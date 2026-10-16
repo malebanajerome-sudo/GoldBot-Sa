@@ -7,7 +7,6 @@
   <meta name="theme-color" content="#090b10">
   <meta name="description" content="GoldBot-ZA gold market intelligence and paper trading dashboard.">
   <title>GoldBot-ZA | Stacks Co.</title>
-
   <style>
     :root {
       color-scheme: dark;
@@ -20,317 +19,112 @@
       --red: #ff6878;
       --border: #292e39;
     }
-
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-
     body {
-      margin: 0;
-      background: var(--bg);
-      color: #f6f7fb;
+      margin: 0; background: var(--bg); color: #f6f7fb;
       font-family: system-ui, -apple-system, sans-serif;
     }
-
     header {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding: 17px 16px;
-      background: rgba(9,11,16,.96);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 5; display: flex;
+      justify-content: space-between; align-items: center; gap: 10px;
+      padding: 17px 16px; background: rgba(9,11,16,.96);
+      border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
     }
-
     .brand { font-size: 21px; font-weight: 900; letter-spacing: -.5px; }
     .brand span { color: var(--gold); }
     .status { font-size: 11px; color: var(--muted); text-align: right; }
     .status.ok { color: var(--green); }
     .status.bad { color: var(--red); }
-
-    main {
-      width: 100%;
-      max-width: 850px;
-      margin: auto;
-      padding: 22px 15px 105px;
-    }
-
+    main { width: 100%; max-width: 850px; margin: auto; padding: 22px 15px 105px; }
     .eyebrow {
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 750;
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
+      color: var(--muted); font-size: 10px; font-weight: 750;
+      letter-spacing: 1.6px; text-transform: uppercase;
     }
-
     .muted { color: var(--muted); }
     .small { font-size: 12px; line-height: 1.65; }
     .gold { color: var(--gold); }
     .green { color: var(--green); }
     .red { color: var(--red); }
-
     .hero {
-      margin-top: 14px;
-      padding: 23px 20px;
-      border: 1px solid #51452b;
-      border-radius: 21px;
-      background: linear-gradient(135deg, #292315, #141821 72%);
+      margin-top: 14px; padding: 23px 20px; border: 1px solid #51452b;
+      border-radius: 21px; background: linear-gradient(135deg, #292315, #141821 72%);
     }
-
     .price {
-      margin: 12px 0;
-      color: var(--gold);
-      font-size: clamp(36px, 9vw, 54px);
-      font-weight: 900;
-      line-height: 1.1;
-      overflow-wrap: anywhere;
+      margin: 12px 0; color: var(--gold);
+      font-size: clamp(36px, 9vw, 54px); font-weight: 900;
+      line-height: 1.1; overflow-wrap: anywhere;
     }
-
-    .quotes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 21px;
-    }
-
-    .quote {
-      padding-top: 13px;
-      border-top: 1px solid #51452b;
-    }
-
+    .quotes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 21px; }
+    .quote { padding-top: 13px; border-top: 1px solid #51452b; }
     .quote-value { margin-top: 5px; font-size: 18px; font-weight: 800; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 13px;
-    }
-
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 13px; }
     .panel {
-      min-width: 0;
-      padding: 16px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      min-width: 0; padding: 16px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 16px;
     }
-
     .wide { grid-column: 1 / -1; }
-
-    .metric {
-      margin-top: 9px;
-      font-size: clamp(23px, 6vw, 30px);
-      font-weight: 900;
-      overflow-wrap: anywhere;
-    }
-
-    .signal {
-      margin: 13px 0 7px;
-      font-size: 31px;
-      font-weight: 950;
-      letter-spacing: -.5px;
-    }
-
+    .metric { margin-top: 9px; font-size: clamp(23px, 6vw, 30px); font-weight: 900; overflow-wrap: anywhere; }
+    .signal { margin: 13px 0 7px; font-size: 31px; font-weight: 950; letter-spacing: -.5px; }
     .signal.buy { color: var(--green); }
     .signal.sell { color: var(--red); }
     .signal.wait { color: var(--gold); }
-
     .signal-reason {
-      margin-top: 13px;
-      padding: 11px;
-      border-radius: 10px;
-      background: var(--panel2);
-      font-size: 12px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
+      margin-top: 13px; padding: 11px; border-radius: 10px;
+      background: var(--panel2); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere;
     }
-
     h2 { margin: 27px 0 12px; font-size: 17px; }
     h3 { margin: 0; font-size: 14px; }
-
     .section-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 28px;
-      margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-top: 28px; margin-bottom: 12px;
     }
-
     .section-heading h2 { margin: 0; }
-
     button {
-      cursor: pointer;
-      padding: 10px 13px;
-      border: 1px solid #51452b;
-      border-radius: 10px;
-      background: #292315;
-      color: var(--gold);
-      font-size: 12px;
-      font-weight: 800;
+      cursor: pointer; padding: 10px 13px; border: 1px solid #51452b;
+      border-radius: 10px; background: #292315; color: var(--gold);
+      font-size: 12px; font-weight: 800;
     }
-
     button:disabled { opacity: .55; }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 17px 12px;
-      margin-top: 20px;
-    }
-
+    .stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px 12px; margin-top: 20px; }
     .stat-label { color: var(--muted); font-size: 11px; }
     .stat-value { margin-top: 5px; font-size: 21px; font-weight: 850; overflow-wrap: anywhere; }
-
-    .timeframes {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .tf-card {
-      padding: 15px;
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 13px;
-    }
-
-    .tf-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 13px;
-    }
-
-    .trend {
-      padding: 5px 9px;
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      font-size: 10px;
-      font-weight: 850;
-    }
-
+    .timeframes { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
+    .tf-card { min-width: 0; padding: 15px; background: var(--panel2); border: 1px solid var(--border); border-radius: 13px; }
+    .tf-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 13px; }
+    .trend { padding: 5px 9px; border: 1px solid var(--border); border-radius: 30px; font-size: 10px; font-weight: 850; }
     .trend.bullish { color: var(--green); }
     .trend.bearish { color: var(--red); }
     .trend.neutral { color: var(--gold); }
-
-    .indicator-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
+    .indicator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .indicator-label { color: var(--muted); font-size: 10px; }
     .indicator-value { margin-top: 4px; font-size: 14px; font-weight: 750; overflow-wrap: anywhere; }
-
-    .analysis-summary {
-      padding: 13px;
-      border-radius: 12px;
-      background: var(--panel2);
-      line-height: 1.65;
-      font-size: 13px;
-      overflow-wrap: anywhere;
-    }
-
-    .trade {
-      padding: 15px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
+    .analysis-summary { padding: 13px; border-radius: 12px; background: var(--panel2); line-height: 1.65; font-size: 13px; overflow-wrap: anywhere; }
+    .trade { padding: 15px 0; border-bottom: 1px solid var(--border); }
     .trade:last-child { border-bottom: 0; }
-
-    .trade-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 9px;
-    }
-
+    .trade-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 9px; }
     .trade-direction { font-size: 14px; font-weight: 850; }
-
-    .pill {
-      display: inline-block;
-      padding: 4px 8px;
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      font-size: 10px;
-      font-weight: 750;
-    }
-
-    .trade-details {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 13px;
-    }
-
+    .pill { display: inline-block; padding: 4px 8px; border: 1px solid var(--border); border-radius: 30px; font-size: 10px; font-weight: 750; }
+    .trade-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 13px; }
     .trade-time { margin-top: 12px; font-size: 11px; color: var(--muted); }
-
-    .message {
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
-
-    .error {
-      padding: 11px;
-      border: 1px solid #62333a;
-      border-radius: 10px;
-      background: #24151a;
-      color: #ffadb6;
-      font-size: 12px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
+    .message { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+    .error { padding: 11px; border: 1px solid #62333a; border-radius: 10px; background: #24151a; color: #ffadb6; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
     .hidden { display: none !important; }
-
     nav {
-      position: fixed;
-      z-index: 10;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-around;
+      position: fixed; z-index: 10; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: space-around;
       padding: 12px 3px calc(12px + env(safe-area-inset-bottom));
-      background: #11151d;
-      border-top: 1px solid var(--border);
+      background: #11151d; border-top: 1px solid var(--border);
     }
-
-    nav a {
-      color: var(--muted);
-      text-align: center;
-      text-decoration: none;
-      font-size: 11px;
-      line-height: 1.7;
-    }
-
+    nav a { color: var(--muted); text-align: center; text-decoration: none; font-size: 11px; line-height: 1.7; }
     nav a:focus, nav a:hover { color: var(--gold); }
-
-    footer {
-      margin-top: 28px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.8;
-    }
-
+    footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 11px; line-height: 1.8; }
     @media (min-width: 620px) {
       main { padding: 28px 22px 110px; }
       .timeframes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .indicator-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
-
     @media (max-width: 360px) {
       header { padding: 15px 10px; }
       .brand { font-size: 18px; }
@@ -339,7 +133,6 @@
     }
   </style>
 </head>
-
 <body id="top">
   <header>
     <div class="brand">GOLD<span>BOT</span>-ZA</div>
@@ -353,16 +146,9 @@
       <div class="eyebrow">Gold spot price · XAU/USD</div>
       <div id="goldPrice" class="price">Loading...</div>
       <div id="priceNote" class="small muted">Connecting to market data...</div>
-
       <div class="quotes">
-        <div class="quote">
-          <div class="eyebrow">BID PRICE</div>
-          <div id="goldBid" class="quote-value">—</div>
-        </div>
-        <div class="quote">
-          <div class="eyebrow">ASK PRICE</div>
-          <div id="goldAsk" class="quote-value">—</div>
-        </div>
+        <div class="quote"><div class="eyebrow">BID PRICE</div><div id="goldBid" class="quote-value">—</div></div>
+        <div class="quote"><div class="eyebrow">ASK PRICE</div><div id="goldAsk" class="quote-value">—</div></div>
       </div>
     </section>
 
@@ -374,88 +160,50 @@
         <div id="signalReason" class="signal-reason">Retrieving signal explanation...</div>
         <div id="signalSetup" class="message"></div>
       </section>
-
       <section class="panel">
-        <div class="eyebrow">Open trades</div>
-        <div id="openTrades" class="metric">—</div>
-        <div class="small muted">Currently marked OPEN</div>
-        <div class="message" id="cancelledTrades">Cancelled: —</div>
+        <div class="eyebrow">Open trades</div><div id="openTrades" class="metric">—</div>
+        <div class="small muted">Currently marked OPEN</div><div class="message" id="cancelledTrades">Cancelled: —</div>
       </section>
-
       <section class="panel">
-        <div class="eyebrow">Win rate</div>
-        <div id="winRate" class="metric gold">—</div>
+        <div class="eyebrow">Win rate</div><div id="winRate" class="metric gold">—</div>
         <div class="small muted">Closed trades only</div>
       </section>
-
       <section class="panel">
-        <div class="eyebrow">Completed trades</div>
-        <div id="completedTrades" class="metric">—</div>
+        <div class="eyebrow">Completed trades</div><div id="completedTrades" class="metric">—</div>
         <div class="small muted">Wins + losses</div>
       </section>
     </div>
 
     <div class="section-heading" id="analysis">
-      <h2>Market intelligence</h2>
-      <span id="analysisUpdated" class="small muted"></span>
+      <h2>Market intelligence</h2><span id="analysisUpdated" class="small muted"></span>
     </div>
-
     <section class="panel">
       <div class="eyebrow">Multi-timeframe analysis</div>
-      <div id="analysisSummary" class="analysis-summary" style="margin-top:12px">
-        Loading market analysis...
-      </div>
+      <div id="analysisSummary" class="analysis-summary" style="margin-top:12px">Loading market analysis...</div>
       <div id="timeframes" class="timeframes"></div>
       <div id="analysisError" class="message"></div>
     </section>
 
     <div class="section-heading" id="performance">
-      <h2>Performance centre</h2>
-      <button id="refreshButton" type="button">Refresh all</button>
+      <h2>Performance centre</h2><button id="refreshButton" type="button">Refresh all</button>
     </div>
-
     <section class="panel">
       <div class="eyebrow">Paper trading performance</div>
       <div id="performanceMode" class="message">Loading performance tracker...</div>
-
       <div class="stats-grid">
-        <div>
-          <div class="stat-label">Total journal trades</div>
-          <div id="totalTrades" class="stat-value">—</div>
-        </div>
-        <div>
-          <div class="stat-label">Wins</div>
-          <div id="wins" class="stat-value green">—</div>
-        </div>
-        <div>
-          <div class="stat-label">Losses</div>
-          <div id="losses" class="stat-value red">—</div>
-        </div>
-        <div>
-          <div class="stat-label">Simulated net R</div>
-          <div id="netR" class="stat-value gold">—</div>
-        </div>
-        <div>
-          <div class="stat-label">Closed trades</div>
-          <div id="closedTrades" class="stat-value">—</div>
-        </div>
-        <div>
-          <div class="stat-label">Cancelled</div>
-          <div id="cancelledCount" class="stat-value">—</div>
-        </div>
+        <div><div class="stat-label">Total journal trades</div><div id="totalTrades" class="stat-value">—</div></div>
+        <div><div class="stat-label">Wins</div><div id="wins" class="stat-value green">—</div></div>
+        <div><div class="stat-label">Losses</div><div id="losses" class="stat-value red">—</div></div>
+        <div><div class="stat-label">Simulated net R</div><div id="netR" class="stat-value gold">—</div></div>
+        <div><div class="stat-label">Closed trades</div><div id="closedTrades" class="stat-value">—</div></div>
+        <div><div class="stat-label">Cancelled</div><div id="cancelledCount" class="stat-value">—</div></div>
       </div>
       <div id="performanceError" class="message"></div>
     </section>
 
-    <div class="section-heading" id="journal">
-      <h2>Recent trades</h2>
-      <span id="journalCount" class="small muted">Loading...</span>
-    </div>
-
+    <div class="section-heading" id="journal"><h2>Recent trades</h2><span id="journalCount" class="small muted">Loading...</span></div>
     <section class="panel">
-      <div id="tradeList">
-        <p class="message">Loading trade journal...</p>
-      </div>
+      <div id="tradeList"><p class="message">Loading trade journal...</p></div>
       <div id="journalError" class="message"></div>
     </section>
 
@@ -468,22 +216,16 @@
   </main>
 
   <nav>
-    <a href="#top">⌂<br>Home</a>
-    <a href="#gold">◈<br>Gold</a>
-    <a href="#signals">↗<br>Signals</a>
-    <a href="#analysis">⌁<br>Analysis</a>
+    <a href="#top">⌂<br>Home</a><a href="#gold">◈<br>Gold</a>
+    <a href="#signals">↗<br>Signals</a><a href="#analysis">⌁<br>Analysis</a>
     <a href="#performance">▤<br>Stats</a>
   </nav>
 
   <script>
     "use strict";
 
-    const SUPABASE_URL =
-      "https://ayfdcfvyeqbjslumfgxf.supabase.co";
-
-    // Public publishable key only. Never put a service-role key in this file.
-    const SUPABASE_KEY =
-      "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
+    const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
 
     const ENDPOINTS = {
       price: "gold-price-public",
@@ -494,99 +236,70 @@
     };
 
     const $ = id => document.getElementById(id);
-
     let lastGoodPrice = null;
     let refreshInProgress = false;
 
     function setText(id, value) {
-      $(id).textContent =
-        value === undefined || value === null || value === ""
-          ? "—"
-          : String(value);
+      $(id).textContent = value === undefined || value === null || value === ""
+        ? "—" : String(value);
     }
 
     function fmtMoney(value) {
       if (value === null || value === undefined || value === "") return "—";
       const n = Number(value);
-      return Number.isFinite(n)
-        ? "$" + n.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          })
-        : "—";
+      return Number.isFinite(n) ? "$" + n.toLocaleString("en-US", {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      }) : "—";
     }
 
     function fmtNumber(value, decimals = 2) {
       if (value === null || value === undefined || value === "") return "—";
       const n = Number(value);
-      return Number.isFinite(n)
-        ? n.toLocaleString("en-US", {
-            minimumFractionDigits: decimals,
-            maximumFractionDigits: decimals
-          })
-        : "—";
+      return Number.isFinite(n) ? n.toLocaleString("en-US", {
+        minimumFractionDigits: decimals, maximumFractionDigits: decimals
+      }) : "—";
     }
 
     function fmtDate(value) {
       if (!value) return "Time not supplied";
       const d = new Date(value);
-      return Number.isNaN(d.getTime())
-        ? String(value)
-        : d.toLocaleString();
+      return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
     }
 
     function first(object, keys) {
       if (!object || typeof object !== "object") return undefined;
       for (const key of keys) {
-        if (object[key] !== undefined && object[key] !== null) {
-          return object[key];
-        }
+        if (object[key] !== undefined && object[key] !== null) return object[key];
       }
       return undefined;
     }
 
     async function callFunction(name) {
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/${name}`,
-        {
-          method: "GET",
-          headers: { "apikey": SUPABASE_KEY },
-          cache: "no-store"
-        }
-      );
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
+        method: "GET",
+        headers: { "apikey": SUPABASE_KEY },
+        cache: "no-store"
+      });
 
       const raw = await response.text();
       let data;
-
       try {
         data = raw ? JSON.parse(raw) : {};
       } catch {
-        throw new Error(
-          `HTTP ${response.status}: the function did not return JSON.`
-        );
+        throw new Error(`HTTP ${response.status}: function did not return JSON.`);
       }
 
       if (!response.ok) {
         const details = data.details
-          ? " " + (Array.isArray(data.details)
-              ? data.details.join(" | ")
-              : JSON.stringify(data.details))
+          ? " " + (Array.isArray(data.details) ? data.details.join(" | ") : JSON.stringify(data.details))
           : "";
-
-        throw new Error(
-          `HTTP ${response.status}: ${
-            data.error || data.message || "Request failed"
-          }${details}`
-        );
+        throw new Error(`HTTP ${response.status}: ${data.error || data.message || "Request failed"}${details}`);
       }
-
       return data;
     }
 
     function showError(id, error) {
-      $(id).textContent = error instanceof Error
-        ? error.message
-        : String(error);
+      $(id).textContent = error instanceof Error ? error.message : String(error);
       $(id).classList.add("error");
     }
 
@@ -598,26 +311,15 @@
     async function loadPrice() {
       try {
         const data = await callFunction(ENDPOINTS.price);
-        if (data.success === false) {
-          throw new Error(data.error || "Price provider returned an error.");
-        }
-
+        if (data.success === false) throw new Error(data.error || "Price provider returned an error.");
         const price = first(data, ["price", "mid", "midpoint"]);
-        if (!Number.isFinite(Number(price))) {
-          throw new Error("The price response did not contain a valid price.");
-        }
+        if (!Number.isFinite(Number(price))) throw new Error("Price response did not contain a valid price.");
 
         lastGoodPrice = data;
         setText("goldPrice", fmtMoney(price));
         setText("goldBid", fmtMoney(data.bid));
         setText("goldAsk", fmtMoney(data.ask));
-
-        setText(
-          "priceNote",
-          `${data.market || "XAU/USD"} · ${
-            data.updated ? "Updated " + fmtDate(data.updated) : "Latest available quote"
-          }`
-        );
+        setText("priceNote", `${data.market || "XAU/USD"} · ${data.updated ? "Updated " + fmtDate(data.updated) : "Latest available quote"}`);
       } catch (error) {
         if (!lastGoodPrice) setText("goldPrice", "Unavailable");
         setText("priceNote", error.message);
@@ -626,50 +328,26 @@
 
     function normaliseSignal(value) {
       const s = String(value || "").toUpperCase().replace(/[_-]+/g, " ").trim();
-
       if (s === "BUY" || s.includes("BUY ")) return "BUY";
       if (s === "SELL" || s.includes("SELL ")) return "SELL";
       if (s === "WAIT" || s.includes("WAIT")) return "WAIT";
       if (s.includes("NO TRADE") || s.includes("NO SIGNAL")) return "NO TRADE";
-
       return s || "NO TRADE";
     }
 
     async function loadSignal() {
       try {
         const data = await callFunction(ENDPOINTS.signal);
-
-        const signal = normaliseSignal(
-          first(data, ["signal", "direction", "action"])
-        );
-
+        const signal = normaliseSignal(first(data, ["signal", "direction", "action"]));
         setText("signal", signal);
-        $("signal").className = "signal " +
-          (signal === "BUY" ? "buy" :
-           signal === "SELL" ? "sell" : "wait");
-
-        setText(
-          "signalSubtitle",
-          data.market || "XAU/USD"
-        );
-
-        setText(
-          "signalReason",
-          first(data, ["reason", "message", "summary"]) ||
-          (data.success === false
-            ? data.error || "Signal engine reported a problem."
-            : "Signal received. Review all conditions before trading.")
-        );
-
+        $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");
+        setText("signalSubtitle", data.market || "XAU/USD");
+        setText("signalReason", first(data, ["reason", "message", "summary"]) ||
+          (data.success === false ? data.error || "Signal engine reported a problem." : "Signal received. Review all conditions before trading."));
         const setup = data.trade_setup || data.setup;
-        if (setup && typeof setup === "object") {
-          setText(
-            "signalSetup",
-            `Entry: ${fmtMoney(setup.entry)} · Stop loss: ${fmtMoney(setup.stop_loss)} · Take profit: ${fmtMoney(setup.take_profit)} · R:R ${setup.risk_to_reward || "—"}`
-          );
-        } else {
-          setText("signalSetup", "No trade setup supplied by the signal engine.");
-        }
+        setText("signalSetup", setup && typeof setup === "object"
+          ? `Entry: ${fmtMoney(setup.entry)} · Stop loss: ${fmtMoney(setup.stop_loss)} · Take profit: ${fmtMoney(setup.take_profit)} · R:R ${setup.risk_to_reward || "—"}`
+          : "No trade setup supplied by the signal engine.");
       } catch (error) {
         setText("signal", "UNAVAILABLE");
         $("signal").className = "signal wait";
@@ -679,6 +357,27 @@
       }
     }
 
+    function extractFrames(data) {
+      // Accept direct response, nested data, or a JSON-encoded response.
+      let root = data;
+      for (let i = 0; i < 3; i++) {
+        if (typeof root === "string") {
+          try { root = JSON.parse(root); } catch { break; }
+        }
+        if (root && root.timeframes) break;
+        if (root && root.data && typeof root.data === "object") root = root.data;
+        else if (root && root.result && typeof root.result === "object") root = root.result;
+        else break;
+      }
+
+      const frames = root?.timeframes || root?.timeFrames || root?.timeframes_data || {};
+      const daily = frames.daily || frames["1d"] || frames.D1 || frames.day;
+      const fourHour = frames.four_hour || frames.fourHour || frames["4h"] || frames.H4;
+      const hourly = frames.one_hour || frames.hourly || frames.oneHour || frames["1h"] || frames.H1;
+
+      return { root, daily, fourHour, hourly };
+    }
+
     function timeframeCard(title, tf) {
       const card = document.createElement("article");
       card.className = "tf-card";
@@ -686,64 +385,58 @@
       if (!tf || typeof tf !== "object" || Object.keys(tf).length === 0) {
         const head = document.createElement("div");
         head.className = "tf-head";
-
         const heading = document.createElement("h3");
         heading.textContent = title;
-
         const badge = document.createElement("span");
         badge.className = "trend neutral";
         badge.textContent = "NO DATA";
-
         head.append(heading, badge);
 
         const message = document.createElement("div");
         message.className = "message";
-        message.textContent = "The function returned no indicators for this timeframe.";
-
+        message.textContent = "No timeframe object found in the market-analysis response.";
         card.append(head, message);
         return card;
       }
 
       const head = document.createElement("div");
       head.className = "tf-head";
-
       const heading = document.createElement("h3");
       heading.textContent = title;
 
       const trend = String(tf.trend || "NEUTRAL").toUpperCase();
       const badge = document.createElement("span");
-      badge.className = "trend " +
-        (trend === "BULLISH" ? "bullish" :
-         trend === "BEARISH" ? "bearish" : "neutral");
+      badge.className = "trend " + (trend === "BULLISH" ? "bullish" : trend === "BEARISH" ? "bearish" : "neutral");
       badge.textContent = trend;
-
       head.append(heading, badge);
 
       const indicators = document.createElement("div");
       indicators.className = "indicator-grid";
 
+      const close = first(tf, ["latest_close", "latestClose", "close", "last_close"]);
+      const sma20 = first(tf, ["sma20", "sma_20", "SMA20"]);
+      const sma50 = first(tf, ["sma50", "sma_50", "SMA50"]);
+      const rsi14 = first(tf, ["rsi14", "rsi_14", "RSI14"]);
+      const records = first(tf, ["records_used", "recordsUsed", "count", "candles"]);
+      const candleTime = first(tf, ["latest_candle_time", "latestTime", "latest_time", "last_candle_time"]);
+
       const values = [
-        ["Latest close", fmtMoney(tf.latest_close ?? tf.close)],
-        ["SMA 20", fmtMoney(tf.sma20)],
-        ["SMA 50", fmtMoney(tf.sma50)],
-        ["RSI 14", fmtNumber(tf.rsi14)],
-        ["Candles used", tf.records_used ?? "—"],
-        ["Last candle", tf.latest_candle_time || tf.latestTime
-          ? fmtDate(tf.latest_candle_time || tf.latestTime)
-          : "—"]
+        ["Latest close", fmtMoney(close)],
+        ["SMA 20", fmtMoney(sma20)],
+        ["SMA 50", fmtMoney(sma50)],
+        ["RSI 14", fmtNumber(rsi14)],
+        ["Candles used", records ?? "—"],
+        ["Last candle", candleTime ? fmtDate(candleTime) : "—"]
       ];
 
       for (const [label, value] of values) {
         const item = document.createElement("div");
-
         const labelEl = document.createElement("div");
         labelEl.className = "indicator-label";
         labelEl.textContent = label;
-
         const valueEl = document.createElement("div");
         valueEl.className = "indicator-value";
         valueEl.textContent = String(value);
-
         item.append(labelEl, valueEl);
         indicators.appendChild(item);
       }
@@ -756,7 +449,6 @@
         warning.textContent = "Insufficient candles for all indicators.";
         card.appendChild(warning);
       }
-
       return card;
     }
 
@@ -767,25 +459,12 @@
 
       try {
         const data = await callFunction(ENDPOINTS.analysis);
+        if (data.success === false) throw new Error(data.error || "Market analysis failed.");
 
-        if (data.success === false) {
-          throw new Error(data.error || "Market analysis failed.");
-        }
-
-        const frames = data.timeframes || {};
-        const daily = frames.daily;
-        const fourHour = frames.four_hour || frames.fourHour;
-        const hourly = frames.one_hour || frames.hourly || frames.oneHour;
-
-        let summary = "Multi-timeframe analysis from the market-analysis function.";
-
-        if (data.error) summary = String(data.error);
-
-        $("analysisSummary").textContent = summary;
-        setText(
-          "analysisUpdated",
-          data.updated_at ? fmtDate(data.updated_at) : ""
-        );
+        const { root, daily, fourHour, hourly } = extractFrames(data);
+        $("analysisSummary").textContent = root?.summary || root?.message ||
+          "Multi-timeframe analysis from the market-analysis function.";
+        setText("analysisUpdated", root?.updated_at || root?.updatedAt ? fmtDate(root.updated_at || root.updatedAt) : "");
 
         holder.append(
           timeframeCard("Daily · 1D", daily),
@@ -795,24 +474,20 @@
 
         if (!daily && !fourHour && !hourly) {
           $("analysisSummary").textContent =
-            "The function returned no timeframe indicators. The deployed response may be an older version or its candle data may be unavailable.";
+            "The market-analysis endpoint responded, but no timeframe objects were found. Check the response structure and deployed function version.";
+          showError("analysisError", `Response keys: ${Object.keys(root || data).join(", ") || "none"}`);
         }
       } catch (error) {
-        $("analysisSummary").textContent =
-          "Market analysis could not be loaded.";
+        $("analysisSummary").textContent = "Market analysis could not be loaded.";
         showError("analysisError", error);
       }
     }
 
     async function loadPerformance() {
       clearError("performanceError");
-
       try {
         const data = await callFunction(ENDPOINTS.performance);
-
-        if (data.success === false) {
-          throw new Error(data.error || "Performance tracker failed.");
-        }
+        if (data.success === false) throw new Error(data.error || "Performance tracker failed.");
 
         setText("performanceMode", data.mode || "Performance tracker connected");
         setText("totalTrades", data.total_trades);
@@ -823,23 +498,10 @@
         setText("closedTrades", data.closed_trades);
         setText("cancelledTrades", `Cancelled: ${data.cancelled ?? "—"}`);
         setText("cancelledCount", data.cancelled);
-        setText(
-          "winRate",
-          data.win_rate_percent === undefined
-            ? "—"
-            : `${fmtNumber(data.win_rate_percent)}%`
-        );
-        setText(
-          "netR",
-          data.simulated_net_R === undefined
-            ? "—"
-            : `${Number(data.simulated_net_R) > 0 ? "+" : ""}${fmtNumber(data.simulated_net_R)}R`
-        );
+        setText("winRate", data.win_rate_percent === undefined ? "—" : `${fmtNumber(data.win_rate_percent)}%`);
+        setText("netR", data.simulated_net_R === undefined ? "—" : `${Number(data.simulated_net_R) > 0 ? "+" : ""}${fmtNumber(data.simulated_net_R)}R`);
 
-        if (data.note) {
-          $("performanceMode").textContent =
-            `${data.mode || "Tracker connected"} · ${data.note}`;
-        }
+        if (data.note) setText("performanceMode", `${data.mode || "Tracker connected"} · ${data.note}`);
       } catch (error) {
         showError("performanceError", error);
         if ($("performanceMode").textContent.startsWith("Loading")) {
@@ -863,26 +525,20 @@
       for (const record of records) {
         const trade = document.createElement("article");
         trade.className = "trade";
-
         const head = document.createElement("div");
         head.className = "trade-head";
 
         const direction = document.createElement("strong");
-        direction.className = "trade-direction " +
-          (record.direction === "BUY" ? "green" :
-           record.direction === "SELL" ? "red" : "");
-        direction.textContent =
-          `${record.market || "XAU/USD"} · ${record.direction || "UNKNOWN"}`;
+        direction.className = "trade-direction " + (record.direction === "BUY" ? "green" : record.direction === "SELL" ? "red" : "");
+        direction.textContent = `${record.market || "XAU/USD"} · ${record.direction || "UNKNOWN"}`;
 
         const outcome = document.createElement("span");
         outcome.className = "pill";
         outcome.textContent = record.outcome || "UNKNOWN";
-
         head.append(direction, outcome);
 
         const details = document.createElement("div");
         details.className = "trade-details";
-
         const fields = [
           ["Entry", fmtMoney(record.entry)],
           ["Stop loss", fmtMoney(record.stop_loss)],
@@ -893,15 +549,12 @@
 
         for (const [label, value] of fields) {
           const item = document.createElement("div");
-
           const labelEl = document.createElement("div");
           labelEl.className = "indicator-label";
           labelEl.textContent = label;
-
           const valueEl = document.createElement("div");
           valueEl.className = "indicator-value";
           valueEl.textContent = String(value);
-
           item.append(labelEl, valueEl);
           details.appendChild(item);
         }
@@ -909,7 +562,6 @@
         const time = document.createElement("div");
         time.className = "trade-time";
         time.textContent = fmtDate(record.created_at || record.signal_time);
-
         trade.append(head, details, time);
 
         if (record.notes) {
@@ -918,25 +570,16 @@
           notes.textContent = record.notes;
           trade.appendChild(notes);
         }
-
         holder.appendChild(trade);
       }
     }
 
     async function loadJournal() {
       clearError("journalError");
-
       try {
         const data = await callFunction(ENDPOINTS.journal);
-
-        if (data.success === false) {
-          throw new Error(data.error || "Trade journal failed.");
-        }
-
-        const records = Array.isArray(data.records)
-          ? data.records
-          : Array.isArray(data) ? data : [];
-
+        if (data.success === false) throw new Error(data.error || "Trade journal failed.");
+        const records = Array.isArray(data.records) ? data.records : Array.isArray(data) ? data : [];
         renderJournal(records);
         setText("journalCount", `${data.count ?? records.length} records`);
       } catch (error) {
@@ -948,7 +591,6 @@
     async function refreshDashboard() {
       if (refreshInProgress) return;
       refreshInProgress = true;
-
       const button = $("refreshButton");
       button.disabled = true;
       button.textContent = "Refreshing...";
@@ -956,14 +598,8 @@
       $("connectionStatus").className = "status";
 
       try {
-        // Each section handles its own errors so one failure
-        // does not prevent the other sections from updating.
         await Promise.allSettled([
-          loadPrice(),
-          loadSignal(),
-          loadAnalysis(),
-          loadPerformance(),
-          loadJournal()
+          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal()
         ]);
 
         const priceOk = $("goldPrice").textContent !== "Unavailable";
@@ -977,7 +613,6 @@
           status.textContent = "● Some services need attention";
           status.className = "status bad";
         }
-
         setText("lastRefresh", `Dashboard refreshed ${new Date().toLocaleTimeString()}`);
       } finally {
         button.disabled = false;
@@ -987,7 +622,6 @@
     }
 
     $("refreshButton").addEventListener("click", refreshDashboard);
-
     refreshDashboard();
     setInterval(refreshDashboard, 60000);
   </script>
