@@ -132,5 +132,36 @@
     <a href="#signal">↗<br>Signals</a>
     <a href="#completed">▤<br>Statistics</a>
   </nav>
+  
+<script>
+const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
+
+async function loadGoldPrice() {
+  const price = document.getElementById("goldPrice");
+  const note = document.getElementById("priceNote");
+
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/gold-price`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Gold price response:", data);
+
+    // We'll map the actual response fields after checking them.
+    price.textContent = JSON.stringify(data);
+    note.textContent = "Connected to Supabase";
+  } catch (error) {
+    price.textContent = "Connection error";
+    note.textContent = error.message;
+  }
+}
+
+loadGoldPrice();
+</script>
 </body>
 </html>
