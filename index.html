@@ -1,485 +1,396 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080909">
-<title>STACKS CO. — Gold Desk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STACKS CO. | Gold Desk</title>
 <style>
-:root {
-  color-scheme:dark;
-  --bg:#080909; --card:#111210; --gold:#d6ad4b;
-  --bright:#f4d47a; --text:#f5f2e9; --muted:#96968e;
-  --green:#55d69a; --red:#ff7777; --line:#302918;
-}
+:root{--bg:#080808;--panel:#111;--gold:#d4af37;--text:#f5f5f5;--muted:#999;--border:#292929;--green:#27d17f;--red:#ff5252}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#241b09 0%,#0b0c0b 40%,var(--bg) 80%);color:var(--text);font:15px/1.5 Arial,Helvetica,sans-serif}
-main{max-width:1150px;margin:auto;padding:22px 16px 40px}
-header{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:10px 0 22px;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:12px;color:var(--bright);font-weight:900;font-size:19px}
-.eyebrow{color:var(--gold);letter-spacing:3px;font-size:11px;font-weight:bold}
-h1{font-size:24px;margin:2px 0;letter-spacing:2px}
-.small{font-size:12px;color:var(--muted)}
-button{border:1px solid var(--gold);border-radius:9px;background:#211a0b;color:var(--bright);padding:10px 14px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:wait}
-button:hover{filter:brightness(1.15)}
-.panel{background:linear-gradient(145deg,#151510,#0e0f0e);border:1px solid var(--line);border-radius:15px;padding:20px;min-width:0}
-.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:15px;margin-top:20px}
-.label{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
-.price{color:var(--bright);font-size:clamp(32px,6vw,52px);font-weight:800;margin:8px 0;overflow-wrap:anywhere}
-.signal{font-size:34px;font-weight:900;margin:12px 0 5px}
-.buy{color:var(--green)}.sell{color:var(--red)}.no-trade{color:var(--bright)}
-.pill{display:inline-block;padding:5px 9px;border-radius:30px;background:#211b0c;border:1px solid #473719;color:var(--bright);font-size:10px;font-weight:bold;letter-spacing:1px}
-.section{margin:25px 0 12px}
-.section h2{font-size:17px;margin:0}
-.section p{margin:4px 0 0;color:var(--muted);font-size:12px}
-.timeframes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
-.tf-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:15px}
-.tf-head strong{font-size:16px}
-.direction{font-size:10px;font-weight:bold;border:1px solid #444;padding:5px 7px;border-radius:20px}
-.direction.bullish{color:var(--green);border-color:#28543e}
-.direction.bearish{color:var(--red);border-color:#633030}
-.direction.neutral{color:var(--bright);border-color:#57451c}
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.metric{background:#090a09;border:1px solid #27271f;border-radius:9px;padding:10px;min-width:0}
-.metric span{display:block;color:var(--muted);font-size:11px}
-.metric strong{display:block;margin-top:4px;font-size:15px;overflow-wrap:anywhere}
-.reason{color:var(--muted);font-size:12px;margin:14px 0 0;overflow-wrap:anywhere}
-.statusbox{margin-top:18px;padding:14px;border:1px solid var(--line);background:#10110f;border-radius:10px;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
-.statusdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#888;margin-right:7px}
-.statusdot.online{background:var(--green)}.statusdot.offline{background:var(--red)}
-.system{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #29291f;font-size:12px}
-.row:last-child{border:0}.row span{color:var(--muted)}.row strong{text-align:right;overflow-wrap:anywhere}
-.paper-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.stat{background:#0b0c0b;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}
-.stat .value{font-size:clamp(22px,3vw,31px);font-weight:800;margin:7px 0;overflow-wrap:anywhere}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-.danger{border-color:#743939;color:#ffaaaa;background:#241111}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{padding:24px 16px;text-align:center;border-bottom:1px solid var(--border)}
+.brand{font-size:28px;font-weight:900;letter-spacing:4px;color:var(--gold)}
+.subtitle{color:var(--muted);font-size:12px;letter-spacing:2px;margin-top:8px}
+main{max-width:1050px;margin:auto;padding:18px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px}
+h2{font-size:13px;letter-spacing:2px;color:var(--gold);margin:0 0 16px}
+.price{font-size:clamp(32px,8vw,48px);font-weight:bold;margin:8px 0}
+.muted{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.stat{background:#0b0b0b;border:1px solid var(--border);padding:14px;border-radius:9px;min-width:0}
+.label{font-size:11px;color:var(--muted);margin-bottom:9px}
+.value{font-size:19px;font-weight:bold;overflow-wrap:anywhere}
+.signal{text-align:center;padding:22px;border:1px solid var(--border);border-radius:10px;margin-bottom:15px}
+.signal-value{font-size:30px;font-weight:900;color:var(--gold)}
+button{background:var(--gold);color:#090909;border:0;border-radius:7px;padding:11px 14px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.secondary{background:#222;color:#eee;border:1px solid #444}
+button.danger{background:#381717;color:#ffbaba;border:1px solid #633}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.status{font-size:12px;color:var(--muted);margin-top:10px;overflow-wrap:anywhere}
+.green{color:var(--green)}.red{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--border)}
+th{color:var(--gold)}
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;text-align:left;font-size:12px;white-space:nowrap}
-th{color:var(--muted);font-weight:normal}
-th,td{padding:11px 9px;border-bottom:1px solid var(--line)}
-.empty{text-align:center;color:var(--muted);padding:20px}
-footer{border-top:1px solid var(--line);margin-top:25px;padding-top:15px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-@media(max-width:760px){.hero,.timeframes,.system{grid-template-columns:1fr}.paper-stats{grid-template-columns:1fr 1fr}main{padding:14px 11px 30px}.panel{padding:16px}header{align-items:flex-start}h1{font-size:21px}}
-@media(max-width:420px){header{flex-wrap:wrap}.header-actions{width:100%;display:flex;justify-content:space-between;align-items:center}}
+footer{text-align:center;color:#666;padding:20px;font-size:11px}
+input{width:100%;background:#080808;border:1px solid #333;color:white;padding:10px;border-radius:6px}
 </style>
 </head>
 <body>
-<main>
 <header>
-  <div class="brand">
-    <div class="logo">SC.</div>
-    <div>
-      <div class="eyebrow">STACKS CO.</div>
-      <h1>GOLD DESK</h1>
-      <div class="small">XAU/USD · GoldBot-ZA</div>
-    </div>
-  </div>
-  <div class="header-actions">
-    <span class="small"><i id="statusDot" class="statusdot"></i><span id="connection">Connecting...</span></span>
-    <button id="refresh">↻ Refresh</button>
-  </div>
+<div class="brand">STACKS CO.</div>
+<div class="subtitle">GOLD DESK · GOLDBOT-ZA</div>
 </header>
-
-<section class="hero">
-  <article class="panel">
-    <div class="label">Live gold spot price · USD</div>
-    <div class="price" id="goldPrice">Loading...</div>
-    <span class="pill">XAU / USD</span>
-    <p class="small" id="priceTime">Waiting for price data...</p>
-  </article>
-  <article class="panel">
-    <div class="label">GoldBot-ZA · Trading decision</div>
-    <div class="signal no-trade" id="signal">Loading...</div>
-    <p class="reason" id="signalReason">Waiting for signal engine...</p>
-    <span class="pill" id="strategy">STRICT CONFIRMATION</span>
-    <p class="small" id="signalTime">Not updated yet</p>
-  </article>
+<main>
+<section class="panel">
+<h2>LIVE GOLD MARKET</h2>
+<div class="price" id="goldPrice">—</div>
+<div class="muted">XAU / USD · Spot Gold</div>
+<div class="status" id="priceStatus">Connecting...</div>
+<div class="actions"><button onclick="refreshAll()">REFRESH DATA</button></div>
 </section>
 
-<div class="section"><h2>Multi-timeframe analysis</h2><p>Daily trend · 4-hour confirmation · 1-hour timing</p></div>
-<section class="timeframes">
-  <article class="panel">
-    <div class="tf-head"><strong>Daily / 1D</strong><span class="direction" id="dailyDirection">—</span></div>
-    <div class="metrics">
-      <div class="metric"><span>Last close</span><strong id="dailyClose">—</strong></div>
-      <div class="metric"><span>RSI (14)</span><strong id="dailyRsi">—</strong></div>
-      <div class="metric"><span>SMA (20)</span><strong id="dailySma20">—</strong></div>
-      <div class="metric"><span>SMA (50)</span><strong id="dailySma50">—</strong></div>
-    </div>
-    <p class="reason" id="dailyReason">Waiting for analysis...</p>
-  </article>
-  <article class="panel">
-    <div class="tf-head"><strong>4-hour / 4H</strong><span class="direction" id="fourDirection">—</span></div>
-    <div class="metrics">
-      <div class="metric"><span>Last close</span><strong id="fourClose">—</strong></div>
-      <div class="metric"><span>RSI (14)</span><strong id="fourRsi">—</strong></div>
-      <div class="metric"><span>SMA (20)</span><strong id="fourSma20">—</strong></div>
-      <div class="metric"><span>SMA (50)</span><strong id="fourSma50">—</strong></div>
-    </div>
-    <p class="reason" id="fourReason">Waiting for analysis...</p>
-  </article>
-  <article class="panel">
-    <div class="tf-head"><strong>1-hour / 1H</strong><span class="direction" id="oneDirection">—</span></div>
-    <div class="metrics">
-      <div class="metric"><span>Last close</span><strong id="oneClose">—</strong></div>
-      <div class="metric"><span>RSI (14)</span><strong id="oneRsi">—</strong></div>
-      <div class="metric"><span>SMA (20)</span><strong id="oneSma20">—</strong></div>
-      <div class="metric"><span>SMA (50)</span><strong id="oneSma50">—</strong></div>
-    </div>
-    <p class="reason" id="oneReason">Waiting for analysis...</p>
-  </article>
+<section class="panel">
+<h2>GOLDBOT-ZA SIGNAL</h2>
+<div class="signal">
+<div class="label">CURRENT SIGNAL</div>
+<div class="signal-value" id="signalValue">—</div>
+<div class="status" id="signalReason">Waiting for analysis...</div>
+</div>
+<div class="grid">
+<div class="stat"><div class="label">DAILY</div><div class="value" id="dailyDirection">—</div><div class="muted" id="dailyDetails">Waiting...</div></div>
+<div class="stat"><div class="label">4 HOUR</div><div class="value" id="fourDirection">—</div><div class="muted" id="fourDetails">Waiting...</div></div>
+<div class="stat"><div class="label">1 HOUR</div><div class="value" id="oneDirection">—</div><div class="muted" id="oneDetails">Waiting...</div></div>
+</div>
+<div class="status" id="signalStatus">Connecting...</div>
 </section>
 
-<div class="section"><h2>Simulated performance tracker</h2><p>Paper trading only · No real orders · P/L reflects price movement</p></div>
-<section class="paper-stats">
-  <article class="stat"><div class="label">Win rate</div><div class="value" id="paperWinRate">—</div><div class="small">Closed trades</div></article>
-  <article class="stat"><div class="label">Net simulated P/L</div><div class="value" id="paperNetPL">$0.00</div><div class="small">USD price movement</div></article>
-  <article class="stat"><div class="label">Record</div><div class="value" id="paperRecord">0W / 0L</div><div class="small">Wins / losses</div></article>
-  <article class="stat"><div class="label">Positions</div><div class="value" id="paperOpenCount">0 open</div><div class="small" id="paperClosedCount">0 closed</div></article>
+<section class="panel">
+<h2>PAPER TRADING</h2>
+<div class="grid">
+<div class="stat"><div class="label">NET SIMULATED P/L</div><div class="value" id="netPL">$0.00</div></div>
+<div class="stat"><div class="label">WIN RATE</div><div class="value" id="winRate">0%</div></div>
+<div class="stat"><div class="label">WINS / LOSSES</div><div class="value" id="winLoss">0 / 0</div></div>
+<div class="stat"><div class="label">OPEN / CLOSED</div><div class="value" id="openClosed">0 / 0</div></div>
+</div>
+<div class="actions">
+<button onclick="openPaper('BUY')">SIMULATE BUY</button>
+<button onclick="openPaper('SELL')">SIMULATE SELL</button>
+<button class="secondary" onclick="exportCSV()">EXPORT CSV</button>
+<button class="danger" onclick="clearHistory()">CLEAR HISTORY</button>
+</div>
+<div class="status">Simulated trades only. No real orders are placed. P/L uses price difference per unit and excludes spread, fees and slippage.</div>
 </section>
 
-<section class="panel" style="margin-top:14px">
-  <div class="label">Open a simulated position</div>
-  <p class="reason">Uses the latest price fetched by this dashboard. Check the displayed price before opening or closing.</p>
-  <div class="actions">
-    <button id="paperBuy" type="button">Simulate BUY</button>
-    <button id="paperSell" type="button">Simulate SELL</button>
-    <button id="paperExport" type="button">Export CSV</button>
-    <button id="paperClear" class="danger" type="button">Clear history</button>
-  </div>
-  <p class="reason" id="paperMessage">No simulated trades recorded yet.</p>
+<section class="panel">
+<h2>OPEN POSITIONS</h2>
+<div class="table-wrap"><table><thead><tr><th>Side</th><th>Entry</th><th>Current</th><th>P/L</th><th></th></tr></thead><tbody id="openTrades"><tr><td colspan="5">No open positions</td></tr></tbody></table></div>
 </section>
 
-<div class="section"><h2>Simulated trade history</h2><p>Entries, exits and results</p></div>
-<section class="panel table-wrap">
-  <table>
-    <thead><tr><th>Opened</th><th>Side</th><th>Entry</th><th>Exit</th><th>P/L</th><th>Status</th><th>Action</th></tr></thead>
-    <tbody id="paperHistory"><tr><td colspan="7" class="empty">No trades yet.</td></tr></tbody>
-  </table>
+<section class="panel">
+<h2>TRADE HISTORY</h2>
+<div class="table-wrap"><table><thead><tr><th>Time</th><th>Side</th><th>Entry</th><th>Exit</th><th>P/L</th><th>Status</th></tr></thead><tbody id="tradeHistory"><tr><td colspan="6">No trades yet</td></tr></tbody></table></div>
 </section>
-
-<div class="section"><h2>System status</h2><p>Supabase service connectivity</p></div>
-<section class="system">
-  <article class="panel">
-    <div class="row"><span>Price service</span><strong id="priceStatus">Checking...</strong></div>
-    <div class="row"><span>Signal service</span><strong id="signalStatus">Checking...</strong></div>
-    <div class="row"><span>Last successful refresh</span><strong id="lastRefresh">—</strong></div>
-  </article>
-  <article class="panel">
-    <div class="label">Risk notice</div>
-    <p class="reason" id="risk">Rule-based analysis only. Signals are not a guarantee of market direction or profit.</p>
-    <p class="reason">This dashboard displays analysis only. It does not execute trades or connect to a broker.</p>
-  </article>
-</section>
-
-<div class="statusbox" id="message" role="status" aria-live="polite">Connecting to STACKS CO. services...</div>
-<footer><span>© <span id="year"></span> STACKS CO. · GOLD DESK</span><span>Pitch black &amp; gold · Powered by Supabase</span></footer>
 </main>
+<footer>STACKS CO. · GOLDBOT-ZA · PAPER TRADING MODE</footer>
 
 <script>
 "use strict";
 
-/* Supabase public configuration. Never put a service-role key in browser code. */
 const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ";
 const PRICE_URL = SUPABASE_URL + "/functions/v1/gold-price-public";
 const SIGNAL_URL = SUPABASE_URL + "/functions/v1/market-signal-v2";
 
-const $ = id => document.getElementById(id);
-let latestPaperPrice = null;
-let latestPaperSignal = "NO TRADE";
-let refreshing = false;
+let currentPrice = null;
+let lastSignal = null;
+let trades = [];
 
-/* ---------- Supabase ---------- */
-async function fetchFunction(url) {
+try {
+  trades = JSON.parse(localStorage.getItem("stacks_co_paper_trades_v1") || "[]");
+  if (!Array.isArray(trades)) trades = [];
+} catch {
+  trades = [];
+}
+
+async function apiGet(url) {
   const response = await fetch(url, {
     method: "GET",
-    headers: { "Accept": "application/json", "apikey": SUPABASE_KEY },
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Accept": "application/json"
+    },
     cache: "no-store"
   });
-  const raw = await response.text();
+
+  const body = await response.text();
   let data;
-  try { data = JSON.parse(raw); }
-  catch { throw new Error("Response wasn't JSON. Check the function URL."); }
-  if (!response.ok) throw new Error(data.message || data.error || "HTTP " + response.status);
-  if (data && data.success === false) throw new Error(data.message || data.error || "Function reported failure");
+
+  try {
+    data = JSON.parse(body);
+  } catch {
+    throw new Error("Invalid response (" + response.status + ")");
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || data.msg || data.error || "HTTP " + response.status);
+  }
+
+  if (data && (data.error === "Invalid API key" || data.code === "UNAUTHORIZED_NO_AUTH_HEADER")) {
+    throw new Error(data.message || data.error);
+  }
+
   return data;
 }
 
-function numberText(value) {
-  if (value === null || value === undefined || value === "") return "—";
-  const n = Number(value);
-  return Number.isFinite(n) ? n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) : "—";
-}
-function showTime(value) {
-  if (!value) return "—";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
-}
 function findPrice(data) {
-  const objects = [data,data?.data,data?.result,data?.gold];
-  const keys = ["price","gold_price","spot_price","spot","xau_usd"];
-  for (const object of objects) {
-    if (!object || typeof object !== "object") continue;
-    for (const key of keys) {
-      const value = object[key];
-      if (value !== null && value !== undefined && value !== "") {
-        const n = Number(value);
-        if (Number.isFinite(n) && n > 0) return n;
-      }
+  const candidates = [
+    data?.price, data?.gold_price, data?.spot_price, data?.spot,
+    data?.xau_usd, data?.data?.price, data?.data?.gold_price,
+    data?.data?.spot_price, data?.data?.spot, data?.data?.xau_usd,
+    data?.result?.price, data?.result?.gold_price,
+    data?.result?.spot_price, data?.gold?.price
+  ];
+
+  for (const value of candidates) {
+    const number = Number(value);
+    if (value !== null && value !== undefined && value !== "" && Number.isFinite(number) && number > 0) {
+      return number;
+    }
+  }
+
+  return null;
+}
+
+function fmtPrice(value) {
+  return Number.isFinite(Number(value))
+    ? "$" + Number(value).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})
+    : "—";
+}
+
+function fmtNumber(value) {
+  const number = Number(value);
+  return value !== null && value !== undefined && value !== "" && Number.isFinite(number)
+    ? number.toFixed(2)
+    : "—";
+}
+
+function findTimeframe(data, names) {
+  for (const source of [data?.timeframes, data?.analysis?.timeframes, data?.data?.timeframes, data?.analysis, data?.data, data]) {
+    if (!source) continue;
+    for (const name of names) {
+      if (source[name]) return source[name];
     }
   }
   return null;
 }
 
-/* ---------- Timeframe rendering ---------- */
-function setDirection(id,value) {
-  const el = $(id);
-  const direction = String(value || "—").toUpperCase();
-  el.textContent = direction;
-  el.className = "direction";
-  if (direction === "BULLISH") el.classList.add("bullish");
-  else if (direction === "BEARISH") el.classList.add("bearish");
-  else if (direction === "NEUTRAL") el.classList.add("neutral");
-}
-function paintTimeframe(prefix,item) {
-  if (!item || typeof item !== "object") return;
-  setDirection(prefix + "Direction",item.direction);
-  $(prefix + "Close").textContent = numberText(item.close ?? item.latest_close);
-  $(prefix + "Rsi").textContent = numberText(item.rsi14);
-  $(prefix + "Sma20").textContent = numberText(item.sma20);
-  $(prefix + "Sma50").textContent = numberText(item.sma50);
-  $(prefix + "Reason").textContent = item.reason || "No explanation supplied.";
-}
-function normalizeTimeframes(data) {
-  const tf = data?.timeframes || data?.analysis?.timeframes || {};
-  return {
-    daily:tf.daily || tf["1d"] || tf.D1,
-    four:tf.four_hour || tf.fourHour || tf["4h"] || tf.H4,
-    one:tf.one_hour || tf.oneHour || tf.hourly || tf["1h"] || tf.H1
-  };
+function paintTimeframe(prefix, frame) {
+  const direction = frame?.direction ?? frame?.trend ?? frame?.signal ?? frame?.bias ?? "—";
+  const close = frame?.close ?? frame?.price ?? frame?.current_price;
+  const rsi = frame?.rsi14 ?? frame?.rsi_14 ?? frame?.rsi;
+  const sma20 = frame?.sma20 ?? frame?.sma_20;
+  const sma50 = frame?.sma50 ?? frame?.sma_50;
+
+  const dirElement = document.getElementById(prefix + "Direction");
+  dirElement.textContent = String(direction).toUpperCase();
+  dirElement.className = "value " + (/BULL|BUY/.test(String(direction).toUpperCase()) ? "green" : /BEAR|SELL/.test(String(direction).toUpperCase()) ? "red" : "");
+
+  document.getElementById(prefix + "Details").textContent =
+    "Close " + fmtPrice(close) + " · RSI " + fmtNumber(rsi) +
+    " · SMA20 " + fmtNumber(sma20) + " · SMA50 " + fmtNumber(sma50);
 }
 
-/* ---------- Paper trading persistence ---------- */
-const PAPER_KEY = "stacks_co_paper_trades_v1";
-let paperTrades = [];
-try {
-  const saved = JSON.parse(localStorage.getItem(PAPER_KEY) || "[]");
-  if (Array.isArray(saved)) paperTrades = saved;
-} catch { paperTrades = []; }
-
-function savePaperTrades() {
+async function loadPrice() {
+  const status = document.getElementById("priceStatus");
+  status.textContent = "Loading price...";
   try {
-    localStorage.setItem(PAPER_KEY,JSON.stringify(paperTrades));
-    return true;
-  } catch {
-    $("paperMessage").textContent = "Browser storage failed. Export your history to keep a backup.";
-    return false;
+    const data = await apiGet(PRICE_URL);
+    const price = findPrice(data);
+
+    if (price === null) {
+      throw new Error("Price field not found in response");
+    }
+
+    currentPrice = price;
+    document.getElementById("goldPrice").textContent = fmtPrice(price);
+    status.textContent = "Live price updated " + new Date().toLocaleTimeString();
+    status.className = "status green";
+    renderTrades();
+  } catch (error) {
+    status.textContent = "Price error: " + error.message;
+    status.className = "status red";
   }
 }
-function paperMoney(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return "—";
-  return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-function paperPL(trade,exitPrice) {
-  return trade.side === "BUY" ? exitPrice - trade.entry : trade.entry - exitPrice;
-}
-function safeCell(value) {
-  const td = document.createElement("td");
-  td.textContent = value == null ? "—" : String(value);
-  td.style.padding = "11px 9px";
-  td.style.borderBottom = "1px solid var(--line)";
-  return td;
-}
-function renderPaperTracker() {
-  const closed = paperTrades.filter(t => t.status === "CLOSED");
-  const open = paperTrades.filter(t => t.status === "OPEN");
-  const wins = closed.filter(t => Number(t.pl) > 0).length;
-  const losses = closed.filter(t => Number(t.pl) < 0).length;
-  const net = closed.reduce((sum,t) => sum + (Number(t.pl) || 0),0);
-  const rate = closed.length ? wins / closed.length * 100 : null;
 
-  $("paperWinRate").textContent = rate === null ? "—" : rate.toFixed(1) + "%";
-  $("paperNetPL").textContent = paperMoney(net);
-  $("paperNetPL").style.color = net > 0 ? "var(--green)" : net < 0 ? "var(--red)" : "var(--bright)";
-  $("paperRecord").textContent = wins + "W / " + losses + "L";
-  $("paperOpenCount").textContent = open.length + " open";
-  $("paperClosedCount").textContent = closed.length + " closed";
+async function loadSignal() {
+  const status = document.getElementById("signalStatus");
+  status.textContent = "Loading signal...";
+  try {
+    const data = await apiGet(SIGNAL_URL);
+    lastSignal = data;
 
-  const tbody = $("paperHistory");
-  tbody.replaceChildren();
+    const signal = data?.signal ?? data?.data?.signal ?? data?.result?.signal ?? "UNKNOWN";
+    document.getElementById("signalValue").textContent = String(signal).toUpperCase();
+    document.getElementById("signalReason").textContent =
+      data?.reason ?? data?.message ?? data?.risk_note ?? data?.data?.reason ?? "Latest signal from market analysis";
 
-  if (!paperTrades.length) {
-    const tr = document.createElement("tr");
-    const td = safeCell("No trades yet.");
-    td.colSpan = 7; td.className = "empty";
-    tr.appendChild(td); tbody.appendChild(tr); return;
+    const daily = findTimeframe(data, ["daily", "1d", "D1"]);
+    const four = findTimeframe(data, ["four_hour", "fourHour", "4h", "H4"]);
+    const one = findTimeframe(data, ["one_hour", "oneHour", "hourly", "1h", "H1"]);
+
+    paintTimeframe("daily", daily);
+    paintTimeframe("four", four);
+    paintTimeframe("one", one);
+
+    status.textContent = "Signal updated " + new Date().toLocaleTimeString();
+    status.className = "status green";
+  } catch (error) {
+    status.textContent = "Signal error: " + error.message;
+    status.className = "status red";
+    document.getElementById("signalValue").textContent = "ERROR";
+    document.getElementById("signalReason").textContent = error.message;
+  }
+}
+
+async function refreshAll() {
+  await Promise.all([loadPrice(), loadSignal()]);
+}
+
+function saveTrades() {
+  localStorage.setItem("stacks_co_paper_trades_v1", JSON.stringify(trades));
+}
+
+function openPaper(side) {
+  if (!Number.isFinite(currentPrice)) {
+    alert("A valid gold price is required before opening a paper trade.");
+    return;
   }
 
-  [...paperTrades].reverse().forEach(trade => {
-    const tr = document.createElement("tr");
-    tr.appendChild(safeCell(showTime(trade.openedAt)));
-    const sideCell = safeCell(trade.side);
-    sideCell.style.color = trade.side === "BUY" ? "var(--green)" : "var(--red)";
-    tr.appendChild(sideCell);
-    tr.appendChild(safeCell("$" + numberText(trade.entry)));
-    tr.appendChild(safeCell(trade.exit == null ? "—" : "$" + numberText(trade.exit)));
-    const plCell = safeCell(trade.pl == null ? "—" : paperMoney(trade.pl));
-    if (trade.pl != null) plCell.style.color = trade.pl > 0 ? "var(--green)" : trade.pl < 0 ? "var(--red)" : "var(--text)";
-    tr.appendChild(plCell);
-    tr.appendChild(safeCell(trade.status));
-
-    const action = safeCell("");
-    if (trade.status === "OPEN") {
-      const close = document.createElement("button");
-      close.type = "button"; close.textContent = "Close"; close.style.padding = "7px 10px";
-      close.addEventListener("click",() => closePaperTrade(trade.id));
-      action.appendChild(close);
-    } else action.textContent = "Closed";
-    tr.appendChild(action);
-    tbody.appendChild(tr);
+  trades.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    side,
+    entry: currentPrice,
+    exit: null,
+    pnl: null,
+    status: "OPEN",
+    openedAt: new Date().toISOString(),
+    closedAt: null
   });
+
+  saveTrades();
+  renderTrades();
 }
-function openPaperTrade(side) {
-  if (!Number.isFinite(latestPaperPrice) || latestPaperPrice <= 0) {
-    $("paperMessage").textContent = "Cannot open: wait for a valid live price to load.";
+
+function closePaper(id) {
+  if (!Number.isFinite(currentPrice)) {
+    alert("A valid current gold price is required before closing a trade.");
     return;
   }
-  if (paperTrades.filter(t => t.status === "OPEN").length >= 10) {
-    $("paperMessage").textContent = "Maximum of 10 open simulated positions reached.";
-    return;
-  }
-  const trade = {
-    id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
-    side,entry:latestPaperPrice,exit:null,pl:null,status:"OPEN",
-    openedAt:new Date().toISOString(),closedAt:null,
-    signalAtEntry:latestPaperSignal
-  };
-  paperTrades.push(trade);
-  savePaperTrades(); renderPaperTracker();
-  $("paperMessage").textContent = "Simulated " + side + " opened at $" +
-    numberText(latestPaperPrice) + ". No real order was placed.";
-}
-function closePaperTrade(id) {
-  if (!Number.isFinite(latestPaperPrice) || latestPaperPrice <= 0) {
-    $("paperMessage").textContent = "Cannot close: wait for a valid live price to load.";
-    return;
-  }
-  const trade = paperTrades.find(t => t.id === id && t.status === "OPEN");
+
+  const trade = trades.find(item => item.id === id && item.status === "OPEN");
   if (!trade) return;
-  trade.exit = latestPaperPrice;
-  trade.pl = paperPL(trade,latestPaperPrice);
+
+  trade.exit = currentPrice;
+  trade.pnl = trade.side === "BUY"
+    ? currentPrice - trade.entry
+    : trade.entry - currentPrice;
   trade.status = "CLOSED";
   trade.closedAt = new Date().toISOString();
-  savePaperTrades(); renderPaperTracker();
-  $("paperMessage").textContent = "Simulated position closed. Price movement P/L: " +
-    paperMoney(trade.pl) + ". Spread, fees and position size are excluded.";
-}
-function exportPaperCSV() {
-  const columns = ["id","side","entry","exit","pl","status","openedAt","closedAt","signalAtEntry"];
-  const quote = value => '"' + String(value ?? "").replace(/"/g,'""') + '"';
-  const csv = [columns.join(","),...paperTrades.map(t => columns.map(k => quote(t[k])).join(","))].join("\r\n");
-  const blob = new Blob([csv],{type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "stacks-co-simulated-trades.csv";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url),1000);
-}
-function clearPaperHistory() {
-  if (!confirm("Delete all simulated trade history from this browser? Export a CSV first if you need a backup.")) return;
-  paperTrades = [];
-  savePaperTrades(); renderPaperTracker();
-  $("paperMessage").textContent = "Simulated trade history cleared from this browser.";
+
+  saveTrades();
+  renderTrades();
 }
 
-/* ---------- Main refresh ---------- */
-async function refreshDashboard() {
-  if (refreshing) return;
-  refreshing = true;
-  $("refresh").disabled = true;
-  $("connection").textContent = "Connecting...";
-  $("statusDot").className = "statusdot";
-  $("message").textContent = "Refreshing market data...";
+function renderTrades() {
+  const open = trades.filter(t => t.status === "OPEN");
+  const closed = trades.filter(t => t.status === "CLOSED");
+  const wins = closed.filter(t => Number(t.pnl) > 0).length;
+  const losses = closed.filter(t => Number(t.pnl) < 0).length;
+  const net = closed.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0);
+  const winPercent = closed.length ? wins / closed.length * 100 : 0;
 
-  const errors = [];
-  let priceOK = false, signalOK = false;
+  document.getElementById("netPL").textContent = fmtPrice(net);
+  document.getElementById("netPL").className = "value " + (net > 0 ? "green" : net < 0 ? "red" : "");
+  document.getElementById("winRate").textContent = winPercent.toFixed(1) + "%";
+  document.getElementById("winLoss").textContent = wins + " / " + losses;
+  document.getElementById("openClosed").textContent = open.length + " / " + closed.length;
 
-  const priceTask = (async () => {
-    try {
-      const data = await fetchFunction(PRICE_URL);
-      const price = findPrice(data);
-      if (price === null) throw new Error("Price field not recognized in response JSON.");
-      latestPaperPrice = price;
-      $("goldPrice").textContent = "$" + numberText(price);
-      $("priceTime").textContent = "Updated " + new Date().toLocaleTimeString();
-      $("priceStatus").textContent = "Connected";
-      priceOK = true;
-    } catch (error) {
-      $("priceStatus").textContent = "Error";
-      errors.push("Price: " + error.message);
-    }
-  })();
+  const openBody = document.getElementById("openTrades");
+  openBody.innerHTML = "";
 
-  const signalTask = (async () => {
-    try {
-      const data = await fetchFunction(SIGNAL_URL);
-      if (!data.signal) throw new Error("Signal response has no signal field.");
-      latestPaperSignal = String(data.signal).toUpperCase();
-      const signal = latestPaperSignal;
-      $("signal").textContent = signal;
-      $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "no-trade");
-      $("signalReason").textContent = data.reason || "No decision reason supplied.";
-      $("strategy").textContent = data.strategy || "GOLDBOT-ZA";
-      $("signalTime").textContent = "Generated " + showTime(data.generated_at);
-      $("risk").textContent = data.risk_note || "Rule-based analysis only. Signals are not a guarantee of market direction or profit.";
-
-      const tf = normalizeTimeframes(data);
-      paintTimeframe("daily",tf.daily);
-      paintTimeframe("four",tf.four);
-      paintTimeframe("one",tf.one);
-      const complete = Boolean(tf.daily && tf.four && tf.one);
-      $("signalStatus").textContent = complete ? "Connected · 3 timeframes" : "Connected · incomplete timeframe data";
-      signalOK = true;
-    } catch (error) {
-      $("signalStatus").textContent = "Error";
-      errors.push("Signal: " + error.message);
-    }
-  })();
-
-  await Promise.all([priceTask,signalTask]);
-
-  if (priceOK && signalOK) {
-    $("connection").textContent = "Services online";
-    $("statusDot").className = "statusdot online";
-    $("lastRefresh").textContent = new Date().toLocaleString();
-    $("message").textContent = "Connected to Supabase. Live price and signal data loaded.";
+  if (!open.length) {
+    openBody.innerHTML = '<tr><td colspan="5">No open positions</td></tr>';
   } else {
-    $("connection").textContent = "Connection issue";
-    $("statusDot").className = "statusdot offline";
-    $("message").textContent = errors.join(" | ") || "One or more services could not be reached.";
+    open.forEach(t => {
+      const pnl = currentPrice === null ? null :
+        (t.side === "BUY" ? currentPrice - t.entry : t.entry - currentPrice);
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + t.side + "</td>" +
+        "<td>" + fmtPrice(t.entry) + "</td>" +
+        "<td>" + fmtPrice(currentPrice) + "</td>" +
+        '<td class="' + (pnl > 0 ? "green" : pnl < 0 ? "red" : "") + '">' + (pnl === null ? "—" : fmtPrice(pnl)) + "</td>" +
+        "<td><button data-close='" + t.id + "'>CLOSE</button></td>";
+      openBody.appendChild(tr);
+    });
   }
 
-  $("refresh").disabled = false;
-  refreshing = false;
+  const historyBody = document.getElementById("tradeHistory");
+  historyBody.innerHTML = "";
+  const history = [...trades].reverse();
+
+  if (!history.length) {
+    historyBody.innerHTML = '<tr><td colspan="6">No trades yet</td></tr>';
+  } else {
+    history.forEach(t => {
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + new Date(t.openedAt).toLocaleString() + "</td>" +
+        "<td>" + t.side + "</td>" +
+        "<td>" + fmtPrice(t.entry) + "</td>" +
+        "<td>" + fmtPrice(t.exit) + "</td>" +
+        '<td class="' + (Number(t.pnl) > 0 ? "green" : Number(t.pnl) < 0 ? "red" : "") + '">' + (t.pnl === null ? "—" : fmtPrice(t.pnl)) + "</td>" +
+        "<td>" + t.status + "</td>";
+      historyBody.appendChild(tr);
+    });
+  }
+
+  openBody.querySelectorAll("[data-close]").forEach(button => {
+    button.addEventListener("click", () => closePaper(button.dataset.close));
+  });
 }
 
-$("refresh").addEventListener("click",refreshDashboard);
-$("paperBuy").addEventListener("click",() => openPaperTrade("BUY"));
-$("paperSell").addEventListener("click",() => openPaperTrade("SELL"));
-$("paperExport").addEventListener("click",exportPaperCSV);
-$("paperClear").addEventListener("click",clearPaperHistory);
-$("year").textContent = new Date().getFullYear();
+function exportCSV() {
+  const header = ["Opened","Side","Entry","Exit","PnL","Status","Closed"];
+  const rows = trades.map(t => [
+    t.openedAt, t.side, t.entry, t.exit ?? "", t.pnl ?? "", t.status, t.closedAt ?? ""
+  ]);
 
-renderPaperTracker();
-refreshDashboard();
-setInterval(refreshDashboard,60000);
+  const csv = [header, ...rows].map(row =>
+    row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(",")
+  ).join("\r\n");
+
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "stacks-co-paper-trades.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearHistory() {
+  if (!confirm("Delete all paper trading history?")) return;
+  trades = [];
+  saveTrades();
+  renderTrades();
+}
+
+refreshAll();
+renderTrades();
+setInterval(refreshAll, 60000);
 </script>
 </body>
 </html>
