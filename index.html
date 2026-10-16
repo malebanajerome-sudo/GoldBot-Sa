@@ -2,203 +2,525 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090b10">
-  <title>GoldBot-ZA</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #090b10;
-      --panel: #141821;
-      --gold: #e7bd55;
-      --muted: #9299a8;
-      --green: #36d399;
-      --red: #ff6878;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: #f6f7fb;
-      font-family: system-ui, sans-serif;
-    }
-    header {
-      padding: 22px 18px;
-      border-bottom: 1px solid #292e39;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .brand { font-size: 21px; font-weight: 800; }
-    .brand span { color: var(--gold); }
-    .status { color: var(--green); font-size: 12px; }
-    main { max-width: 650px; margin: auto; padding: 20px 16px 90px; }
-    .eyebrow { color: var(--muted); font-size: 12px; letter-spacing: 1.5px; }
-    .price-card {
-      margin-top: 12px;
-      padding: 24px 20px;
-      border: 1px solid #51452b;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #252115, #141821 70%);
-    }
-    .price {
-      color: var(--gold);
-      font-size: clamp(32px, 9vw, 46px);
-      font-weight: 800;
-      margin: 10px 0;
-      overflow-wrap: anywhere;
-    }
-    .note { color: var(--muted); font-size: 12px; }
-    .quote-row {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-    .quote-label { color: var(--muted); font-size: 12px; }
-    .quote-value { font-size: 17px; font-weight: 700; margin-top: 4px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-    .card { background: var(--panel); border: 1px solid #292e39; border-radius: 16px; padding: 17px; min-width: 0; }
-    .value { font-size: 22px; font-weight: 750; margin-top: 9px; }
-    .gold { color: var(--gold); }
-    .signal { font-size: 28px; font-weight: 850; margin: 12px 0 5px; }
-    .wait { color: var(--gold); }
-    h2 { font-size: 16px; margin: 26px 0 12px; }
-    .wide { grid-column: 1 / -1; }
-    .trade { display: flex; justify-content: space-between; gap: 10px; padding: 13px 0; border-bottom: 1px solid #292e39; font-size: 13px; }
-    .trade:last-child { border-bottom: 0; }
-    .empty { color: var(--muted); font-size: 13px; line-height: 1.6; }
-    nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      display: flex; justify-content: space-around;
-      padding: 13px 4px calc(13px + env(safe-area-inset-bottom));
-      background: #11151d; border-top: 1px solid #292e39;
-    }
-    nav a { color: var(--muted); text-decoration: none; font-size: 12px; text-align: center; }
-    nav a:first-child { color: var(--gold); }
-    button {
-      border: 1px solid #51452b; background: #292315; color: var(--gold);
-      border-radius: 10px; padding: 11px 14px; font-weight: 700;
-    }
-    @media (min-width: 520px) { main { padding-top: 28px; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808">
+<title>STACKS CO. | GoldBot ZA</title>
+<style>
+:root{
+  --bg:#080808;--panel:#11110f;--panel2:#171612;--gold:#d9ad48;
+  --gold2:#f4d98a;--text:#f6f2e8;--muted:#a29c8e;--line:#393222;
+  --green:#4cdaa0;--red:#ff6979;--radius:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.5}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.shell{max-width:1440px;margin:auto;padding:24px}
+header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:28px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{height:52px;width:52px;border:1px solid var(--gold);border-radius:14px;display:grid;place-items:center;color:var(--gold2);font-size:23px;font-weight:900;background:linear-gradient(145deg,#252016,#0c0b09)}
+.brand-name{font-size:21px;font-weight:900;letter-spacing:.13em}
+.brand-name span{color:var(--gold)}
+.brand-sub{font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+button{border:1px solid var(--line);background:#191711;color:var(--text);border-radius:10px;padding:10px 14px;font-weight:700}
+button:hover{border-color:var(--gold)}
+button.gold{background:var(--gold);color:#100d06;border-color:var(--gold)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.connection{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.dot{height:8px;width:8px;border-radius:50%;background:#817b6c;display:inline-block}
+.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+.kicker{font-size:10px;letter-spacing:.19em;text-transform:uppercase;color:var(--gold);font-weight:800}
+h1,h2,h3,p{margin-top:0}
+h2{font-size:15px;margin-bottom:0}
+.muted{color:var(--muted)}
+.panel{background:linear-gradient(145deg,#15140f,#0e0e0c);border:1px solid var(--line);border-radius:var(--radius);padding:21px;min-width:0}
+.hero{display:grid;grid-template-columns:1.25fr .85fr;gap:15px;margin-bottom:15px}
+.price{font-size:clamp(36px,5.4vw,60px);font-weight:850;letter-spacing:-.055em;margin:13px 0 4px;overflow-wrap:anywhere}
+.price-caption{font-size:12px;color:var(--muted)}
+.info-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:22px;font-size:11px;color:var(--muted)}
+.info-row b{color:var(--text);font-weight:650}
+.signal-top,.section-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.signal-value{font-size:37px;line-height:1.2;font-weight:900;letter-spacing:-.04em;margin:24px 0 8px;color:var(--gold2)}
+.signal-value.BUY{color:var(--green)}.signal-value.SELL{color:var(--red)}
+.reason{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.tag{display:inline-flex;align-items:center;padding:5px 8px;border-radius:7px;font-size:10px;font-weight:850;letter-spacing:.07em;background:#29251b;color:var(--gold2);white-space:nowrap}
+.tag.ok{background:#103529;color:var(--green)}
+.tag.bad{background:#421f26;color:#ff9ba7}
+.tag.neutral{background:#29251b;color:var(--gold2)}
+.signal-bottom{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);margin-top:20px;padding-top:13px;font-size:11px;color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}
+.metric{padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:13px;min-width:0}
+.metric-label{font-size:11px;color:var(--muted)}
+.metric-value{font-size:20px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}
+.metric-hint{font-size:10px;color:var(--muted);margin-top:3px}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px}
+.section-top{margin-bottom:18px}
+.section-top .muted{font-size:11px}
+.chart{height:270px;position:relative}
+canvas{width:100%;height:100%;display:block}
+.chart-message{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:18px;color:var(--muted);font-size:12px}
+.timeframes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tf{border:1px solid var(--line);background:#0b0b09;border-radius:12px;padding:13px;min-width:0}
+.tf-heading{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+.tf-name{font-size:12px;font-weight:800}
+.tf-price{font-size:19px;font-weight:850;margin:14px 0 9px;overflow-wrap:anywhere}
+.tf-line{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted);margin-top:6px}
+.tf-line b{color:var(--text);font-weight:650;text-align:right}
+.notice{margin-top:14px;padding:12px;border:1px solid #514329;background:#211b10;border-radius:10px;font-size:11px;color:#d9c99f}
+.health-list,.log-list{display:grid;gap:9px}
+.health-item,.log-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;background:#0b0b09;border:1px solid var(--line);border-radius:11px;min-width:0}
+.health-name{font-size:12px;font-weight:750;overflow-wrap:anywhere}
+.health-detail{font-size:10px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere;max-width:520px}
+.health-right{display:flex;align-items:center;gap:8px}
+.health-item details{margin-top:7px;font-size:10px;color:var(--muted)}
+.health-item pre{white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto;background:#10100d;padding:9px;border-radius:7px}
+.log-item{align-items:flex-start;font-size:11px}
+.log-time{font-size:10px;color:var(--muted);white-space:nowrap}
+.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#777164;font-size:10px;margin-top:24px;letter-spacing:.04em}
+.modal-backdrop{position:fixed;inset:0;background:#000d;display:grid;place-items:center;padding:16px;z-index:10}
+.modal{width:min(560px,100%);padding:23px;background:#13120f;border:1px solid var(--gold);border-radius:16px;max-height:90vh;overflow:auto}
+.modal h2{font-size:20px;margin-bottom:8px}
+.modal p{font-size:12px;color:var(--muted)}
+.field{display:grid;gap:6px;margin:14px 0}
+.field label{font-size:11px;font-weight:750;color:var(--gold2)}
+.field input{width:100%;background:#080808;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:12px}
+.field small{font-size:10px;color:var(--muted)}
+.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.hidden{display:none!important}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:20;background:#1d1a12;border:1px solid var(--gold);padding:12px 16px;border-radius:10px;font-size:12px;max-width:90vw;box-shadow:0 8px 35px #0009}
+@media(max-width:850px){.hero,.columns{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.shell{padding:14px}.panel{padding:15px}.brand-name{font-size:16px}.brand-sub{font-size:8px}.logo{height:43px;width:43px}.header-actions{gap:6px}.header-actions button{padding:8px;font-size:11px}.connection{display:none}.timeframes{grid-template-columns:1fr}.tf{display:block}.chart{height:220px}.signal-value{margin:16px 0 7px}}
+</style>
 </head>
-<body id="top">
-  <header>
-    <div class="brand">GOLD<span>BOT</span>-ZA</div>
-    <div class="status">● Interface online</div>
-  </header>
-
-  <main>
-    <div class="eyebrow">GOLD MARKET DASHBOARD</div>
-
-    <section class="price-card">
-      <div class="eyebrow">GOLD SPOT PRICE · XAUUSD</div>
-      <div class="price" id="goldPrice">Loading...</div>
-      <div class="note" id="priceNote">Connecting to live market data</div>
-
-      <div class="quote-row">
-        <div>
-          <div class="quote-label">BID</div>
-          <div class="quote-value" id="goldBid">—</div>
-        </div>
-        <div>
-          <div class="quote-label">ASK</div>
-          <div class="quote-value" id="goldAsk">—</div>
-        </div>
-      </div>
-    </section>
-
-    <div class="grid">
-      <section class="card">
-        <div class="eyebrow">CURRENT SIGNAL</div>
-        <div class="signal wait" id="signal">WAIT</div>
-        <div class="note">Signal connection pending</div>
-      </section>
-      <section class="card">
-        <div class="eyebrow">OPEN TRADES</div>
-        <div class="value" id="openTrades">—</div>
-        <div class="note">Journal connection pending</div>
-      </section>
-      <section class="card">
-        <div class="eyebrow">WIN RATE</div>
-        <div class="value gold" id="winRate">—</div>
-        <div class="note">Based on completed trades</div>
-      </section>
-      <section class="card">
-        <div class="eyebrow">COMPLETED</div>
-        <div class="value" id="completed">—</div>
-        <div class="note">Wins + losses</div>
-      </section>
-      <section class="card wide">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <div>
-            <div class="eyebrow">PERFORMANCE</div>
-            <div class="value">Your trading record</div>
-          </div>
-          <button onclick="alert('Statistics will be connected next.')">Statistics</button>
-        </div>
-        <p class="empty">Your verified results will appear here after we connect the existing performance tracker.</p>
-      </section>
+<body>
+<div class="shell">
+<header>
+  <div class="brand">
+    <div class="logo">S<span style="font-size:12px">.</span></div>
+    <div>
+      <div class="brand-name">STACKS <span>CO.</span></div>
+      <div class="brand-sub">GoldBot ZA · Market Intelligence</div>
     </div>
+  </div>
+  <div class="header-actions">
+    <div class="connection"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
+    <button id="settingsBtn">Settings</button>
+    <button class="gold" id="refreshBtn">↻ Refresh</button>
+  </div>
+</header>
 
-    <h2>Recent trades</h2>
-    <section class="card">
-      <div class="trade"><span>Trade journal</span><span class="note">Not connected yet</span></div>
-      <p class="empty">Your real BUY and SELL records will appear here. This page does not create or change trades.</p>
-    </section>
+<section class="hero">
+  <article class="panel">
+    <div class="kicker">Gold spot · XAU/USD</div>
+    <div class="price" id="spotPrice">—</div>
+    <div class="price-caption" id="priceCaption">Waiting for the configured price function</div>
+    <div class="info-row">
+      <span>Source <b id="priceSource">Supabase</b></span>
+      <span>Updated <b id="updatedAt">—</b></span>
+      <span>Instrument <b>Spot gold</b></span>
+    </div>
+  </article>
+  <article class="panel">
+    <div class="signal-top"><div class="kicker">Strict signal engine</div><span class="tag neutral" id="signalTag">WAITING</span></div>
+    <div class="signal-value" id="signalValue">NO TRADE</div>
+    <div class="reason" id="signalReason">Connect Supabase to load the actual signal response.</div>
+    <div class="signal-bottom"><span>Daily · 4H · 1H confirmation</span><span id="signalGenerated">—</span></div>
+  </article>
+</section>
 
-    <p class="note" style="text-align:center;margin-top:24px">GoldBot-ZA · Data by Standard Bullion</p>
-  </main>
+<section class="metrics">
+  <div class="metric"><div class="metric-label">Entry reference</div><div class="metric-value" id="entryValue">—</div><div class="metric-hint">From signal function, if provided</div></div>
+  <div class="metric"><div class="metric-label">Daily bias</div><div class="metric-value" id="dailyMetric">—</div><div class="metric-hint">Higher timeframe</div></div>
+  <div class="metric"><div class="metric-label">4-hour bias</div><div class="metric-value" id="fourMetric">—</div><div class="metric-hint">Confirmation timeframe</div></div>
+  <div class="metric"><div class="metric-label">1-hour RSI</div><div class="metric-value" id="rsiMetric">—</div><div class="metric-hint">Momentum filter</div></div>
+</section>
 
-  <nav>
-    <a href="#top">⌂<br>Home</a>
-    <a href="#goldPrice">◈<br>Gold</a>
-    <a href="#signal">↗<br>Signals</a>
-    <a href="#completed">▤<br>Statistics</a>
-  </nav>
+<section class="columns">
+  <article class="panel">
+    <div class="section-top"><h2>Gold price history</h2><span class="muted" id="chartCaption">Waiting for candles</span></div>
+    <div class="chart"><canvas id="chart"></canvas><div class="chart-message" id="chartMessage">No candle data loaded yet.</div></div>
+  </article>
+  <article class="panel">
+    <div class="section-top"><h2>Multi-timeframe analysis</h2><span class="muted">Actual function output</span></div>
+    <div class="timeframes">
+      <div class="tf">
+        <div class="tf-heading"><span class="tf-name">DAILY</span><span class="tag neutral" id="dailyTag">—</span></div>
+        <div class="tf-price" id="dailyPrice">—</div>
+        <div class="tf-line"><span>SMA 20</span><b id="dailySma20">—</b></div>
+        <div class="tf-line"><span>SMA 50</span><b id="dailySma50">—</b></div>
+        <div class="tf-line"><span>RSI 14</span><b id="dailyRsi">—</b></div>
+      </div>
+      <div class="tf">
+        <div class="tf-heading"><span class="tf-name">4 HOURS</span><span class="tag neutral" id="fourTag">—</span></div>
+        <div class="tf-price" id="fourPrice">—</div>
+        <div class="tf-line"><span>SMA 20</span><b id="fourSma20">—</b></div>
+        <div class="tf-line"><span>SMA 50</span><b id="fourSma50">—</b></div>
+        <div class="tf-line"><span>RSI 14</span><b id="fourRsi">—</b></div>
+      </div>
+      <div class="tf">
+        <div class="tf-heading"><span class="tf-name">1 HOUR</span><span class="tag neutral" id="hourTag">—</span></div>
+        <div class="tf-price" id="hourPrice">—</div>
+        <div class="tf-line"><span>SMA 20</span><b id="hourSma20">—</b></div>
+        <div class="tf-line"><span>SMA 50</span><b id="hourSma50">—</b></div>
+        <div class="tf-line"><span>RSI 14</span><b id="hourRsi">—</b></div>
+      </div>
+    </div>
+    <div class="notice">GoldBot ZA provides market analysis, not guaranteed outcomes. Stop-loss, take-profit, position sizing and backtested performance must be established before risking real money. This interface does not execute trades.</div>
+  </article>
+</section>
 
-  <script>
-    const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
+<section class="columns">
+  <article class="panel">
+    <div class="section-top"><h2>Supabase function monitor</h2><span class="muted" id="healthSummary">Not tested</span></div>
+    <div class="health-list" id="healthList"></div>
+    <div class="notice">HTTP success means the endpoint responded; it does not automatically mean its market data is valid. Open each result's details to inspect the response.</div>
+  </article>
+  <article class="panel">
+    <div class="section-top"><h2>System activity</h2><button id="clearLogBtn">Clear log</button></div>
+    <div class="log-list" id="activityLog"></div>
+  </article>
+</section>
 
-    const money = value => Number(value).toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+<footer class="footer">
+  <span>STACKS CO. © GOLDBOT ZA</span>
+  <span>XAU/USD · Spot gold only</span>
+  <span id="clock">—</span>
+</footer>
+</div>
+
+<div class="modal-backdrop hidden" id="settingsModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">Connect your Supabase project</h2>
+    <p>Use your existing project and deployed Edge Functions. Your public anon/publishable key belongs here; never use a service-role or secret key in browser code.</p>
+    <div class="field"><label for="projectUrl">Supabase project URL</label><input id="projectUrl" placeholder="https://YOUR_PROJECT.supabase.co" autocomplete="url"><small>Use the Project URL shown in Supabase → Project Settings → API.</small></div>
+    <div class="field"><label for="publicKey">Anon / publishable key</label><input id="publicKey" placeholder="Your public anon or sb_publishable key" autocomplete="off"></div>
+    <div class="field"><label for="priceFunction">Price function name</label><input id="priceFunction" value="gold-price"></div>
+    <div class="field"><label for="candlesFunction">Candles function name</label><input id="candlesFunction" value="gold-candles"></div>
+    <div class="field"><label for="analysisFunction">Analysis function name</label><input id="analysisFunction" value="market-analysis-v2"></div>
+    <div class="field"><label for="signalFunction">Signal function name</label><input id="signalFunction" value="market-signal-v2"></div>
+    <p>Saved settings stay in this browser. If a function requires JWT verification, the request must include valid authentication. If the browser reports a CORS error, the function's CORS settings must allow your GitHub Pages origin.</p>
+    <div class="modal-actions"><button id="cancelSettings">Cancel</button><button class="gold" id="saveSettings">Save & connect</button></div>
+  </div>
+</div>
+<div class="toast hidden" id="toast"></div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const DEFAULTS = {
+  priceFunction:"gold-price",
+  candlesFunction:"gold-candles",
+  analysisFunction:"market-analysis-v2",
+  signalFunction:"market-signal-v2"
+};
+let cfg = readConfig();
+let busy = false, candlesForChart = [], toastTimer;
+
+function readConfig(){
+  try { return {...DEFAULTS,...JSON.parse(localStorage.getItem("stacks_goldbot_config")||"{}")}; }
+  catch { return {...DEFAULTS}; }
+}
+function persistConfig(){
+  cfg = {
+    url:$("projectUrl").value.trim().replace(/\/+$/,""),
+    key:$("publicKey").value.trim(),
+    priceFunction:$("priceFunction").value.trim()||DEFAULTS.priceFunction,
+    candlesFunction:$("candlesFunction").value.trim()||DEFAULTS.candlesFunction,
+    analysisFunction:$("analysisFunction").value.trim()||DEFAULTS.analysisFunction,
+    signalFunction:$("signalFunction").value.trim()||DEFAULTS.signalFunction
+  };
+  localStorage.setItem("stacks_goldbot_config",JSON.stringify(cfg));
+}
+function showSettings(){
+  $("projectUrl").value=cfg.url||"";
+  $("publicKey").value=cfg.key||"";
+  for(const k of Object.keys(DEFAULTS)) $(k).value=cfg[k]||DEFAULTS[k];
+  $("settingsModal").classList.remove("hidden");
+}
+function endpoint(name){
+  if(!cfg.url) throw new Error("Supabase URL is missing. Open Settings.");
+  return cfg.url+"/functions/v1/"+encodeURIComponent(name);
+}
+function requestHeaders(){
+  const h={"Accept":"application/json"};
+  if(cfg.key){h.apikey=cfg.key;h.Authorization="Bearer "+cfg.key;}
+  return h;
+}
+async function callFunction(name){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),20000);
+  try{
+    const response=await fetch(endpoint(name),{
+      method:"GET",headers:requestHeaders(),signal:controller.signal,cache:"no-store"
     });
-
-    async function loadGoldPrice() {
-      const priceEl = document.getElementById("goldPrice");
-      const noteEl = document.getElementById("priceNote");
-
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/gold-price-public`,
-          { headers: { "apikey": SUPABASE_KEY } }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.error || data.message || `HTTP ${response.status}`);
-        }
-
-        priceEl.textContent = `$${money(data.price)}`;
-        document.getElementById("goldBid").textContent = `$${money(data.bid)}`;
-        document.getElementById("goldAsk").textContent = `$${money(data.ask)}`;
-
-        noteEl.textContent = `USD per troy ounce · Updated ${
-          data.updated ? new Date(data.updated).toLocaleTimeString() : "just now"
-        }`;
-      } catch (error) {
-        priceEl.textContent = "Unavailable";
-        noteEl.textContent = error.message;
-      }
+    const raw=await response.text();
+    let data;
+    try{data=raw?JSON.parse(raw):{};}catch{data={raw_response:raw};}
+    if(!response.ok){
+      const msg=data.message||data.error_description||data.error||data.details||raw||("HTTP "+response.status);
+      const e=new Error(String(msg).slice(0,1000));
+      e.httpStatus=response.status;e.response=data;throw e;
     }
-
-    loadGoldPrice();
-    setInterval(loadGoldPrice, 60000);
-  </script>
+    return {data,httpStatus:response.status};
+  } finally {clearTimeout(timer);}
+}
+function addLog(message,state="INFO"){
+  const item=document.createElement("div");item.className="log-item";
+  const text=document.createElement("div");text.textContent=message;
+  const time=document.createElement("div");time.className="log-time";time.textContent=new Date().toLocaleTimeString();
+  const tag=document.createElement("span");tag.className="tag "+(state==="OK"?"ok":state==="ERROR"?"bad":"neutral");tag.textContent=state;
+  const left=document.createElement("div");left.style.minWidth="0";left.append(text,time);
+  item.append(left,tag);$("activityLog").prepend(item);
+  while($("activityLog").children.length>10)$("activityLog").lastElementChild.remove();
+}
+function toast(message){
+  $("toast").textContent=message;$("toast").classList.remove("hidden");
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),4000);
+}
+function fmtPrice(value){
+  const n=Number(value);
+  return value!==null&&value!==undefined&&Number.isFinite(n)
+    ?n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+}
+function fmtNum(value,digits=2){
+  const n=Number(value);
+  return value!==null&&value!==undefined&&Number.isFinite(n)?n.toFixed(digits):"—";
+}
+function deepFind(obj,keys){
+  if(!obj||typeof obj!=="object")return undefined;
+  for(const key of keys){
+    if(obj[key]!==undefined&&obj[key]!==null&&
+       (typeof obj[key]==="number"||typeof obj[key]==="string")&&
+       obj[key]!==""&&Number.isFinite(Number(obj[key])))return Number(obj[key]);
+  }
+  for(const value of Object.values(obj)){
+    if(value&&typeof value==="object"&&!Array.isArray(value)){
+      const found=deepFind(value,keys);if(found!==undefined)return found;
+    }
+  }
+  return undefined;
+}
+function deepText(obj,keys){
+  if(!obj||typeof obj!=="object")return "";
+  for(const key of keys)if(typeof obj[key]==="string"&&obj[key])return obj[key];
+  for(const value of Object.values(obj)){
+    if(value&&typeof value==="object"&&!Array.isArray(value)){
+      const found=deepText(value,keys);if(found)return found;
+    }
+  }
+  return "";
+}
+function findArray(obj){
+  if(Array.isArray(obj))return obj;
+  if(!obj||typeof obj!=="object")return [];
+  for(const key of ["points","candles","bars","prices","data","results","history"]){
+    if(Array.isArray(obj[key]))return obj[key];
+  }
+  for(const value of Object.values(obj)){
+    if(value&&typeof value==="object"&&!Array.isArray(value)){
+      const arr=findArray(value);if(arr.length)return arr;
+    }
+  }
+  return [];
+}
+function normalizeCandles(data){
+  return findArray(data).map(p=>{
+    let t=Number(p.t??p.time??p.timestamp??p.date);
+    if(typeof (p.t??p.time??p.timestamp??p.date)==="string"&&
+       !Number.isFinite(t))t=Date.parse(p.t??p.time??p.timestamp??p.date)/1000;
+    if(t>1e12)t/=1000;
+    return {t,o:Number(p.o??p.open),h:Number(p.h??p.high),l:Number(p.l??p.low),c:Number(p.c??p.close??p.price)};
+  }).filter(p=>Number.isFinite(p.t)&&Number.isFinite(p.c))
+    .sort((a,b)=>a.t-b.t);
+}
+function setTag(id,value){
+  const el=$(id),v=String(value||"NEUTRAL").toUpperCase();
+  el.textContent=v;el.className="tag "+(v==="BULLISH"||v==="BUY"?"ok":v==="BEARISH"||v==="SELL"?"bad":"neutral");
+}
+function renderTimeframe(prefix,item){
+  if(!item)return;
+  setTag(prefix+"Tag",item.trend||"NEUTRAL");
+  $(prefix+"Price").textContent=fmtPrice(item.latest_close??item.close);
+  $(prefix+"Sma20").textContent=fmtPrice(item.sma20);
+  $(prefix+"Sma50").textContent=fmtPrice(item.sma50);
+  $(prefix+"Rsi").textContent=fmtNum(item.rsi14,1);
+}
+function getTimeframes(data){
+  const root=data?.timeframes||data?.analysis||data?.indicators||data;
+  return {
+    daily:root?.daily,
+    four:root?.four_hour||root?.fourHour||root?.["4h"],
+    hour:root?.one_hour||root?.oneHour||root?.["1h"]
+  };
+}
+function renderAnalysis(data){
+  const tf=getTimeframes(data);
+  renderTimeframe("daily",tf.daily);
+  renderTimeframe("four",tf.four);
+  renderTimeframe("hour",tf.hour);
+  $("dailyMetric").textContent=tf.daily?.trend||"—";
+  $("fourMetric").textContent=tf.four?.trend||"—";
+  $("rsiMetric").textContent=tf.hour?.rsi14!==undefined?fmtNum(tf.hour.rsi14,1):"—";
+}
+function renderPrice(data){
+  const price=deepFind(data,["spot_price","spotPrice","xauusd","xau_usd","price","current_price","last_price","last","close","value"]);
+  if(price!==undefined){
+    $("spotPrice").textContent="$"+fmtPrice(price);
+    $("priceCaption").textContent="Latest price returned by "+cfg.priceFunction;
+  }else{
+    $("spotPrice").textContent="—";
+    $("priceCaption").textContent="Function responded, but no recognized price field was found. Inspect its response below.";
+  }
+  const source=deepText(data,["source","provider"]);
+  if(source)$("priceSource").textContent=source;
+  const stamp=deepText(data,["updated_at","timestamp","as_of","generated_at"]);
+  $("updatedAt").textContent=stamp?(Number.isNaN(Date.parse(stamp))?stamp:new Date(stamp).toLocaleTimeString()):new Date().toLocaleTimeString();
+}
+function renderSignal(data){
+  const signal=String(data?.signal||"NO TRADE").toUpperCase();
+  $("signalValue").textContent=signal;
+  $("signalValue").className="signal-value "+signal;
+  setTag("signalTag",data?.success===false?"DATA ERROR":signal);
+  $("signalReason").textContent=data?.reason||data?.details||
+    (data?.success===false?"Signal function reported a failure.":"Signal response received without a reason field.");
+  $("signalGenerated").textContent=data?.generated_at?new Date(data.generated_at).toLocaleTimeString():"Response received";
+  const entry=data?.entry_reference_price??data?.entry_price??data?.analysis?.one_hour?.latest_close;
+  $("entryValue").textContent=entry!==undefined?"$"+fmtPrice(entry):"—";
+  if(data?.analysis)renderAnalysis({analysis:data.analysis});
+}
+function drawChart(data){
+  const arr=normalizeCandles(data);candlesForChart=arr;
+  const canvas=$("chart"),message=$("chartMessage");
+  if(!arr.length){
+    message.classList.remove("hidden");message.textContent="No recognized candle array found. Open the candles function details below to inspect the response.";
+    $("chartCaption").textContent="No candle array";return;
+  }
+  message.classList.add("hidden");
+  const rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  canvas.width=Math.max(1,Math.floor(rect.width*dpr));canvas.height=Math.max(1,Math.floor(rect.height*dpr));
+  const ctx=canvas.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
+  const w=rect.width,h=rect.height,p={l:8,r:66,t:12,b:20};
+  ctx.clearRect(0,0,w,h);
+  const values=arr.map(c=>c.c);
+  let min=Math.min(...values),max=Math.max(...values);
+  if(max===min){max+=1;min-=1;}
+  const extra=(max-min)*.1;min-=extra;max+=extra;
+  const x=i=>p.l+(w-p.l-p.r)*i/Math.max(1,values.length-1);
+  const y=v=>p.t+(h-p.t-p.b)*(1-(v-min)/(max-min));
+  ctx.font="10px Arial";ctx.fillStyle="#a29c8e";ctx.strokeStyle="#393222";ctx.lineWidth=1;
+  for(let i=0;i<4;i++){
+    const yy=p.t+(h-p.t-p.b)*i/3;
+    ctx.beginPath();ctx.moveTo(p.l,yy);ctx.lineTo(w-p.r,yy);ctx.stroke();
+    ctx.fillText((max-(max-min)*i/3).toFixed(2),w-p.r+5,yy+3);
+  }
+  ctx.beginPath();values.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));
+  ctx.strokeStyle="#d9ad48";ctx.lineWidth=2;ctx.stroke();
+  const last=values[values.length-1];ctx.beginPath();ctx.arc(x(values.length-1),y(last),3.5,0,Math.PI*2);ctx.fillStyle="#f4d98a";ctx.fill();
+  $("chartCaption").textContent=arr.length+" candles · last $"+fmtPrice(last);
+}
+function showHealth(name,state,detail,data,httpStatus){
+  const id="health-"+name;
+  let item=$(id);
+  if(!item){
+    item=document.createElement("div");item.className="health-item";item.id=id;
+    const left=document.createElement("div");left.style.flex="1";left.style.minWidth="0";
+    const title=document.createElement("div");title.className="health-name";title.textContent=name;
+    const desc=document.createElement("div");desc.className="health-detail";
+    const details=document.createElement("details");
+    const summary=document.createElement("summary");summary.textContent="Inspect response";
+    const pre=document.createElement("pre");
+    details.append(summary,pre);left.append(title,desc,details);
+    const right=document.createElement("div");right.className="health-right";
+    const badge=document.createElement("span");badge.className="tag neutral";right.append(badge);
+    item.append(left,right);$("healthList").append(item);
+  }
+  item.querySelector(".health-detail").textContent=detail||"";
+  const badge=item.querySelector(".tag");
+  badge.textContent=state;badge.className="tag "+(state==="OK"?"ok":state==="ERROR"?"bad":"neutral");
+  item.querySelector("pre").textContent=JSON.stringify(
+    data===undefined?{error:detail,http_status:httpStatus}:data,null,2
+  );
+}
+function getFunctions(){
+  return [
+    {name:cfg.priceFunction,kind:"price",label:"Spot gold price"},
+    {name:cfg.candlesFunction,kind:"candles",label:"Historical candles"},
+    {name:cfg.analysisFunction,kind:"analysis",label:"Multi-timeframe analysis"},
+    {name:cfg.signalFunction,kind:"signal",label:"Signal engine"}
+  ];
+}
+async function refresh(){
+  if(busy)return;
+  if(!cfg.url||!cfg.key){showSettings();toast("Enter your Supabase URL and public key first.");return;}
+  busy=true;$("refreshBtn").disabled=true;$("refreshBtn").textContent="Connecting…";
+  $("connectionText").textContent="Checking functions";$("connectionDot").className="dot";
+  const funcs=getFunctions();
+  for(const f of funcs)showHealth(f.name,"WAITING","Request pending…");
+  addLog("Started function health check","INFO");
+  const results=await Promise.allSettled(funcs.map(f=>callFunction(f.name)));
+  let ok=0,failed=0;
+  for(let i=0;i<funcs.length;i++){
+    const f=funcs[i],result=results[i];
+    if(result.status==="fulfilled"){
+      ok++;
+      const {data,httpStatus}=result.value;
+      showHealth(f.name,"OK",f.label+" · HTTP "+httpStatus,data,httpStatus);
+      addLog(f.name+" responded · HTTP "+httpStatus,"OK");
+      if(data?.success===false){
+        // HTTP 200 can still carry an application-level failure.
+        showHealth(f.name,"ERROR",f.label+" · JSON reports success=false",data,httpStatus);
+        failed++;ok--;
+        addLog(f.name+" returned success=false","ERROR");
+      }else if(f.kind==="price")renderPrice(data);
+      else if(f.kind==="candles")drawChart(data);
+      else if(f.kind==="analysis")renderAnalysis(data);
+      else if(f.kind==="signal")renderSignal(data);
+    }else{
+      failed++;
+      const e=result.reason;
+      let detail=e?.name==="AbortError"?"Request timed out after 20 seconds.":(e?.message||String(e));
+      if(detail.includes("Failed to fetch"))detail="Browser could not read the response. Possible CORS, network, URL or TLS issue. Check the function URL directly and inspect browser console.";
+      showHealth(f.name,"ERROR",detail,e?.response??{error:detail,http_status:e?.httpStatus},e?.httpStatus);
+      addLog(f.name+" failed: "+detail,"ERROR");
+    }
+  }
+  $("healthSummary").textContent=ok+" of "+funcs.length+" functions healthy";
+  $("connectionText").textContent=failed===0?"All functions responding":failed+" function(s) need attention";
+  $("connectionDot").className="dot "+(failed===0?"ok":"bad");
+  $("refreshBtn").disabled=false;$("refreshBtn").textContent="↻ Refresh";
+  busy=false;
+  toast(failed===0?"All four functions returned successful responses.":ok+" healthy · "+failed+" need attention. Inspect each response.");
+}
+$("settingsBtn").addEventListener("click",showSettings);
+$("cancelSettings").addEventListener("click",()=>$("settingsModal").classList.add("hidden"));
+$("saveSettings").addEventListener("click",()=>{
+  const url=$("projectUrl").value.trim();
+  const key=$("publicKey").value.trim();
+  if(!/^https:\/\/[a-zA-Z0-9.-]+\.supabase\.co$/.test(url)){
+    toast("Enter your Supabase Project URL, e.g. https://project.supabase.co");return;
+  }
+  if(!key){toast("Enter your public anon/publishable key.");return;}
+  persistConfig();$("settingsModal").classList.add("hidden");addLog("Supabase settings saved","INFO");refresh();
+});
+$("refreshBtn").addEventListener("click",refresh);
+$("clearLogBtn").addEventListener("click",()=>$("activityLog").replaceChildren());
+window.addEventListener("resize",()=>{if(candlesForChart.length)drawChart(candlesForChart);});
+function clock(){$("clock").textContent=new Date().toLocaleString();}
+clock();setInterval(clock,1000);
+addLog("STACKS CO. · GoldBot ZA interface loaded","INFO");
+if(cfg.url&&cfg.key){
+  $("projectUrl").value=cfg.url;$("publicKey").value=cfg.key;
+  for(const k of Object.keys(DEFAULTS))$(k).value=cfg[k]||DEFAULTS[k];
+  refresh();
+}else{
+  for(const k of Object.keys(DEFAULTS))$(k).value=cfg[k]||DEFAULTS[k];
+  showSettings();
+}
+})();
+</script>
 </body>
 </html>
