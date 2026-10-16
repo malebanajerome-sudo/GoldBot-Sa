@@ -4,260 +4,482 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#050505">
-<title>STACKS CO. | Gold Desk</title>
+<meta name="theme-color" content="#080909">
+<title>STACKS CO. — Gold Desk</title>
 <style>
-:root{color-scheme:dark;--bg:#050505;--panel:#101010;--gold:#d6ad53;--gold2:#f4d88e;--muted:#99958b;--line:#302718;--green:#6ee7a0;--red:#ff8585}
+:root {
+  color-scheme:dark;
+  --bg:#080909; --card:#111210; --gold:#d6ad4b;
+  --bright:#f4d47a; --text:#f5f2e9; --muted:#96968e;
+  --green:#55d69a; --red:#ff7777; --line:#302918;
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top, #211a0b 0%,#080808 38%,var(--bg) 75%);color:#f5f1e8;font-family:Arial,Helvetica,sans-serif}
-main{max-width:1100px;width:calc(100% - 28px);margin:auto;padding:25px 0 40px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:25px}
+body{margin:0;background:radial-gradient(ellipse at top,#241b09 0%,#0b0c0b 40%,var(--bg) 80%);color:var(--text);font:15px/1.5 Arial,Helvetica,sans-serif}
+main{max-width:1150px;margin:auto;padding:22px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:10px 0 22px;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px}
-.logo{width:45px;height:45px;border:1px solid var(--gold);border-radius:12px;display:grid;place-items:center;color:var(--gold2);font-weight:900}
-.brand h2{font-size:16px;letter-spacing:4px;margin:0}
-.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:5px}
-#connection{font-size:11px;color:var(--gold);border:1px solid var(--line);padding:9px 12px;border-radius:30px}
-.card{background:linear-gradient(145deg,#12110e,#090909);border:1px solid var(--line);border-radius:17px;padding:21px;min-width:0}
-.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
-.kicker{color:var(--gold);font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase}
-.asset{display:flex;align-items:center;gap:12px;margin-top:17px}
-.coin{height:43px;width:43px;flex-shrink:0;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold2);font-size:19px}
-h1{font-size:clamp(27px,5vw,42px);margin:0;letter-spacing:-1px}
-.sub{font-size:12px;color:var(--muted);margin-top:6px}
-#price{font-size:clamp(40px,8vw,65px);font-weight:800;letter-spacing:-2px;margin:27px 0 6px;overflow-wrap:anywhere}
-#price-caption{font-size:12px;color:var(--muted)}
-.quotes{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:24px}
-.quote{background:#070707;border:1px solid #282319;border-radius:12px;padding:14px;min-width:0}
-.quote label{font-size:11px;letter-spacing:2px;color:var(--muted)}
-.quote strong{display:block;font-size:clamp(20px,3vw,29px);margin-top:10px;overflow-wrap:anywhere}
-.bid{color:var(--green)}.ask{color:var(--red)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #272219;font-size:12px}
-.row:last-child{border-bottom:0}.muted{color:var(--muted)}
-.tag{border:1px solid var(--line);padding:6px 9px;border-radius:20px;color:var(--gold);font-size:10px}
-button{background:#211908;color:var(--gold2);border:1px solid #675020;border-radius:10px;padding:11px 14px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-.section{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:27px 0 12px}
-.section h3{font-size:15px;margin:0}.section p{font-size:11px;color:var(--muted);margin:5px 0 0}
-.frames{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.frame{background:#0d0d0d;border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
-.frame-head{display:flex;justify-content:space-between;align-items:center;gap:7px;font-size:11px;font-weight:bold}
-.trend{font-size:9px;padding:6px;border-radius:6px;background:#202020;color:var(--muted)}
-.trend.bullish{color:var(--green)}.trend.bearish{color:var(--red)}
-.tfprice{font-size:23px;font-weight:bold;margin:20px 0 13px;overflow-wrap:anywhere}
-.metric{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid #211f19;font-size:11px}
-.metric span:first-child{color:var(--muted)}.metric span:last-child{text-align:right;overflow-wrap:anywhere}
-.bottom{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:15px}
-#signal{font-size:28px;font-weight:900;color:var(--gold2);margin:13px 0}
-#reason{font-size:12px;line-height:1.6;color:var(--muted)}
-#activity{font-size:12px;line-height:1.8;color:var(--muted);overflow-wrap:anywhere}
-.notice{font-size:11px;line-height:1.7;color:#aaa18c;border:1px solid var(--line);padding:13px;border-radius:11px;margin-top:15px}
-footer{display:flex;justify-content:space-between;gap:10px;color:#716b5e;font-size:10px;letter-spacing:1px;margin-top:23px}
-@media(max-width:720px){main{width:calc(100% - 20px);padding-top:17px}.hero,.bottom{grid-template-columns:1fr}.frames{grid-template-columns:1fr}.card{padding:17px}.section{align-items:start}footer{flex-direction:column}.brand h2{font-size:14px}.quotes{gap:8px}.quote{padding:11px}}
+.logo{width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:12px;color:var(--bright);font-weight:900;font-size:19px}
+.eyebrow{color:var(--gold);letter-spacing:3px;font-size:11px;font-weight:bold}
+h1{font-size:24px;margin:2px 0;letter-spacing:2px}
+.small{font-size:12px;color:var(--muted)}
+button{border:1px solid var(--gold);border-radius:9px;background:#211a0b;color:var(--bright);padding:10px 14px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+button:hover{filter:brightness(1.15)}
+.panel{background:linear-gradient(145deg,#151510,#0e0f0e);border:1px solid var(--line);border-radius:15px;padding:20px;min-width:0}
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:15px;margin-top:20px}
+.label{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.price{color:var(--bright);font-size:clamp(32px,6vw,52px);font-weight:800;margin:8px 0;overflow-wrap:anywhere}
+.signal{font-size:34px;font-weight:900;margin:12px 0 5px}
+.buy{color:var(--green)}.sell{color:var(--red)}.no-trade{color:var(--bright)}
+.pill{display:inline-block;padding:5px 9px;border-radius:30px;background:#211b0c;border:1px solid #473719;color:var(--bright);font-size:10px;font-weight:bold;letter-spacing:1px}
+.section{margin:25px 0 12px}
+.section h2{font-size:17px;margin:0}
+.section p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.timeframes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.tf-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:15px}
+.tf-head strong{font-size:16px}
+.direction{font-size:10px;font-weight:bold;border:1px solid #444;padding:5px 7px;border-radius:20px}
+.direction.bullish{color:var(--green);border-color:#28543e}
+.direction.bearish{color:var(--red);border-color:#633030}
+.direction.neutral{color:var(--bright);border-color:#57451c}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{background:#090a09;border:1px solid #27271f;border-radius:9px;padding:10px;min-width:0}
+.metric span{display:block;color:var(--muted);font-size:11px}
+.metric strong{display:block;margin-top:4px;font-size:15px;overflow-wrap:anywhere}
+.reason{color:var(--muted);font-size:12px;margin:14px 0 0;overflow-wrap:anywhere}
+.statusbox{margin-top:18px;padding:14px;border:1px solid var(--line);background:#10110f;border-radius:10px;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.statusdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#888;margin-right:7px}
+.statusdot.online{background:var(--green)}.statusdot.offline{background:var(--red)}
+.system{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #29291f;font-size:12px}
+.row:last-child{border:0}.row span{color:var(--muted)}.row strong{text-align:right;overflow-wrap:anywhere}
+.paper-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{background:#0b0c0b;border:1px solid var(--line);border-radius:12px;padding:15px;min-width:0}
+.stat .value{font-size:clamp(22px,3vw,31px);font-weight:800;margin:7px 0;overflow-wrap:anywhere}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.danger{border-color:#743939;color:#ffaaaa;background:#241111}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:12px;white-space:nowrap}
+th{color:var(--muted);font-weight:normal}
+th,td{padding:11px 9px;border-bottom:1px solid var(--line)}
+.empty{text-align:center;color:var(--muted);padding:20px}
+footer{border-top:1px solid var(--line);margin-top:25px;padding-top:15px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:760px){.hero,.timeframes,.system{grid-template-columns:1fr}.paper-stats{grid-template-columns:1fr 1fr}main{padding:14px 11px 30px}.panel{padding:16px}header{align-items:flex-start}h1{font-size:21px}}
+@media(max-width:420px){header{flex-wrap:wrap}.header-actions{width:100%;display:flex;justify-content:space-between;align-items:center}}
 </style>
 </head>
 <body>
 <main>
 <header>
-  <div class="brand"><div class="logo">SC.</div><div><h2>STACKS CO.</h2><small>GOLD DESK · XAU/USD</small></div></div>
-  <div id="connection">CONNECTING</div>
+  <div class="brand">
+    <div class="logo">SC.</div>
+    <div>
+      <div class="eyebrow">STACKS CO.</div>
+      <h1>GOLD DESK</h1>
+      <div class="small">XAU/USD · GoldBot-ZA</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="small"><i id="statusDot" class="statusdot"></i><span id="connection">Connecting...</span></span>
+    <button id="refresh">↻ Refresh</button>
+  </div>
 </header>
 
 <section class="hero">
-  <article class="card">
-    <div class="kicker">Spot market · Gold vs US dollar</div>
-    <div class="asset"><div class="coin">Au</div><div><h1>Gold Spot</h1><div class="sub">XAU/USD · USD per troy ounce</div></div></div>
-    <div id="price">Loading…</div>
-    <div id="price-caption">Connecting to your price feed</div>
-    <div class="quotes">
-      <div class="quote"><label>BID · SELL</label><strong class="bid" id="bid">Unavailable</strong></div>
-      <div class="quote"><label>ASK · BUY</label><strong class="ask" id="ask">Unavailable</strong></div>
-    </div>
+  <article class="panel">
+    <div class="label">Live gold spot price · USD</div>
+    <div class="price" id="goldPrice">Loading...</div>
+    <span class="pill">XAU / USD</span>
+    <p class="small" id="priceTime">Waiting for price data...</p>
   </article>
-  <aside class="card">
-    <div class="kicker">System status</div>
-    <div class="row"><span class="muted">Price feed</span><span class="tag" id="price-status">Checking</span></div>
-    <div class="row"><span class="muted">Analysis</span><span class="tag" id="analysis-status">Checking</span></div>
-    <div class="row"><span class="muted">Signal engine</span><span class="tag" id="signal-status">Checking</span></div>
-    <div class="row"><span class="muted">Quote source</span><span id="source">Supabase</span></div>
-    <div class="row"><span class="muted">Last refresh</span><span id="updated">—</span></div>
-    <button id="refresh" type="button">↻ Refresh data</button>
-  </aside>
+  <article class="panel">
+    <div class="label">GoldBot-ZA · Trading decision</div>
+    <div class="signal no-trade" id="signal">Loading...</div>
+    <p class="reason" id="signalReason">Waiting for signal engine...</p>
+    <span class="pill" id="strategy">STRICT CONFIRMATION</span>
+    <p class="small" id="signalTime">Not updated yet</p>
+  </article>
 </section>
 
-<div class="section"><div><h3>Market analysis</h3><p>Daily · 4-hour · 1-hour | SMA20 / SMA50 / RSI14</p></div><span class="tag" id="analysis-time">Waiting</span></div>
-<section class="frames">
-  <article class="frame" id="daily"><div class="frame-head">DAILY · 1D <span class="trend">WAITING</span></div><div class="tfprice">—</div><div class="metric"><span>SMA 20</span><span>—</span></div><div class="metric"><span>SMA 50</span><span>—</span></div><div class="metric"><span>RSI 14</span><span>—</span></div><div class="metric"><span>Candle time</span><span>—</span></div></article>
-  <article class="frame" id="fourhour"><div class="frame-head">4-HOUR · 4H <span class="trend">WAITING</span></div><div class="tfprice">—</div><div class="metric"><span>SMA 20</span><span>—</span></div><div class="metric"><span>SMA 50</span><span>—</span></div><div class="metric"><span>RSI 14</span><span>—</span></div><div class="metric"><span>Candle time</span><span>—</span></div></article>
-  <article class="frame" id="onehour"><div class="frame-head">HOURLY · 1H <span class="trend">WAITING</span></div><div class="tfprice">—</div><div class="metric"><span>SMA 20</span><span>—</span></div><div class="metric"><span>SMA 50</span><span>—</span></div><div class="metric"><span>RSI 14</span><span>—</span></div><div class="metric"><span>Candle time</span><span>—</span></div></article>
+<div class="section"><h2>Multi-timeframe analysis</h2><p>Daily trend · 4-hour confirmation · 1-hour timing</p></div>
+<section class="timeframes">
+  <article class="panel">
+    <div class="tf-head"><strong>Daily / 1D</strong><span class="direction" id="dailyDirection">—</span></div>
+    <div class="metrics">
+      <div class="metric"><span>Last close</span><strong id="dailyClose">—</strong></div>
+      <div class="metric"><span>RSI (14)</span><strong id="dailyRsi">—</strong></div>
+      <div class="metric"><span>SMA (20)</span><strong id="dailySma20">—</strong></div>
+      <div class="metric"><span>SMA (50)</span><strong id="dailySma50">—</strong></div>
+    </div>
+    <p class="reason" id="dailyReason">Waiting for analysis...</p>
+  </article>
+  <article class="panel">
+    <div class="tf-head"><strong>4-hour / 4H</strong><span class="direction" id="fourDirection">—</span></div>
+    <div class="metrics">
+      <div class="metric"><span>Last close</span><strong id="fourClose">—</strong></div>
+      <div class="metric"><span>RSI (14)</span><strong id="fourRsi">—</strong></div>
+      <div class="metric"><span>SMA (20)</span><strong id="fourSma20">—</strong></div>
+      <div class="metric"><span>SMA (50)</span><strong id="fourSma50">—</strong></div>
+    </div>
+    <p class="reason" id="fourReason">Waiting for analysis...</p>
+  </article>
+  <article class="panel">
+    <div class="tf-head"><strong>1-hour / 1H</strong><span class="direction" id="oneDirection">—</span></div>
+    <div class="metrics">
+      <div class="metric"><span>Last close</span><strong id="oneClose">—</strong></div>
+      <div class="metric"><span>RSI (14)</span><strong id="oneRsi">—</strong></div>
+      <div class="metric"><span>SMA (20)</span><strong id="oneSma20">—</strong></div>
+      <div class="metric"><span>SMA (50)</span><strong id="oneSma50">—</strong></div>
+    </div>
+    <p class="reason" id="oneReason">Waiting for analysis...</p>
+  </article>
 </section>
 
-<section class="bottom">
-  <article class="card"><div class="kicker">Strict confirmation system</div><div id="signal">NO TRADE</div><div id="reason">Waiting for signal response.</div><div class="notice">BUY or SELL requires all three trends to agree and hourly RSI confirmation. Errors never count as trade signals.</div></article>
-  <article class="card"><div class="kicker">Desk activity</div><div id="activity">Dashboard started. Waiting for Supabase.</div></article>
+<div class="section"><h2>Simulated performance tracker</h2><p>Paper trading only · No real orders · P/L reflects price movement</p></div>
+<section class="paper-stats">
+  <article class="stat"><div class="label">Win rate</div><div class="value" id="paperWinRate">—</div><div class="small">Closed trades</div></article>
+  <article class="stat"><div class="label">Net simulated P/L</div><div class="value" id="paperNetPL">$0.00</div><div class="small">USD price movement</div></article>
+  <article class="stat"><div class="label">Record</div><div class="value" id="paperRecord">0W / 0L</div><div class="small">Wins / losses</div></article>
+  <article class="stat"><div class="label">Positions</div><div class="value" id="paperOpenCount">0 open</div><div class="small" id="paperClosedCount">0 closed</div></article>
 </section>
-<div class="notice"><b>Risk notice:</b> Informational dashboard, not financial advice. Quotes may be delayed. Bid and ask are displayed only if supplied by the price API. This dashboard does not fabricate missing quote values. Verify all prices with your broker.</div>
-<footer><span>STACKS CO. © <span id="year"></span></span><span>BLACK. GOLD. DISCIPLINE.</span><span>SUPABASE EDGE FUNCTIONS</span></footer>
+
+<section class="panel" style="margin-top:14px">
+  <div class="label">Open a simulated position</div>
+  <p class="reason">Uses the latest price fetched by this dashboard. Check the displayed price before opening or closing.</p>
+  <div class="actions">
+    <button id="paperBuy" type="button">Simulate BUY</button>
+    <button id="paperSell" type="button">Simulate SELL</button>
+    <button id="paperExport" type="button">Export CSV</button>
+    <button id="paperClear" class="danger" type="button">Clear history</button>
+  </div>
+  <p class="reason" id="paperMessage">No simulated trades recorded yet.</p>
+</section>
+
+<div class="section"><h2>Simulated trade history</h2><p>Entries, exits and results</p></div>
+<section class="panel table-wrap">
+  <table>
+    <thead><tr><th>Opened</th><th>Side</th><th>Entry</th><th>Exit</th><th>P/L</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody id="paperHistory"><tr><td colspan="7" class="empty">No trades yet.</td></tr></tbody>
+  </table>
+</section>
+
+<div class="section"><h2>System status</h2><p>Supabase service connectivity</p></div>
+<section class="system">
+  <article class="panel">
+    <div class="row"><span>Price service</span><strong id="priceStatus">Checking...</strong></div>
+    <div class="row"><span>Signal service</span><strong id="signalStatus">Checking...</strong></div>
+    <div class="row"><span>Last successful refresh</span><strong id="lastRefresh">—</strong></div>
+  </article>
+  <article class="panel">
+    <div class="label">Risk notice</div>
+    <p class="reason" id="risk">Rule-based analysis only. Signals are not a guarantee of market direction or profit.</p>
+    <p class="reason">This dashboard displays analysis only. It does not execute trades or connect to a broker.</p>
+  </article>
+</section>
+
+<div class="statusbox" id="message" role="status" aria-live="polite">Connecting to STACKS CO. services...</div>
+<footer><span>© <span id="year"></span> STACKS CO. · GOLD DESK</span><span>Pitch black &amp; gold · Powered by Supabase</span></footer>
 </main>
 
 <script>
-const PROJECT = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
+"use strict";
 
-/*
-If your functions require a key, put your Supabase publishable/anon key below.
-Never put a service_role key in this public file.
-*/
-const ANON_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
+/* Supabase public configuration. Never put a service-role key in browser code. */
+const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ";
+const PRICE_URL = SUPABASE_URL + "/functions/v1/gold-price-public";
+const SIGNAL_URL = SUPABASE_URL + "/functions/v1/market-signal-v2";
 
-const PRICE_FUNCTIONS = ["gold-price-public", "gold-price"];
-const ANALYSIS_FUNCTION = "market-analysis-v2";
-const SIGNAL_FUNCTION = "market-signal-v2";
-const REFRESH_MS = 30000;
 const $ = id => document.getElementById(id);
+let latestPaperPrice = null;
+let latestPaperSignal = "NO TRADE";
+let refreshing = false;
 
-function fmt(v) {
-  if (v === null || v === undefined || v === "") return "—";
-  const n = Number(v);
-  return Number.isFinite(n) ? new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2, maximumFractionDigits: 4
-  }).format(n) : "—";
-}
-function timeFmt(v) {
-  if (!v) return "Not supplied";
-  const d = new Date(v);
-  return Number.isNaN(d.getTime()) ? String(v) :
-    d.toLocaleString([], {month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false,timeZone:"UTC"}) + " UTC";
-}
-function status(id, text, good=false) {
-  const el = $(id);
-  el.textContent = text;
-  el.style.color = good ? "var(--green)" : "var(--gold)";
-}
-function log(message) {
-  $("activity").textContent = new Date().toLocaleTimeString() + " — " + message;
-}
-async function callFunction(name) {
-  const headers = { "Accept": "application/json" };
-  if (ANON_KEY) {
-    headers.apikey = ANON_KEY;
-    headers.Authorization = "Bearer " + ANON_KEY;
-  }
-  const res = await fetch(`${PROJECT}/functions/v1/${name}`, {
-    method: "GET", headers, cache: "no-store"
+/* ---------- Supabase ---------- */
+async function fetchFunction(url) {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Accept": "application/json", "apikey": SUPABASE_KEY },
+    cache: "no-store"
   });
-  const text = await res.text();
+  const raw = await response.text();
   let data;
-  try { data = JSON.parse(text); }
-  catch { throw new Error(`${name}: expected JSON, received HTTP ${res.status}. Check function access settings.`); }
-  if (!res.ok) throw new Error(`${name}: HTTP ${res.status}: ${data.error || data.message || data.details || "request failed"}`);
-  if (data && data.data && typeof data.data === "object" && !Array.isArray(data.data)) {
-    data = {...data.data, ...data};
-  }
-  return Array.isArray(data) ? (data[0] || {}) : data;
+  try { data = JSON.parse(raw); }
+  catch { throw new Error("Response wasn't JSON. Check the function URL."); }
+  if (!response.ok) throw new Error(data.message || data.error || "HTTP " + response.status);
+  if (data && data.success === false) throw new Error(data.message || data.error || "Function reported failure");
+  return data;
 }
-function deepValue(root, keys, depth=0) {
-  if (!root || typeof root !== "object" || depth > 6) return undefined;
-  for (const k of keys) if (root[k] !== undefined && root[k] !== null && root[k] !== "") return root[k];
-  for (const value of Object.values(root)) {
-    if (value && typeof value === "object") {
-      const found = deepValue(value, keys, depth+1);
-      if (found !== undefined) return found;
+
+function numberText(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) : "—";
+}
+function showTime(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+}
+function findPrice(data) {
+  const objects = [data,data?.data,data?.result,data?.gold];
+  const keys = ["price","gold_price","spot_price","spot","xau_usd"];
+  for (const object of objects) {
+    if (!object || typeof object !== "object") continue;
+    for (const key of keys) {
+      const value = object[key];
+      if (value !== null && value !== undefined && value !== "") {
+        const n = Number(value);
+        if (Number.isFinite(n) && n > 0) return n;
+      }
     }
   }
+  return null;
 }
-function deepNumber(root, keys) {
-  const v = deepValue(root, keys);
-  if (v === undefined) return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
+
+/* ---------- Timeframe rendering ---------- */
+function setDirection(id,value) {
+  const el = $(id);
+  const direction = String(value || "—").toUpperCase();
+  el.textContent = direction;
+  el.className = "direction";
+  if (direction === "BULLISH") el.classList.add("bullish");
+  else if (direction === "BEARISH") el.classList.add("bearish");
+  else if (direction === "NEUTRAL") el.classList.add("neutral");
 }
-function parseQuote(data) {
+function paintTimeframe(prefix,item) {
+  if (!item || typeof item !== "object") return;
+  setDirection(prefix + "Direction",item.direction);
+  $(prefix + "Close").textContent = numberText(item.close ?? item.latest_close);
+  $(prefix + "Rsi").textContent = numberText(item.rsi14);
+  $(prefix + "Sma20").textContent = numberText(item.sma20);
+  $(prefix + "Sma50").textContent = numberText(item.sma50);
+  $(prefix + "Reason").textContent = item.reason || "No explanation supplied.";
+}
+function normalizeTimeframes(data) {
+  const tf = data?.timeframes || data?.analysis?.timeframes || {};
   return {
-    price: deepNumber(data, ["spot_price","spotPrice","xauusd","xau_usd","last_price","mid_price","price","spot","last","close","value","mid"]),
-    bid: deepNumber(data, ["bid","bid_price","bidPrice","best_bid"]),
-    ask: deepNumber(data, ["ask","ask_price","askPrice","best_ask"]),
-    time: deepValue(data, ["as_of","updated_at","timestamp","time","datetime","last_updated"]),
-    source: deepValue(data, ["source","provider","vendor"])
+    daily:tf.daily || tf["1d"] || tf.D1,
+    four:tf.four_hour || tf.fourHour || tf["4h"] || tf.H4,
+    one:tf.one_hour || tf.oneHour || tf.hourly || tf["1h"] || tf.H1
   };
 }
-async function loadPrice() {
-  let lastError;
-  for (const name of PRICE_FUNCTIONS) {
-    try {
-      const quote = parseQuote(await callFunction(name));
-      if (quote.price === null) {
-        lastError = new Error(name + " responded but no known spot-price field was found.");
-        continue;
-      }
-      $("price").textContent = "$" + fmt(quote.price);
-      $("price-caption").textContent = "Latest returned spot price · USD per troy ounce";
-      $("bid").textContent = quote.bid === null ? "Unavailable" : "$" + fmt(quote.bid);
-      $("ask").textContent = quote.ask === null ? "Unavailable" : "$" + fmt(quote.ask);
-      $("source").textContent = quote.source || name;
-      $("updated").textContent = timeFmt(quote.time);
-      status("price-status", quote.bid !== null && quote.ask !== null ? "Price + quotes" : "Price loaded", true);
-      log(quote.bid !== null && quote.ask !== null
-        ? "Spot, bid and ask loaded from " + name + "."
-        : "Spot price loaded. Bid/ask were not included in the API response.");
-      return;
-    } catch (e) { lastError = e; }
+
+/* ---------- Paper trading persistence ---------- */
+const PAPER_KEY = "stacks_co_paper_trades_v1";
+let paperTrades = [];
+try {
+  const saved = JSON.parse(localStorage.getItem(PAPER_KEY) || "[]");
+  if (Array.isArray(saved)) paperTrades = saved;
+} catch { paperTrades = []; }
+
+function savePaperTrades() {
+  try {
+    localStorage.setItem(PAPER_KEY,JSON.stringify(paperTrades));
+    return true;
+  } catch {
+    $("paperMessage").textContent = "Browser storage failed. Export your history to keep a backup.";
+    return false;
   }
-  status("price-status", "Unavailable");
-  $("price-caption").textContent = "Could not load price. Check function access and response fields.";
-  throw lastError || new Error("Price unavailable");
 }
-function renderFrame(id, d) {
-  if (!d) throw new Error("Missing timeframe data for " + id);
-  const el = $(id);
-  el.querySelector(".tfprice").textContent = "$" + fmt(d.latest_close ?? d.close);
-  const trend = String(d.trend || "NEUTRAL").toUpperCase();
-  const badge = el.querySelector(".trend");
-  badge.textContent = trend;
-  badge.className = "trend " + trend.toLowerCase();
-  const values = el.querySelectorAll(".metric span:last-child");
-  values[0].textContent = fmt(d.sma20);
-  values[1].textContent = fmt(d.sma50);
-  values[2].textContent = fmt(d.rsi14);
-  values[3].textContent = timeFmt(d.latest_candle_time ?? d.latestTime);
+function paperMoney(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-async function loadAnalysis() {
-  const data = await callFunction(ANALYSIS_FUNCTION);
-  if (data.success !== true) throw new Error(data.error || "Analysis returned failure");
-  const t = data.timeframes || {};
-  renderFrame("daily", t.daily);
-  renderFrame("fourhour", t.four_hour);
-  renderFrame("onehour", t.one_hour || t.hourly);
-  status("analysis-status", "Loaded", true);
-  $("analysis-time").textContent = "Updated " + new Date().toLocaleTimeString();
+function paperPL(trade,exitPrice) {
+  return trade.side === "BUY" ? exitPrice - trade.entry : trade.entry - exitPrice;
 }
-async function loadSignal() {
-  const data = await callFunction(SIGNAL_FUNCTION);
-  const signal = data.success === true ? String(data.signal || "NO TRADE").toUpperCase() : "NO TRADE";
-  $("signal").textContent = signal;
-  $("signal").style.color = signal === "BUY" ? "var(--green)" : signal === "SELL" ? "var(--red)" : "var(--gold2)";
-  $("reason").textContent = data.success === true
-    ? (data.reason || "No reason supplied.")
-    : (data.details || data.reason || data.error || "Signal data validation failed. No trade.");
-  status("signal-status", data.success === true ? signal : "Data error", data.success === true && signal !== "NO TRADE");
-  if (data.success !== true) throw new Error(data.details || data.error || "Signal validation failed");
+function safeCell(value) {
+  const td = document.createElement("td");
+  td.textContent = value == null ? "—" : String(value);
+  td.style.padding = "11px 9px";
+  td.style.borderBottom = "1px solid var(--line)";
+  return td;
 }
-async function refreshAll() {
-  const button = $("refresh");
-  button.disabled = true;
-  button.textContent = "Refreshing…";
-  $("connection").textContent = "CONNECTING";
-  const results = await Promise.allSettled([loadPrice(),loadAnalysis(),loadSignal()]);
-  const failed = results.filter(x => x.status === "rejected");
-  $("connection").textContent = failed.length === 0 ? "● CONNECTED" : failed.length < 3 ? "● PARTIAL DATA" : "● OFFLINE";
-  $("connection").style.color = failed.length === 0 ? "var(--green)" : failed.length < 3 ? "var(--gold)" : "var(--red)";
-  if (failed.length) log(failed.map(x => x.reason?.message || "Unknown error").join(" | "));
-  $("updated").title = "Dashboard checked at " + new Date().toISOString();
-  button.disabled = false;
-  button.textContent = "↻ Refresh data";
+function renderPaperTracker() {
+  const closed = paperTrades.filter(t => t.status === "CLOSED");
+  const open = paperTrades.filter(t => t.status === "OPEN");
+  const wins = closed.filter(t => Number(t.pl) > 0).length;
+  const losses = closed.filter(t => Number(t.pl) < 0).length;
+  const net = closed.reduce((sum,t) => sum + (Number(t.pl) || 0),0);
+  const rate = closed.length ? wins / closed.length * 100 : null;
+
+  $("paperWinRate").textContent = rate === null ? "—" : rate.toFixed(1) + "%";
+  $("paperNetPL").textContent = paperMoney(net);
+  $("paperNetPL").style.color = net > 0 ? "var(--green)" : net < 0 ? "var(--red)" : "var(--bright)";
+  $("paperRecord").textContent = wins + "W / " + losses + "L";
+  $("paperOpenCount").textContent = open.length + " open";
+  $("paperClosedCount").textContent = closed.length + " closed";
+
+  const tbody = $("paperHistory");
+  tbody.replaceChildren();
+
+  if (!paperTrades.length) {
+    const tr = document.createElement("tr");
+    const td = safeCell("No trades yet.");
+    td.colSpan = 7; td.className = "empty";
+    tr.appendChild(td); tbody.appendChild(tr); return;
+  }
+
+  [...paperTrades].reverse().forEach(trade => {
+    const tr = document.createElement("tr");
+    tr.appendChild(safeCell(showTime(trade.openedAt)));
+    const sideCell = safeCell(trade.side);
+    sideCell.style.color = trade.side === "BUY" ? "var(--green)" : "var(--red)";
+    tr.appendChild(sideCell);
+    tr.appendChild(safeCell("$" + numberText(trade.entry)));
+    tr.appendChild(safeCell(trade.exit == null ? "—" : "$" + numberText(trade.exit)));
+    const plCell = safeCell(trade.pl == null ? "—" : paperMoney(trade.pl));
+    if (trade.pl != null) plCell.style.color = trade.pl > 0 ? "var(--green)" : trade.pl < 0 ? "var(--red)" : "var(--text)";
+    tr.appendChild(plCell);
+    tr.appendChild(safeCell(trade.status));
+
+    const action = safeCell("");
+    if (trade.status === "OPEN") {
+      const close = document.createElement("button");
+      close.type = "button"; close.textContent = "Close"; close.style.padding = "7px 10px";
+      close.addEventListener("click",() => closePaperTrade(trade.id));
+      action.appendChild(close);
+    } else action.textContent = "Closed";
+    tr.appendChild(action);
+    tbody.appendChild(tr);
+  });
 }
+function openPaperTrade(side) {
+  if (!Number.isFinite(latestPaperPrice) || latestPaperPrice <= 0) {
+    $("paperMessage").textContent = "Cannot open: wait for a valid live price to load.";
+    return;
+  }
+  if (paperTrades.filter(t => t.status === "OPEN").length >= 10) {
+    $("paperMessage").textContent = "Maximum of 10 open simulated positions reached.";
+    return;
+  }
+  const trade = {
+    id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+    side,entry:latestPaperPrice,exit:null,pl:null,status:"OPEN",
+    openedAt:new Date().toISOString(),closedAt:null,
+    signalAtEntry:latestPaperSignal
+  };
+  paperTrades.push(trade);
+  savePaperTrades(); renderPaperTracker();
+  $("paperMessage").textContent = "Simulated " + side + " opened at $" +
+    numberText(latestPaperPrice) + ". No real order was placed.";
+}
+function closePaperTrade(id) {
+  if (!Number.isFinite(latestPaperPrice) || latestPaperPrice <= 0) {
+    $("paperMessage").textContent = "Cannot close: wait for a valid live price to load.";
+    return;
+  }
+  const trade = paperTrades.find(t => t.id === id && t.status === "OPEN");
+  if (!trade) return;
+  trade.exit = latestPaperPrice;
+  trade.pl = paperPL(trade,latestPaperPrice);
+  trade.status = "CLOSED";
+  trade.closedAt = new Date().toISOString();
+  savePaperTrades(); renderPaperTracker();
+  $("paperMessage").textContent = "Simulated position closed. Price movement P/L: " +
+    paperMoney(trade.pl) + ". Spread, fees and position size are excluded.";
+}
+function exportPaperCSV() {
+  const columns = ["id","side","entry","exit","pl","status","openedAt","closedAt","signalAtEntry"];
+  const quote = value => '"' + String(value ?? "").replace(/"/g,'""') + '"';
+  const csv = [columns.join(","),...paperTrades.map(t => columns.map(k => quote(t[k])).join(","))].join("\r\n");
+  const blob = new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "stacks-co-simulated-trades.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+function clearPaperHistory() {
+  if (!confirm("Delete all simulated trade history from this browser? Export a CSV first if you need a backup.")) return;
+  paperTrades = [];
+  savePaperTrades(); renderPaperTracker();
+  $("paperMessage").textContent = "Simulated trade history cleared from this browser.";
+}
+
+/* ---------- Main refresh ---------- */
+async function refreshDashboard() {
+  if (refreshing) return;
+  refreshing = true;
+  $("refresh").disabled = true;
+  $("connection").textContent = "Connecting...";
+  $("statusDot").className = "statusdot";
+  $("message").textContent = "Refreshing market data...";
+
+  const errors = [];
+  let priceOK = false, signalOK = false;
+
+  const priceTask = (async () => {
+    try {
+      const data = await fetchFunction(PRICE_URL);
+      const price = findPrice(data);
+      if (price === null) throw new Error("Price field not recognized in response JSON.");
+      latestPaperPrice = price;
+      $("goldPrice").textContent = "$" + numberText(price);
+      $("priceTime").textContent = "Updated " + new Date().toLocaleTimeString();
+      $("priceStatus").textContent = "Connected";
+      priceOK = true;
+    } catch (error) {
+      $("priceStatus").textContent = "Error";
+      errors.push("Price: " + error.message);
+    }
+  })();
+
+  const signalTask = (async () => {
+    try {
+      const data = await fetchFunction(SIGNAL_URL);
+      if (!data.signal) throw new Error("Signal response has no signal field.");
+      latestPaperSignal = String(data.signal).toUpperCase();
+      const signal = latestPaperSignal;
+      $("signal").textContent = signal;
+      $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "no-trade");
+      $("signalReason").textContent = data.reason || "No decision reason supplied.";
+      $("strategy").textContent = data.strategy || "GOLDBOT-ZA";
+      $("signalTime").textContent = "Generated " + showTime(data.generated_at);
+      $("risk").textContent = data.risk_note || "Rule-based analysis only. Signals are not a guarantee of market direction or profit.";
+
+      const tf = normalizeTimeframes(data);
+      paintTimeframe("daily",tf.daily);
+      paintTimeframe("four",tf.four);
+      paintTimeframe("one",tf.one);
+      const complete = Boolean(tf.daily && tf.four && tf.one);
+      $("signalStatus").textContent = complete ? "Connected · 3 timeframes" : "Connected · incomplete timeframe data";
+      signalOK = true;
+    } catch (error) {
+      $("signalStatus").textContent = "Error";
+      errors.push("Signal: " + error.message);
+    }
+  })();
+
+  await Promise.all([priceTask,signalTask]);
+
+  if (priceOK && signalOK) {
+    $("connection").textContent = "Services online";
+    $("statusDot").className = "statusdot online";
+    $("lastRefresh").textContent = new Date().toLocaleString();
+    $("message").textContent = "Connected to Supabase. Live price and signal data loaded.";
+  } else {
+    $("connection").textContent = "Connection issue";
+    $("statusDot").className = "statusdot offline";
+    $("message").textContent = errors.join(" | ") || "One or more services could not be reached.";
+  }
+
+  $("refresh").disabled = false;
+  refreshing = false;
+}
+
+$("refresh").addEventListener("click",refreshDashboard);
+$("paperBuy").addEventListener("click",() => openPaperTrade("BUY"));
+$("paperSell").addEventListener("click",() => openPaperTrade("SELL"));
+$("paperExport").addEventListener("click",exportPaperCSV);
+$("paperClear").addEventListener("click",clearPaperHistory);
 $("year").textContent = new Date().getFullYear();
-$("refresh").addEventListener("click", refreshAll);
-refreshAll();
-setInterval(refreshAll, REFRESH_MS);
+
+renderPaperTracker();
+refreshDashboard();
+setInterval(refreshDashboard,60000);
 </script>
 </body>
 </html>
