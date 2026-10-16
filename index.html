@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090b10">
   <title>GoldBot-ZA</title>
+
   <style>
     :root {
       color-scheme: dark;
@@ -16,13 +17,16 @@
       --green: #36d399;
       --red: #ff6878;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       background: var(--bg);
       color: #f6f7fb;
       font-family: system-ui, sans-serif;
     }
+
     header {
       padding: 22px 18px;
       border-bottom: 1px solid #292e39;
@@ -30,11 +34,23 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .brand { font-size: 21px; font-weight: 800; }
     .brand span { color: var(--gold); }
     .status { color: var(--green); font-size: 12px; }
-    main { max-width: 650px; margin: auto; padding: 20px 16px 90px; }
-    .eyebrow { color: var(--muted); font-size: 12px; letter-spacing: 1.5px; }
+
+    main {
+      max-width: 650px;
+      margin: auto;
+      padding: 20px 16px 90px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+    }
+
     .price-card {
       margin-top: 12px;
       padding: 24px 20px;
@@ -42,35 +58,98 @@
       border-radius: 20px;
       background: linear-gradient(135deg, #252115, #141821 70%);
     }
-    .price { color: var(--gold); font-size: clamp(32px, 9vw, 46px); font-weight: 800; margin: 10px 0; }
+
+    .price {
+      color: var(--gold);
+      font-size: clamp(24px, 7vw, 46px);
+      font-weight: 800;
+      margin: 10px 0;
+      overflow-wrap: anywhere;
+    }
+
     .note { color: var(--muted); font-size: 12px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-    .card { background: var(--panel); border: 1px solid #292e39; border-radius: 16px; padding: 17px; }
-    .value { font-size: 22px; font-weight: 750; margin-top: 9px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid #292e39;
+      border-radius: 16px;
+      padding: 17px;
+      min-width: 0;
+    }
+
+    .value {
+      font-size: 22px;
+      font-weight: 750;
+      margin-top: 9px;
+    }
+
     .gold { color: var(--gold); }
     .signal { font-size: 28px; font-weight: 850; margin: 12px 0 5px; }
     .wait { color: var(--gold); }
     h2 { font-size: 16px; margin: 26px 0 12px; }
     .wide { grid-column: 1 / -1; }
-    .trade { display: flex; justify-content: space-between; gap: 10px; padding: 13px 0; border-bottom: 1px solid #292e39; font-size: 13px; }
+
+    .trade {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px 0;
+      border-bottom: 1px solid #292e39;
+      font-size: 13px;
+    }
+
     .trade:last-child { border-bottom: 0; }
-    .empty { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    .empty {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      display: flex; justify-content: space-around;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
       padding: 13px 4px calc(13px + env(safe-area-inset-bottom));
-      background: #11151d; border-top: 1px solid #292e39;
+      background: #11151d;
+      border-top: 1px solid #292e39;
     }
-    nav a { color: var(--muted); text-decoration: none; font-size: 12px; text-align: center; }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      text-align: center;
+    }
+
     nav a:first-child { color: var(--gold); }
+
     button {
-      border: 1px solid #51452b; background: #292315; color: var(--gold);
-      border-radius: 10px; padding: 11px 14px; font-weight: 700;
+      border: 1px solid #51452b;
+      background: #292315;
+      color: var(--gold);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-weight: 700;
     }
-    @media (min-width: 520px) { main { padding-top: 28px; } }
+
+    @media (min-width: 520px) {
+      main { padding-top: 28px; }
+    }
   </style>
 </head>
-<body>
+
+<body id="top">
   <header>
     <div class="brand">GOLD<span>BOT</span>-ZA</div>
     <div class="status">● Interface online</div>
@@ -81,49 +160,66 @@
 
     <section class="price-card">
       <div class="eyebrow">GOLD SPOT PRICE · XAU</div>
-      <div class="price" id="goldPrice">Connecting soon</div>
-      <div class="note" id="priceNote">Live price will appear when the backend is connected.</div>
+      <div class="price" id="goldPrice">Connecting...</div>
+      <div class="note" id="priceNote">Connecting to your gold-price function...</div>
     </section>
 
     <div class="grid">
       <section class="card">
         <div class="eyebrow">CURRENT SIGNAL</div>
         <div class="signal wait" id="signal">WAIT</div>
-        <div class="note">Awaiting live signal connection</div>
+        <div class="note">Signal connection pending</div>
       </section>
+
       <section class="card">
         <div class="eyebrow">OPEN TRADES</div>
         <div class="value" id="openTrades">—</div>
         <div class="note">Journal connection pending</div>
       </section>
+
       <section class="card">
         <div class="eyebrow">WIN RATE</div>
         <div class="value gold" id="winRate">—</div>
         <div class="note">Based on completed trades</div>
       </section>
+
       <section class="card">
         <div class="eyebrow">COMPLETED</div>
         <div class="value" id="completed">—</div>
         <div class="note">Wins + losses</div>
       </section>
+
       <section class="card wide">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
           <div>
             <div class="eyebrow">PERFORMANCE</div>
             <div class="value">Your trading record</div>
           </div>
-          <button onclick="alert('Statistics will be connected to Supabase next.')">Statistics</button>
+          <button onclick="alert('We will connect the existing performance tracker next.')">
+            Statistics
+          </button>
         </div>
-        <p class="empty">Your verified results will appear here after we connect the existing performance tracker.</p>
+        <p class="empty">
+          Your verified results will appear here after we connect the existing performance tracker.
+        </p>
       </section>
     </div>
 
     <h2>Recent trades</h2>
+
     <section class="card">
-      <div class="trade"><span>Trade journal</span><span class="note">Not connected yet</span></div>
-      <p class="empty">Your real BUY and SELL records will appear here. This first version does not create or change trades.</p>
+      <div class="trade">
+        <span>Trade journal</span>
+        <span class="note">Not connected yet</span>
+      </div>
+      <p class="empty">
+        Your real BUY and SELL records will appear here. This page does not create or change trades.
+      </p>
     </section>
-    <p class="note" style="text-align:center;margin-top:24px">GoldBot-ZA · Powered by your Supabase backend</p>
+
+    <p class="note" style="text-align:center;margin-top:24px">
+      GoldBot-ZA · Powered by your Supabase backend
+    </p>
   </main>
 
   <nav>
@@ -132,36 +228,57 @@
     <a href="#signal">↗<br>Signals</a>
     <a href="#completed">▤<br>Statistics</a>
   </nav>
-  
-<script>
-const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
 
-async function loadGoldPrice() {
-  const price = document.getElementById("goldPrice");
-  const note = document.getElementById("priceNote");
+  <script>
+    const SUPABASE_URL =
+      "https://ayfdcfvyeqbjslumfgxf.supabase.co";
 
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/gold-price`
-    );
+    const SUPABASE_KEY =
+      "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    async function loadGoldPrice() {
+      const price = document.getElementById("goldPrice");
+      const note = document.getElementById("priceNote");
+
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/gold-price`,
+          {
+            headers: {
+              "apikey": SUPABASE_KEY
+            }
+          }
+        );
+
+        const raw = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          data = { message: raw };
+        }
+
+        console.log("Gold price response:", data);
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status}: ${
+              data.message || data.error || JSON.stringify(data)
+            }`
+          );
+        }
+
+        // Temporary diagnostic display; next we'll format the real price.
+        price.textContent = JSON.stringify(data);
+        note.textContent = "Connected to Supabase";
+      } catch (error) {
+        price.textContent = "Connection error";
+        note.textContent = error.message;
+      }
     }
 
-    const data = await response.json();
-    console.log("Gold price response:", data);
-
-    // We'll map the actual response fields after checking them.
-    price.textContent = JSON.stringify(data);
-    note.textContent = "Connected to Supabase";
-  } catch (error) {
-    price.textContent = "Connection error";
-    note.textContent = error.message;
-  }
-}
-
-loadGoldPrice();
-</script>
+    loadGoldPrice();
+  </script>
 </body>
 </html>
