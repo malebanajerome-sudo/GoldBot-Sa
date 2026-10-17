@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "GoldBot-ZA | Stacks Co.",
+  "short_name": "GoldBot-ZA",
+  "description": "Gold trading signals and paper trading dashboard.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050505",
+  "theme_color": "#D4AF37",
+  "lang": "en-ZA"
+}
