@@ -1,678 +1,567 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="GoldBot-ZA XAU/USD trading signals by Stacks Co.">
   <title>GoldBot-ZA | Stacks Co.</title>
 
   <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel2: #171717;
+      --gold: #e8bd48;
+      --gold2: #ffdf78;
+      --text: #f5f5f5;
+      --muted: #aaa;
+      --green: #40d99b;
+      --red: #ff6969;
+      --border: #333;
+    }
+
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 16px;
-      background: #000;
-      color: #eee;
-      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
       line-height: 1.5;
     }
 
     header {
-      padding: 16px 0;
-      border-bottom: 2px solid #d4af37;
-      margin-bottom: 18px;
+      padding: 19px 16px;
+      border-bottom: 1px solid #42371a;
+      background: #080808;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
 
-    h1 {
-      color: #d4af37;
-      font-size: 25px;
-      margin: 0;
-    }
-
-    h2 {
-      color: #d4af37;
-      font-size: 19px;
-      margin-top: 0;
-    }
-
-    h3 {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .muted { color: #aaa; }
-    .gold { color: #d4af37; }
-    .green { color: #56d68b; }
-    .red { color: #ff7777; }
-
-    nav {
+    .header-inner {
+      max-width: 900px;
+      margin: auto;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 16px 0;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
-    button {
-      background: #d4af37;
-      color: #000;
-      border: 0;
-      border-radius: 5px;
-      padding: 11px 13px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
+    .brand {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: .4px;
     }
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: wait;
+    .owner {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
     }
 
-    nav button {
-      background: #222;
-      color: #eee;
-      border: 1px solid #555;
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 18px 13px 45px;
     }
 
-    nav button.active {
-      background: #d4af37;
-      color: #000;
+    .hero {
+      border: 1px solid #5d4919;
+      border-radius: 15px;
+      background: linear-gradient(140deg, #17130a, #090909 70%);
+      padding: 22px 18px;
+      margin-bottom: 16px;
     }
 
-    .panel {
-      border: 1px solid #333;
-      border-radius: 7px;
-      padding: 15px;
-      margin-bottom: 14px;
-      background: #0b0b0b;
-      overflow-wrap: anywhere;
+    .eyebrow {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
     }
 
     .price {
-      font-size: 29px;
-      font-weight: bold;
-      color: #d4af37;
+      font-size: clamp(32px, 8vw, 47px);
+      font-weight: 800;
+      margin: 5px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .subtext, .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--border);
+      background: #111;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      margin-top: 12px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      display: inline-block;
+      border-radius: 50%;
+      background: var(--gold);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 13px;
+      min-width: 0;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: var(--gold);
+    }
+
+    .signal-direction {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 7px 0;
+    }
+
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .gold { color: var(--gold); }
+
     .metric {
-      background: #151515;
-      padding: 12px;
-      border-radius: 5px;
+      background: var(--panel2);
+      border: 1px solid #292929;
+      border-radius: 9px;
+      padding: 10px;
+      min-width: 0;
     }
 
     .metric-label {
-      display: block;
-      color: #aaa;
-      font-size: 12px;
-      margin-bottom: 5px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
     }
 
     .metric-value {
-      font-weight: bold;
+      font-size: 15px;
+      font-weight: 700;
       overflow-wrap: anywhere;
     }
 
-    .status {
-      padding: 9px;
-      background: #151515;
-      border-radius: 4px;
-      font-size: 13px;
-      margin-top: 10px;
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 { margin: 0; }
+
+    button {
+      border: 1px solid #6b551e;
+      background: #191407;
+      color: var(--gold2);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--gold);
+      color: #090909;
+      border: none;
+      font-size: 14px;
+      margin: 4px 0 15px;
+    }
+
+    .record {
+      border-bottom: 1px solid #292929;
+      padding: 10px 0;
       overflow-wrap: anywhere;
+    }
+
+    .record:last-child { border-bottom: none; }
+
+    .record-key {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: capitalize;
+      margin-bottom: 3px;
+    }
+
+    .record-value {
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      padding: 13px 0;
+      color: var(--muted);
+      font-size: 13px;
     }
 
     .error {
-      color: #ff9999;
-      white-space: pre-wrap;
-    }
-
-    .success { color: #56d68b; }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    .record {
-      border-top: 1px solid #333;
-      padding: 12px 0;
-    }
-
-    .record:first-child { border-top: 0; }
-
-    pre {
-      white-space: pre-wrap;
+      color: var(--red);
+      font-size: 12px;
       overflow-wrap: anywhere;
-      font-size: 12px;
-      color: #ddd;
     }
 
-    footer {
-      margin-top: 25px;
-      border-top: 1px solid #333;
-      padding-top: 15px;
-      font-size: 12px;
-      color: #999;
+    .success { color: var(--green); }
+
+    .footer {
+      border-top: 1px solid #292929;
+      margin-top: 20px;
+      padding-top: 17px;
       text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .small-button { padding: 7px 9px; }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: 1fr; }
+      .levels { grid-template-columns: 1fr 1fr 1fr; }
+      .card { padding: 13px; }
+      .brand { font-size: 16px; }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>GoldBot-ZA</h1>
-    <div class="muted">Owned by Stacks Co. | XAU/USD</div>
-    <div id="connectionStatus" class="status">Connecting to Supabase...</div>
-    <div id="lastUpdated" class="muted" style="font-size:12px;margin-top:6px">
-      Last updated: —
+<header>
+  <div class="header-inner">
+    <div class="brand">GOLDBOT-ZA</div>
+    <div class="owner">OWNED BY<br><strong>STACKS CO.</strong></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">XAU/USD · GOLD MARKET</div>
+    <div class="price" id="goldPrice">Loading...</div>
+    <div class="subtext" id="priceSource">Connecting to gold price service...</div>
+    <div class="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="connectionStatus">Connecting to Supabase...</span>
     </div>
-  </header>
+    <div class="subtext" style="margin-top:10px">
+      Last updated: <span id="lastUpdated">—</span>
+    </div>
+  </section>
 
-  <nav>
-    <button class="active" data-page="home">Overview</button>
-    <button data-page="signalPage">Signal</button>
-    <button data-page="analysisPage">Analysis</button>
-    <button data-page="journalPage">Trade Journal</button>
-    <button data-page="performancePage">Performance</button>
-  </nav>
+  <button class="primary" id="refreshAll" onclick="refreshAll()">
+    ↻ REFRESH ALL DATA
+  </button>
 
-  <div style="margin-bottom:16px">
-    <button id="refreshButton" style="width:100%">Refresh All Data</button>
+  <div class="grid">
+    <section class="card">
+      <div class="section-head">
+        <h2>Current Signal</h2>
+        <button class="small-button" onclick="loadSignal()">Refresh</button>
+      </div>
+      <div id="signalDirection" class="signal-direction">—</div>
+      <div id="signalMessage" class="muted">Waiting for signal data...</div>
+
+      <div class="levels">
+        <div class="metric">
+          <div class="metric-label">ENTRY</div>
+          <div class="metric-value" id="entryPrice">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">STOP LOSS</div>
+          <div class="metric-value red" id="stopLoss">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">TAKE PROFIT</div>
+          <div class="metric-value green" id="takeProfit">—</div>
+        </div>
+      </div>
+
+      <div class="levels">
+        <div class="metric">
+          <div class="metric-label">RISK : REWARD</div>
+          <div class="metric-value" id="riskReward">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">TIMEFRAME</div>
+          <div class="metric-value" id="signalTimeframe">Multi</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">SIGNAL TIME</div>
+          <div class="metric-value" id="signalTime">—</div>
+        </div>
+      </div>
+      <div id="signalError" class="error"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>Multi-Timeframe Analysis</h2>
+        <button class="small-button" onclick="loadAnalysis()">Refresh</button>
+      </div>
+      <div id="analysisContent" class="empty">Loading market analysis...</div>
+      <div id="analysisError" class="error"></div>
+    </section>
   </div>
 
-  <main>
-    <!-- OVERVIEW -->
-    <section id="home" class="page active">
-      <div class="panel">
-        <h2>Live Gold Price</h2>
-        <div id="goldPrice" class="price">Loading...</div>
-        <div class="grid" style="margin-top:12px">
-          <div class="metric">
-            <span class="metric-label">Bid</span>
-            <span id="bidPrice" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Ask</span>
-            <span id="askPrice" class="metric-value">—</span>
-          </div>
-        </div>
-        <div id="priceStatus" class="status">Waiting for price data...</div>
+  <section class="card">
+    <div class="section-head">
+      <h2>Open Trades & Trade Journal</h2>
+      <button class="small-button" onclick="loadJournal()">Refresh</button>
+    </div>
+    <div class="muted">Trades and journal records returned by your Supabase service.</div>
+    <div id="journalContent" class="empty">Loading trade journal...</div>
+    <div id="journalError" class="error"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>Performance Tracker</h2>
+      <button class="small-button" onclick="loadPerformance()">Statistics</button>
+    </div>
+
+    <div class="grid">
+      <div class="metric">
+        <div class="metric-label">TOTAL TRADES</div>
+        <div class="metric-value" id="totalTrades">—</div>
       </div>
-
-      <div class="panel">
-        <h2>Current Signal</h2>
-        <div id="overviewSignal" class="price">Loading...</div>
-        <p id="overviewSignalDetails" class="muted">Waiting for signal data...</p>
-        <button data-go="signalPage">View Signal Details</button>
+      <div class="metric">
+        <div class="metric-label">WIN RATE</div>
+        <div class="metric-value" id="winRate">—</div>
       </div>
-
-      <div class="panel">
-        <h2>Market Analysis</h2>
-        <div id="overviewAnalysis">Loading...</div>
-        <button data-go="analysisPage">View Analysis</button>
+      <div class="metric">
+        <div class="metric-label">WINS</div>
+        <div class="metric-value green" id="totalWins">—</div>
       </div>
-
-      <div class="panel">
-        <h2>Performance Summary</h2>
-        <div class="grid">
-          <div class="metric">
-            <span class="metric-label">Total Trades</span>
-            <span id="overviewTotal" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Wins</span>
-            <span id="overviewWins" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Losses</span>
-            <span id="overviewLosses" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Win Rate</span>
-            <span id="overviewWinRate" class="metric-value">—</span>
-          </div>
-        </div>
-        <button data-go="performancePage" style="margin-top:12px">
-          View Performance
-        </button>
+      <div class="metric">
+        <div class="metric-label">LOSSES</div>
+        <div class="metric-value red" id="totalLosses">—</div>
       </div>
-    </section>
+    </div>
 
-    <!-- SIGNAL -->
-    <section id="signalPage" class="page">
-      <div class="panel">
-        <h2>Live Trading Signal</h2>
-        <div id="signalDirection" class="price">Loading...</div>
-        <p id="signalMessage" class="muted">Fetching signal...</p>
-        <div class="grid">
-          <div class="metric">
-            <span class="metric-label">Entry</span>
-            <span id="signalEntry" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Stop Loss</span>
-            <span id="signalSL" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Take Profit</span>
-            <span id="signalTP" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Risk : Reward</span>
-            <span id="signalRR" class="metric-value">—</span>
-          </div>
-        </div>
-        <div id="signalStatus" class="status">Waiting for signal...</div>
-      </div>
-    </section>
+    <div id="performanceContent" class="empty">Loading performance statistics...</div>
+    <div id="performanceError" class="error"></div>
+  </section>
 
-    <!-- ANALYSIS -->
-    <section id="analysisPage" class="page">
-      <div class="panel">
-        <h2>Multi-Timeframe Analysis</h2>
-        <p class="muted">Analysis supplied by your existing Supabase function.</p>
-        <div id="analysisStatus" class="status">Loading...</div>
-        <div id="analysisResults"></div>
-        <details style="margin-top:12px">
-          <summary>Raw analysis response</summary>
-          <pre id="analysisRaw">Waiting for data...</pre>
-        </details>
-      </div>
-    </section>
+  <section class="card">
+    <h2>System Status</h2>
+    <div id="systemStatus" class="empty">Ready to check services.</div>
+  </section>
 
-    <!-- JOURNAL -->
-    <section id="journalPage" class="page">
-      <div class="panel">
-        <h2>Trade Journal</h2>
-        <p id="journalCount" class="muted">Loading records...</p>
-        <div id="journalStatus" class="status">Loading...</div>
-        <div id="journalRecords"></div>
-        <details style="margin-top:12px">
-          <summary>Raw journal response</summary>
-          <pre id="journalRaw">Waiting for data...</pre>
-        </details>
-      </div>
-    </section>
+  <div class="footer">
+    GOLDBOT-ZA | STACKS CO.<br>
+    XAU/USD signal analysis · Educational and paper-trading use
+  </div>
+</main>
 
-    <!-- PERFORMANCE -->
-    <section id="performancePage" class="page">
-      <div class="panel">
-        <h2>Performance Centre</h2>
-        <div class="grid">
-          <div class="metric">
-            <span class="metric-label">Total Trades</span>
-            <span id="performanceTotal" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Open Trades</span>
-            <span id="performanceOpen" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Wins</span>
-            <span id="performanceWins" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Losses</span>
-            <span id="performanceLosses" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Win Rate</span>
-            <span id="performanceWinRate" class="metric-value">—</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Profit / Loss</span>
-            <span id="performancePL" class="metric-value">—</span>
-          </div>
-        </div>
-        <div id="performanceStatus" class="status">Loading...</div>
-        <details style="margin-top:12px">
-          <summary>Full performance response</summary>
-          <pre id="performanceRaw">Waiting for data...</pre>
-        </details>
-      </div>
-    </section>
-  </main>
+<script>
+"use strict";
 
-  <footer>
-    GoldBot-ZA | Stacks Co.<br>
-    XAU/USD only. Signals are informational and paper-trading results are not guaranteed.
-  </footer>
+/*
+ * GoldBot-ZA | Stacks Co.
+ * Frontend uses the existing Supabase Edge Functions.
+ * Never place a Supabase service-role secret in this file.
+ */
 
-  <script>
-    "use strict";
+const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
 
-    // EXISTING SUPABASE PROJECT
-    const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
+const FUNCTIONS = {
+  price: "gold-price-public",
+  analysis: "market-analysis-v2",
+  signal: "market-signal-v2",
+  journal: "trade-journal",
+  performance: "performance-tracker"
+};
 
-    // Keep the existing function names.
-    const FUNCTIONS = {
-      price: "gold-price-public",
-      signal: "market-signal-v2",
-      analysis: "market-analysis-v2",
-      journal: "trade-journal",
-      performance: "performance-tracker"
-    };
+const $ = (id) => document.getElementById(id);
 
-    const $ = (id) => document.getElementById(id);
+let lastPriceData = null;
+let lastSignalData = null;
+let requestCount = 0;
 
-    function setText(id, value) {
-      const element = $(id);
-      if (element) {
-        element.textContent =
-          value === null || value === undefined || value === ""
-            ? "—"
-            : String(value);
-      }
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function isObject(value) {
+  return value !== null && typeof value === "object";
+}
+
+function unwrap(data) {
+  let current = data;
+
+  for (let i = 0; i < 3; i++) {
+    if (!isObject(current) || Array.isArray(current)) break;
+
+    if (isObject(current.data)) {
+      current = current.data;
+      continue;
     }
 
-    function showStatus(id, message, isError = false) {
-      const element = $(id);
-      if (!element) return;
-      element.textContent = message;
-      element.className = isError ? "status error" : "status";
+    if (isObject(current.result)) {
+      current = current.result;
+      continue;
     }
 
-    function escapeHTML(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    if (isObject(current.analysis)) {
+      current = current.analysis;
+      continue;
     }
 
-    function asObject(value) {
-      return value && typeof value === "object" ? value : {};
-    }
+    break;
+  }
 
-    function firstValue(objects, keys) {
-      for (const object of objects) {
-        if (!object || typeof object !== "object") continue;
-        for (const key of keys) {
-          if (
-            object[key] !== undefined &&
-            object[key] !== null &&
-            object[key] !== ""
-          ) {
-            return object[key];
-          }
-        }
-      }
-      return null;
-    }
+  return current;
+}
 
-    function money(value) {
-      if (value === null || value === undefined || value === "") return "—";
-      const number = Number(value);
-      if (!Number.isFinite(number)) return String(value);
-      return "$" + number.toLocaleString("en-US", {
+function findValue(data, keys, depth = 0) {
+  if (!isObject(data) || depth > 6) return undefined;
+
+  const wanted = keys.map(k => k.toLowerCase());
+
+  for (const [key, value] of Object.entries(data)) {
+    if (wanted.includes(key.toLowerCase()) &&
+        value !== null && value !== undefined && value !== "") {
+      return value;
+    }
+  }
+
+  for (const value of Object.values(data)) {
+    if (isObject(value)) {
+      const result = findValue(value, keys, depth + 1);
+      if (result !== undefined) return result;
+    }
+  }
+
+  return undefined;
+}
+
+function formatNumber(value) {
+  if (value === null || value === undefined || value === "") return "—";
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number(value);
+    if (Number.isFinite(n)) {
+      return n.toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
     }
-
-    function displayValue(value) {
-      if (value === null || value === undefined || value === "") return "—";
-      if (typeof value === "number") return value.toLocaleString("en-US");
-      if (typeof value === "boolean") return value ? "Yes" : "No";
-      if (typeof value === "object") return JSON.stringify(value);
-      return String(value);
-    }
-
-    function findNestedObjects(data) {
-      const root = asObject(data);
-      return [
-        root,
-        asObject(root.data),
-        asObject(root.result),
-        asObject(root.signal),
-        asObject(root.analysis),
-        asObject(root.performance),
-        asObject(root.statistics),
-        asObject(root.stats),
-        asObject(root.data && root.data.signal),
-        asObject(root.data && root.data.performance),
-        asObject(root.data && root.data.statistics)
-      ];
-    }
-
-    async function callFunction(functionName) {
-      const url =
-        SUPABASE_URL.replace(/\/+$/, "") +
-        "/functions/v1/" +
-        encodeURIComponent(functionName);
-
-      let response;
-
-      try {
-        response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY,
-            "Accept": "application/json"
-          },
-          cache: "no-store"
-        });
-      } catch (error) {
-        throw new Error(
-          "Network error. Check your internet connection. " +
-          (error && error.message ? error.message : "")
-        );
-      }
-
-      const rawText = await response.text();
-      let data = {};
-
-      if (rawText) {
-        try {
-          data = JSON.parse(rawText);
-        } catch {
-          if (!response.ok) {
-            throw new Error(
-              "HTTP " + response.status + ": " + rawText.slice(0, 350)
-            );
-          }
-          throw new Error(
-            "The function returned non-JSON data. Check its response."
-          );
-        }
-      }
-
-      if (!response.ok) {
-        const message = firstValue(
-          findNestedObjects(data),
-          ["message", "error", "details", "hint"]
-        );
-        throw new Error(
-          "HTTP " + response.status + ": " +
-          (message || "Supabase function request failed.")
-        );
-      }
-
-      if (data && data.success === false) {
-        throw new Error(
-          data.error || data.message || "The function reported a failure."
-        );
-      }
-
-      return data;
-    }
-
-    function getPriceObjects(data) {
-      const root = asObject(data);
-      return [
-        root,
-        asObject(root.data),
-        asObject(root.price),
-        asObject(root.data && root.data.price),
-        asObject(root.result)
-      ];
-    }
-
-    async function loadPrice() {
-      showStatus("priceStatus", "Loading live gold price...");
-
-      try {
-        const data = await callFunction(FUNCTIONS.price);
-        const objects = getPriceObjects(data);
-
-        const price = firstValue(objects, [
-          "price", "current_price", "spot_price", "mid",
-          "midpoint", "last", "close", "value", "xauusd"
-        ]);
-
-        const bid = firstValue(objects, ["bid", "bid_price"]);
-        const ask = firstValue(objects, ["ask", "ask_price"]);
-        const source = firstValue(objects, ["source", "data_source"]);
-
-        setText("goldPrice", money(price));
-        setText("bidPrice", money(bid));
-        setText("askPrice", money(ask));
-
-        if (price === null) {
-          showStatus(
-            "priceStatus",
-            "Price function responded, but no recognised price field was found."
-          );
-        } else {
-          showStatus(
-            "priceStatus",
-            "Price loaded" + (source ? " | Source: " + source : "")
-          );
-        }
-      } catch (error) {
-        setText("goldPrice", "Unavailable");
-        setText("bidPrice", "—");
-        setText("askPrice", "—");
-        showStatus("priceStatus", error.message, true);
-      }
-    }
-
-    function extractSignal(data) {
-      const root = asObject(data);
-      const setup = asObject(root.trade_setup || root.setup ||
-        (root.data && (root.data.trade_setup || root.data.setup)));
-
-      const objects = [
-        setup,
-        ...findNestedObjects(data)
-      ];
-
-      const direction = firstValue(objects, [
-        "signal", "direction", "action", "recommendation", "trade_signal"
-      ]);
-
-      const entry = firstValue(objects, ["entry", "entry_price"]);
-      const sl = firstValue(objects, ["stop_loss", "stopLoss", "sl"]);
-      const tp = firstValue(objects, ["take_profit", "takeProfit", "tp"]);
-      const rr = firstValue(objects, [
-        "risk_to_reward", "riskReward", "rr", "risk_reward"
-      ]);
-
-      const message = firstValue(objects, [
-        "message", "reason", "explanation", "status"
-      ]);
-
-      return {
-        direction: direction === null ? "NO TRADE" : String(direction).toUpperCase(),
-        entry,
-        sl,
-        tp,
-        rr,
-        message,
-        setup
-      };
-    }
-
-    async function loadSignal() {
-      showStatus("signalStatus", "Loading signal...");
-
-      try {
-        const data = await callFunction(FUNCTIONS.signal);
-        const signal = extractSignal(data);
-
-        setText("signalDirection", signal.direction);
-        setText("overviewSignal", signal.direction);
-        setText("signalEntry", money(signal.entry));
-        setText("signalSL", money(signal.sl));
-        setText("signalTP", money(signal.tp));
-        setText("signalRR", signal.rr === null ? "—" : signal.rr);
-
-        const details = signal.message || "Signal data received.";
-        setText("signalMessage", details);
-        setText("overviewSignalDetails", details);
-
-        const hasSetup =
-          signal.entry !== null || signal.sl !== null || signal.tp !== null;
-
-        if (signal.direction.includes("BUY")) {
-          $("signalDirection").className = "price green";
-          $("overviewSignal").className = "price green";
-        } else if (signal.direction.includes("SELL")) {
-          $("signalDirection").className = "price red";
-          $("overviewSignal").className = "price red";
-        } else {
-          $("signalDirection").className = "price";
-          $("overviewSignal").className = "price";
-        }
-
-        showStatus(
-          "signalStatus",
-          hasSetup
-            ? "Signal loaded. Check entry, stop loss and take profit before use."
-            : "Signal loaded. No complete trade setup was supplied."
-        );
-      } catch (error) {
-        setText("signalDirection", "Unavailable");
-        setText("overviewSignal", "Unavailable");
-        setText("signalMessage", error.message);
-        setText("overviewSignalDetails", error.message);
-        setText("signalEntry", "—");
-        setText("signalSL", "—");
-        setText("signalTP", "—");
-        setText("signalRR", "—");
-        showStatus("signalStatus", error.message, true);
-      }
-    }
-
-    
-function formatAnalysis(data) {
-  const root = data && typeof data === "object" ? data : {};
-  const payload = root.data ?? root.analysis ?? root;
-
-  function render(value) {
-    if (value === null || value === undefined || value === "") {
-      return "—";
-    }
-
-    if (Array.isArray(value)) {
-      return value.map((item, i) =>
-        `<div class="record"><strong>${i + 1}.</strong> ${render(item)}</div>`
-      ).join("");
-    }
-
-    if (typeof value === "object") {
-      return Object.entries(value)
-        .map(([key, item]) =>
-          `<div class="record">
-            <strong>${escapeHTML(key.replace(/_/g, " "))}:</strong>
-            ${render(item)}
-          </div>`
-        ).join("");
-    }
-
-    return escapeHTML(String(value));
   }
 
-  if (!payload || typeof payload !== "object") {
-    return `<p>${escapeHTML(String(payload ?? "No analysis available"))}</p>`;
+  return escapeHTML(value);
+}
+
+function readableKey(key) {
+  return String(key)
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function renderValue(value, depth = 0) {
+  if (value === null || value === undefined || value === "") return "—";
+  if (depth > 5) return escapeHTML(String(value));
+
+  if (Array.isArray(value)) {
+    if (!value.length) return '<div class="empty">No records returned.</div>';
+
+    return value.map((item, index) =>
+      '<div class="record"><div class="record-key">Record ' +
+      (index + 1) + '</div><div class="record-value">' +
+      renderValue(item, depth + 1) + '</div></div>'
+    ).join("");
+  }
+
+  if (isObject(value)) {
+    const entries = Object.entries(value).filter(([key]) =>
+      !["success", "error", "message"].includes(key.toLowerCase())
+    );
+
+    if (!entries.length) return '<span class="muted">No details returned.</span>';
+
+    return entries.map(([key, item]) =>
+      '<div class="record"><div class="record-key">' +
+      escapeHTML(readableKey(key)) +
+      '</div><div class="record-value">' +
+      renderValue(item, depth + 1) +
+      '</div></div>'
+    ).join("");
+  }
+
+  const text = String(value);
+  const lower = text.toLowerCase();
+  let cls = "";
+
+  if (lower.includes("bullish") || lower === "buy" || lower === "win") {
+    cls = "green";
+  } else if (
+    lower.includes("bearish") || lower === "sell" || lower === "loss"
+  ) {
+    cls = "red";
+  }
+
+  return '<span class="' + cls + '">' + escapeHTML(text) + '</span>';
+}
+
+function formatAnalysis(data) {
+  const root = isObject(data) ? data : {};
+  const payload = root.data ?? root.analysis ?? root;
+
+  if (!isObject(payload)) {
+    return '<div class="record-value">' + renderValue(payload) + '</div>';
   }
 
   const entries = Object.entries(payload).filter(([key]) =>
@@ -680,471 +569,401 @@ function formatAnalysis(data) {
   );
 
   if (!entries.length) {
-    return "<p>No analysis details were returned.</p>";
+    return '<div class="empty">No analysis details returned.</div>';
   }
 
   return entries.map(([key, value]) =>
-    `<div class="record">
-      <h3>${escapeHTML(key.replace(/_/g, " ").toUpperCase())}</h3>
-      ${render(value)}
-    </div>`
+    '<div class="record"><div class="record-key">' +
+    escapeHTML(readableKey(key)) +
+    '</div><div class="record-value">' +
+    renderValue(value) +
+    '</div></div>'
   ).join("");
 }
 
-  function readable(value, key = "") {
-    if (value === null || value === undefined || value === "") {
-      return "—";
+async function callFunction(functionName, options = {}) {
+  const url = SUPABASE_URL + "/functions/v1/" + functionName;
+  const method = options.method || "POST";
+
+  const headers = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + SUPABASE_KEY,
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  };
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+
+  try {
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: method === "GET" ? undefined : JSON.stringify(options.body ?? {}),
+      signal: controller.signal,
+      cache: "no-store"
+    });
+
+    const text = await response.text();
+    let data;
+
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = { raw_response: text };
     }
 
-    if (Array.isArray(value)) {
-      return value.map((item, index) =>
-        `<div class="record"><strong>${index + 1}.</strong> ${readable(item)}</div>`
-      ).join("");
+    if (!response.ok) {
+      const detail = data.message || data.error || data.msg ||
+        (typeof data === "string" ? data : text);
+
+      throw new Error(
+        functionName + " returned HTTP " + response.status +
+        (detail ? ": " + String(detail).slice(0, 350) : "")
+      );
     }
 
-    if (typeof value === "object") {
-      return Object.entries(value)
-        .filter(([k]) => ![
-          "success", "error", "message", "available"
-        ].includes(k.toLowerCase()))
-        .map(([k, v]) =>
-          `<div class="record">
-            <strong>${escapeHTML(k.replace(/_/g, " "))}:</strong>
-            ${readable(v, k)}
-          </div>`
-        ).join("");
+    if (data && data.success === false) {
+      throw new Error(
+        functionName + ": " +
+        (data.message || data.error || "The function reported failure.")
+      );
     }
 
-    const text = String(value);
-    const safe = escapeHTML(text);
-
-    if (key.toLowerCase().includes("trend")) {
-      const trend = text.toUpperCase();
-      const colour = trend.includes("BULLISH")
-        ? "#56d68b"
-        : trend.includes("BEARISH")
-          ? "#ff7777"
-          : "#d4af37";
-
-      return `<span style="color:${colour};font-weight:bold">${safe}</span>`;
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(functionName + " timed out. Try refreshing.");
     }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
-    return safe;
+function setConnection(ok, message) {
+  $("connectionStatus").textContent = message;
+  $("statusDot").style.background = ok ? "var(--green)" : "var(--red)";
+}
+
+function showError(id, error) {
+  $(id).textContent = error ? String(error.message || error) : "";
+}
+
+function setUpdated() {
+  $("lastUpdated").textContent = new Date().toLocaleString();
+}
+
+function extractPrice(data) {
+  const value = findValue(data, [
+    "price", "current_price", "spot_price", "mid", "midpoint",
+    "last_price", "xauusd", "XAUUSD"
+  ]);
+
+  if (value !== undefined && Number.isFinite(Number(value))) {
+    return Number(value);
   }
 
-  const payload = root.data ?? root.analysis ?? root;
+  const bid = findValue(data, ["bid", "bid_price"]);
+  const ask = findValue(data, ["ask", "ask_price"]);
 
-  if (typeof payload !== "object" || payload === null) {
-    return `<p>${escapeHTML(payload)}</p>`;
+  if (Number.isFinite(Number(bid)) && Number.isFinite(Number(ask))) {
+    return (Number(bid) + Number(ask)) / 2;
   }
 
-  const fields = Object.entries(payload).filter(([key]) =>
-    !["success", "error", "message"].includes(key.toLowerCase())
+  return undefined;
+}
+
+async function loadPrice() {
+  try {
+    const data = await callFunction(FUNCTIONS.price);
+    lastPriceData = data;
+
+    const price = extractPrice(data);
+
+    if (price !== undefined) {
+      $("goldPrice").textContent = "$" + formatNumber(price);
+    } else {
+      $("goldPrice").textContent = "Price unavailable";
+    }
+
+    const source = findValue(data, ["source", "data_source", "provider"]);
+    $("priceSource").textContent = source
+      ? "Source: " + String(source)
+      : "Live gold price service";
+
+    showError("systemStatus", "");
+    return data;
+  } catch (error) {
+    $("goldPrice").textContent = "Unavailable";
+    $("priceSource").textContent = "Unable to retrieve the latest gold price.";
+    throw error;
+  }
+}
+
+function updateSignalFields(data) {
+  const payload = isObject(data) ? data : {};
+  lastSignalData = payload;
+
+  const direction = findValue(payload, [
+    "signal", "direction", "action", "trade_signal", "recommendation"
+  ]);
+
+  const normalized = String(direction ?? "NO TRADE").toUpperCase();
+  const isBuy = normalized.includes("BUY");
+  const isSell = normalized.includes("SELL");
+  const isNoTrade = normalized.includes("NO TRADE") ||
+    normalized.includes("NO_SIGNAL") ||
+    normalized.includes("NO SIGNAL") ||
+    normalized === "NONE";
+
+  const display = isNoTrade ? "NO TRADE" :
+    isBuy ? "BUY" : isSell ? "SELL" : normalized;
+
+  $("signalDirection").textContent = display || "NO TRADE";
+  $("signalDirection").className =
+    "signal-direction " + (isBuy ? "green" : isSell ? "red" : "gold");
+
+  const message = findValue(payload, [
+    "message", "reason", "explanation", "status", "reasoning"
+  ]);
+
+  $("signalMessage").textContent = message !== undefined
+    ? String(message)
+    : (isNoTrade
+      ? "The signal engine has not identified a qualifying trade."
+      : "Signal data received from Supabase.");
+
+  const entry = findValue(payload, [
+    "entry", "entry_price", "entryPrice", "entry_point"
+  ]);
+  const sl = findValue(payload, [
+    "sl", "stop_loss", "stopLoss", "stoploss"
+  ]);
+  const tp = findValue(payload, [
+    "tp", "take_profit", "takeProfit", "takeprofit", "target"
+  ]);
+  const rr = findValue(payload, [
+    "rr", "risk_reward", "riskReward", "risk_reward_ratio"
+  ]);
+  const timeframe = findValue(payload, [
+    "timeframe", "time_frame", "interval"
+  ]);
+  const signalTime = findValue(payload, [
+    "created_at", "timestamp", "signal_time", "generated_at"
+  ]);
+
+  $("entryPrice").textContent = isNoTrade ? "—" : formatNumber(entry);
+  $("stopLoss").textContent = isNoTrade ? "—" : formatNumber(sl);
+  $("takeProfit").textContent = isNoTrade ? "—" : formatNumber(tp);
+  $("riskReward").textContent = isNoTrade ? "—" :
+    (rr !== undefined ? String(rr) : "—");
+  $("signalTimeframe").textContent =
+    timeframe !== undefined ? String(timeframe) : "Multi";
+
+  if (signalTime) {
+    const parsed = new Date(signalTime);
+    $("signalTime").textContent = Number.isNaN(parsed.getTime())
+      ? String(signalTime)
+      : parsed.toLocaleTimeString();
+  } else {
+    $("signalTime").textContent = "—";
+  }
+
+  $("signalError").textContent = "";
+}
+
+async function loadSignal() {
+  $("signalMessage").textContent = "Loading signal...";
+  showError("signalError", "");
+
+  try {
+    const data = await callFunction(FUNCTIONS.signal);
+    updateSignalFields(data);
+    return data;
+  } catch (error) {
+    $("signalDirection").textContent = "UNAVAILABLE";
+    $("signalDirection").className = "signal-direction red";
+    $("signalMessage").textContent = "The signal service could not be loaded.";
+    $("entryPrice").textContent = "—";
+    $("stopLoss").textContent = "—";
+    $("takeProfit").textContent = "—";
+    $("riskReward").textContent = "—";
+    showError("signalError", error);
+    throw error;
+  }
+}
+
+async function loadAnalysis() {
+  $("analysisContent").innerHTML =
+    '<div class="empty">Loading multi-timeframe analysis...</div>';
+  showError("analysisError", "");
+
+  try {
+    const data = await callFunction(FUNCTIONS.analysis);
+    $("analysisContent").innerHTML = formatAnalysis(data);
+    return data;
+  } catch (error) {
+    $("analysisContent").innerHTML =
+      '<div class="empty">Analysis could not be loaded.</div>';
+    showError("analysisError", error);
+    throw error;
+  }
+}
+
+function extractArray(data) {
+  if (Array.isArray(data)) return data;
+  if (!isObject(data)) return [];
+
+  for (const key of [
+    "trades", "records", "journal", "data", "results",
+    "open_trades", "openTrades", "items"
+  ]) {
+    if (Array.isArray(data[key])) return data[key];
+  }
+
+  if (isObject(data.data)) return extractArray(data.data);
+  if (isObject(data.result)) return extractArray(data.result);
+
+  return [];
+}
+
+async function loadJournal() {
+  $("journalContent").innerHTML =
+    '<div class="empty">Loading trade journal...</div>';
+  showError("journalError", "");
+
+  try {
+    const data = await callFunction(FUNCTIONS.journal);
+    const records = extractArray(data);
+
+    if (records.length) {
+      $("journalContent").innerHTML = renderValue(records);
+    } else {
+      $("journalContent").innerHTML = formatAnalysis(data);
+    }
+
+    return data;
+  } catch (error) {
+    $("journalContent").innerHTML =
+      '<div class="empty">Journal data could not be loaded.</div>';
+    showError("journalError", error);
+    throw error;
+  }
+}
+
+function updatePerformance(data) {
+  const total = findValue(data, [
+    "total_trades", "totalTrades", "trades_count", "total"
+  ]);
+  const wins = findValue(data, ["wins", "total_wins", "winning_trades"]);
+  const losses = findValue(data, [
+    "losses", "total_losses", "losing_trades"
+  ]);
+  let rate = findValue(data, [
+    "win_rate", "winRate", "win_percentage", "win_percent"
+  ]);
+
+  $("totalTrades").textContent =
+    total !== undefined ? String(total) : "—";
+  $("totalWins").textContent =
+    wins !== undefined ? String(wins) : "—";
+  $("totalLosses").textContent =
+    losses !== undefined ? String(losses) : "—";
+
+  if (rate !== undefined) {
+    const rateText = String(rate);
+    $("winRate").textContent =
+      rateText.includes("%") ? rateText : rateText + "%";
+  } else if (
+    Number.isFinite(Number(wins)) &&
+    Number.isFinite(Number(losses)) &&
+    Number(wins) + Number(losses) > 0
+  ) {
+    rate = Number(wins) / (Number(wins) + Number(losses)) * 100;
+    $("winRate").textContent = rate.toFixed(1) + "%";
+  } else {
+    $("winRate").textContent = "—";
+  }
+}
+
+async function loadPerformance() {
+  $("performanceContent").innerHTML =
+    '<div class="empty">Loading performance statistics...</div>';
+  showError("performanceError", "");
+
+  try {
+    const data = await callFunction(FUNCTIONS.performance);
+    updatePerformance(data);
+    $("performanceContent").innerHTML = formatAnalysis(data);
+    return data;
+  } catch (error) {
+    $("performanceContent").innerHTML =
+      '<div class="empty">Performance statistics could not be loaded.</div>';
+    showError("performanceError", error);
+    throw error;
+  }
+}
+
+async function refreshAll() {
+  const button = $("refreshAll");
+  button.disabled = true;
+  button.textContent = "REFRESHING...";
+
+  setConnection(true, "Refreshing services...");
+  $("systemStatus").innerHTML = '<div class="empty">Checking services...</div>';
+
+  const tasks = [
+    ["Gold price", loadPrice],
+    ["Signal", loadSignal],
+    ["Market analysis", loadAnalysis],
+    ["Trade journal", loadJournal],
+    ["Performance tracker", loadPerformance]
+  ];
+
+  const results = await Promise.allSettled(
+    tasks.map(([, fn]) => fn())
   );
 
-  if (!fields.length) {
-    return "<p>No analysis details were returned.</p>";
-  }
+  const lines = results.map((result, index) => {
+    const name = tasks[index][0];
+    if (result.status === "fulfilled") {
+      return '<div class="record"><span class="success">✓</span> ' +
+        escapeHTML(name) + ': request successful</div>';
+    }
 
-  return fields.map(([key, value]) =>
-    `<div class="record">
-      <h3>${escapeHTML(key.replace(/_/g, " ").toUpperCase())}</h3>
-      ${readable(value, key)}
-    </div>`
-  ).join("");
+    return '<div class="record"><span class="red">✕</span> ' +
+      escapeHTML(name) + '<div class="error">' +
+      escapeHTML(result.reason?.message || "Request failed") +
+      '</div></div>';
+  });
+
+  const failures = results.filter(r => r.status === "rejected").length;
+  setConnection(
+    failures === 0,
+    failures === 0
+      ? "Services responding"
+      : failures + " service request(s) failed"
+  );
+
+  $("systemStatus").innerHTML = lines.join("");
+  setUpdated();
+
+  button.disabled = false;
+  button.textContent = "↻ REFRESH ALL DATA";
 }
 
-      const root = asObject(data);
-      const source = asObject(root.data || root.analysis || root);
-      const excluded = new Set([
-        "success", "message", "error", "market", "symbol",
-        "timeframe", "data_source", "available", "records_used",
-        "updated_at", "timestamp"
-      ]);
+window.addEventListener("online", () => {
+  setConnection(true, "Internet connection restored");
+});
 
-      const timeframes = source.timeframes || source.results ||
-        source.frames || source.analysis_by_timeframe;
+window.addEventListener("offline", () => {
+  setConnection(false, "Device is offline");
+});
 
-      const items = [];
-
-      if (timeframes && typeof timeframes === "object") {
-        for (const [name, values] of Object.entries(timeframes)) {
-          if (!values || typeof values !== "object") continue;
-          items.push([name, values]);
-        }
-      }
-
-      if (items.length === 0) {
-        for (const [name, values] of Object.entries(source)) {
-          if (
-            !excluded.has(name) &&
-            values &&
-            typeof values === "object" &&
-            !Array.isArray(values)
-          ) {
-            items.push([name, values]);
-          }
-        }
-      }
-
-      if (items.length === 0) {
-        const rows = Object.entries(source).filter(([key]) => !excluded.has(key));
-        if (rows.length === 0) {
-          return "<p>No analysis details were provided.</p>";
-        }
-
-        return "<div class='record'>" +
-          rows.map(([key, value]) =>
-            "<div><strong>" + escapeHTML(key.replace(/_/g, " ")) +
-            ":</strong> " + escapeHTML(displayValue(value)) + "</div>"
-          ).join("") +
-          "</div>";
-      }
-
-      return items.map(([name, values]) => {
-        const entries = Object.entries(values);
-        return "<div class='record'><h3>" +
-          escapeHTML(String(name).toUpperCase()) +
-          "</h3>" +
-          entries.map(([key, value]) =>
-            "<div><strong>" +
-            escapeHTML(key.replace(/_/g, " ")) +
-            ":</strong> " +
-            escapeHTML(displayValue(value)) +
-            "</div>"
-          ).join("") +
-          "</div>";
-      }).join("");
-    }
-
-    async function loadAnalysis() {
-      showStatus("analysisStatus", "Loading market analysis...");
-      setText("overviewAnalysis", "Loading...");
-
-      try {
-        const data = await callFunction(FUNCTIONS.analysis);
-        $("analysisRaw").textContent = JSON.stringify(data, null, 2);
-        $("analysisResults").innerHTML = formatAnalysis(data);
-
-        const root = asObject(data);
-        const objects = findNestedObjects(data);
-        const market = firstValue(objects, ["market", "symbol"]) || "XAU/USD";
-        const timeframe = firstValue(objects, ["timeframe"]) || "Multi";
-        const source = firstValue(objects, ["data_source", "source"]);
-
-        setText(
-          "overviewAnalysis",
-          market + " | " + timeframe +
-          (source ? " | " + source : "")
-        );
-
-        showStatus(
-          "analysisStatus",
-          "Analysis loaded" +
-          (source ? " | Source: " + source : "")
-        );
-      } catch (error) {
-        $("analysisResults").textContent = "Analysis unavailable.";
-        $("analysisRaw").textContent = error.message;
-        setText("overviewAnalysis", "Unavailable: " + error.message);
-        showStatus("analysisStatus", error.message, true);
-      }
-    }
-
-    function findRecords(data) {
-      const root = asObject(data);
-      const candidates = [
-        root.records,
-        root.trades,
-        root.journal,
-        root.data && root.data.records,
-        root.data && root.data.trades,
-        root.data && root.data.journal,
-        Array.isArray(root.data) ? root.data : null,
-        Array.isArray(data) ? data : null
-      ];
-
-      return candidates.find(Array.isArray) || [];
-    }
-
-    function renderJournalRecord(record, index) {
-      const r = asObject(record);
-
-      const title = firstValue([r], [
-        "symbol", "market", "direction", "signal", "action"
-      ]) || ("Trade " + (index + 1));
-
-      const date = firstValue([r], [
-        "created_at", "timestamp", "date", "opened_at", "entry_time"
-      ]);
-
-      const status = firstValue([r], [
-        "status", "result", "outcome", "trade_status"
-      ]);
-
-      const entry = firstValue([r], ["entry", "entry_price"]);
-      const sl = firstValue([r], ["stop_loss", "sl"]);
-      const tp = firstValue([r], ["take_profit", "tp"]);
-      const pl = firstValue([r], [
-        "profit_loss", "pnl", "profit", "net_profit"
-      ]);
-
-      return "<div class='record'>" +
-        "<h3>" + escapeHTML(title) + "</h3>" +
-        "<div><strong>Date:</strong> " + escapeHTML(date || "—") + "</div>" +
-        "<div><strong>Status:</strong> " + escapeHTML(status || "—") + "</div>" +
-        "<div><strong>Entry:</strong> " + escapeHTML(money(entry)) + "</div>" +
-        "<div><strong>Stop loss:</strong> " + escapeHTML(money(sl)) + "</div>" +
-        "<div><strong>Take profit:</strong> " + escapeHTML(money(tp)) + "</div>" +
-        "<div><strong>P/L:</strong> " + escapeHTML(money(pl)) + "</div>" +
-        "</div>";
-    }
-
-    async function loadJournal() {
-      showStatus("journalStatus", "Loading trade journal...");
-
-      try {
-        const data = await callFunction(FUNCTIONS.journal);
-        const records = findRecords(data);
-        const count = firstValue(findNestedObjects(data), [
-          "count", "total", "total_records"
-        ]);
-
-        setText(
-          "journalCount",
-          (count !== null ? count : records.length) + " records"
-        );
-
-        $("journalRaw").textContent = JSON.stringify(data, null, 2);
-
-        if (records.length === 0) {
-          $("journalRecords").innerHTML =
-            "<p>No journal records were returned.</p>";
-        } else {
-          $("journalRecords").innerHTML = records
-            .map(renderJournalRecord)
-            .join("");
-        }
-
-        showStatus("journalStatus", "Journal response received.");
-      } catch (error) {
-        setText("journalCount", "Journal unavailable");
-        $("journalRecords").textContent =
-          "Could not load journal records.";
-        $("journalRaw").textContent = error.message;
-        showStatus("journalStatus", error.message, true);
-      }
-    }
-
-    function normaliseStatus(record) {
-      return String(firstValue([record], [
-        "status", "result", "outcome", "trade_status"
-      ]) || "").toLowerCase();
-    }
-
-    function computeStats(records) {
-      let wins = 0;
-      let losses = 0;
-      let open = 0;
-      let closed = 0;
-      let pnl = 0;
-      let pnlFound = false;
-
-      for (const record of records) {
-        const r = asObject(record);
-        const status = normaliseStatus(r);
-
-        if (
-          status.includes("open") ||
-          status.includes("pending") ||
-          status.includes("active")
-        ) {
-          open++;
-        } else if (
-          status.includes("win") ||
-          status.includes("profit") ||
-          status.includes("take_profit") ||
-          status.includes("tp_hit")
-        ) {
-          wins++;
-          closed++;
-        } else if (
-          status.includes("loss") ||
-          status.includes("stop_loss") ||
-          status.includes("sl_hit")
-        ) {
-          losses++;
-          closed++;
-        }
-
-        const value = firstValue([r], [
-          "profit_loss", "pnl", "net_profit", "profit"
-        ]);
-
-        if (value !== null && Number.isFinite(Number(value))) {
-          pnl += Number(value);
-          pnlFound = true;
-        }
-      }
-
-      const winRate = closed > 0 ? (wins / closed) * 100 : null;
-
-      return {
-        total: records.length,
-        wins,
-        losses,
-        open,
-        winRate,
-        pnl: pnlFound ? pnl : null
-      };
-    }
-
-    function fillPerformance(data) {
-      const objects = findNestedObjects(data);
-
-      const total = firstValue(objects, [
-        "total_trades", "totalTrades", "total", "trade_count"
-      ]);
-      const wins = firstValue(objects, ["wins", "winning_trades", "total_wins"]);
-      const losses = firstValue(objects, [
-        "losses", "losing_trades", "total_losses"
-      ]);
-      const open = firstValue(objects, ["open_trades", "open", "active_trades"]);
-      const rate = firstValue(objects, [
-        "win_rate", "winRate", "win_percentage", "win_percentage"
-      ]);
-      const pnl = firstValue(objects, [
-        "profit_loss", "total_pnl", "pnl", "net_profit", "total_profit"
-      ]);
-
-      const records = findRecords(data);
-      const computed = computeStats(records);
-
-      const shownTotal = total !== null ? total : computed.total;
-      const shownWins = wins !== null ? wins : computed.wins;
-      const shownLosses = losses !== null ? losses : computed.losses;
-      const shownOpen = open !== null ? open : computed.open;
-
-      let shownRate = rate;
-      if (shownRate === null && computed.winRate !== null) {
-        shownRate = computed.winRate;
-      }
-
-      const shownPL = pnl !== null ? pnl : computed.pnl;
-
-      setText("performanceTotal", shownTotal);
-      setText("performanceOpen", shownOpen);
-      setText("performanceWins", shownWins);
-      setText("performanceLosses", shownLosses);
-      setText(
-        "performanceWinRate",
-        shownRate === null
-          ? "—"
-          : Number.isFinite(Number(shownRate))
-            ? Number(shownRate).toFixed(2) + "%"
-            : shownRate
-      );
-      setText("performancePL", shownPL === null ? "—" : money(shownPL));
-
-      setText("overviewTotal", shownTotal);
-      setText("overviewWins", shownWins);
-      setText("overviewLosses", shownLosses);
-      setText(
-        "overviewWinRate",
-        shownRate === null
-          ? "—"
-          : Number.isFinite(Number(shownRate))
-            ? Number(shownRate).toFixed(2) + "%"
-            : shownRate
-      );
-    }
-
-    async function loadPerformance() {
-      showStatus("performanceStatus", "Loading performance data...");
-
-      try {
-        const data = await callFunction(FUNCTIONS.performance);
-        $("performanceRaw").textContent = JSON.stringify(data, null, 2);
-        fillPerformance(data);
-        showStatus("performanceStatus", "Performance response received.");
-      } catch (error) {
-        $("performanceRaw").textContent = error.message;
-        showStatus("performanceStatus", error.message, true);
-      }
-    }
-
-    async function refreshAll() {
-      const button = $("refreshButton");
-      button.disabled = true;
-      button.textContent = "Refreshing...";
-
-      setText("lastUpdated", "Last updated: Refreshing...");
-
-      try {
-        const tasks = [
-          loadPrice(),
-          loadSignal(),
-          loadAnalysis(),
-          loadJournal(),
-          loadPerformance()
-        ];
-
-        await Promise.allSettled(tasks);
-
-        const now = new Date();
-        setText("lastUpdated", "Last updated: " + now.toLocaleString());
-
-        const statuses = [
-          "priceStatus",
-          "signalStatus",
-          "analysisStatus",
-          "journalStatus",
-          "performanceStatus"
-        ];
-
-        const errors = statuses.filter((id) =>
-          $(id).classList.contains("error")
-        ).length;
-
-        if (errors === 0) {
-          showStatus("connectionStatus", "Connected. All functions responded.");
-        } else {
-          showStatus(
-            "connectionStatus",
-            errors + " section(s) have errors. Open each section to see details.",
-            true
-          );
-        }
-      } catch (error) {
-        showStatus("connectionStatus", error.message, true);
-      } finally {
-        button.disabled = false;
-        button.textContent = "Refresh All Data";
-      }
-    }
-
-    function showPage(pageId) {
-      document.querySelectorAll(".page").forEach((page) => {
-        page.classList.toggle("active", page.id === pageId);
-      });
-
-      document.querySelectorAll("nav button[data-page]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.page === pageId);
-      });
-    }
-
-    document.querySelectorAll("nav button[data-page]").forEach((button) => {
-      button.addEventListener("click", () => showPage(button.dataset.page));
-    });
-
-    document.querySelectorAll("button[data-go]").forEach((button) => {
-      button.addEventListener("click", () => showPage(button.dataset.go));
-    });
-
-    $("refreshButton").addEventListener("click", refreshAll);
-
-    // Start the app.
-    refreshAll();
-  </script>
+window.addEventListener("DOMContentLoaded", () => {
+  refreshAll();
+});
+</script>
 </body>
-  </html>
+</html>
