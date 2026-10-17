@@ -1,4 +1,4 @@
-8px<!DOCTYPE html>  <html lang="en">  
+<!DOCTYPE html>  <html lang="en">  
 <head>  
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1">  
@@ -441,7 +441,7 @@ scroll-behavior: auto !important;
 transition: none !important;
 }
 }
-
+</style>
   <style>  
     :root {  
       color-scheme: dark;  
@@ -1114,6 +1114,17 @@ transition: none !important;
       }
     });
   }
+
+    navigator.serviceWorker?.addEventListener("message", (event) => {
+    if (
+      event.data?.type === "GOLDBOT_PERIODIC_SYNC" &&
+      event.data?.action === "REFRESH_LIVE_DATA"
+    ) {
+      if (typeof refreshDashboard === "function") {
+        refreshDashboard();
+      }
+    }
+  });
 </script>
 </body>
 </html>
