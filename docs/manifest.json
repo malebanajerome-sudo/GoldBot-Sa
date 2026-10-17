@@ -9,5 +9,13 @@
   "orientation": "portrait",
   "background_color": "#050505",
   "theme_color": "#D4AF37",
-  "lang": "en-ZA"
+  "lang": "en-ZA",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
