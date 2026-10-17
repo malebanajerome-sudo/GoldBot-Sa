@@ -1115,16 +1115,30 @@ transition: none !important;
     });
   }
 
-    navigator.serviceWorker?.addEventListener("message", (event) => {
-    if (
-      event.data?.type === "GOLDBOT_PERIODIC_SYNC" &&
-      event.data?.action === "REFRESH_LIVE_DATA"
-    ) {
-      if (typeof refreshDashboard === "function") {
-        refreshDashboard();
+
+      } catch (error) {
+        console.error(
+          "GoldBot-ZA service worker registration failed:",
+          error
+        );
       }
-    }
-  });
+    });
+
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (
+        event.data?.type === "GOLDBOT_PERIODIC_SYNC" &&
+        event.data?.action === "REFRESH_LIVE_DATA"
+      ) {
+        if (typeof refreshDashboard === "function") {
+          refreshDashboard();
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>
+
 </script>
 </body>
 </html>
