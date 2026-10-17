@@ -1,518 +1,1055 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  
+  <link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050505">
-<title>GoldBot-ZA | Stacks Co.</title>
-<style>
-:root{color-scheme:dark;--bg:#050505;--panel:#111;--gold:#e9bf5b;--text:#f5f5f5;--muted:#a2a2a2;--green:#39d7a0;--red:#ff6d7d;--line:#303030}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.5}
-header{position:sticky;top:0;z-index:10;background:#090909;border-bottom:1px solid #40351d;padding:16px}
-.head,main{max-width:1000px;margin:auto}
-.head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.brand{color:var(--gold);font-size:19px;font-weight:900}
-.owner{font-size:10px;color:var(--muted);text-align:right}
-main{padding:16px 12px 40px}
-.hero,.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:13px;min-width:0}
-.hero{background:linear-gradient(135deg,#201a0c,#101010);border-color:#574622}
-.eyebrow,.label{color:var(--muted);font-size:11px}
-.price{font-size:clamp(32px,8vw,49px);font-weight:900;color:var(--gold);overflow-wrap:anywhere}
-h1{font-size:23px;margin:7px 0}
-h2{font-size:15px;color:var(--gold);margin:0}
-h3{font-size:13px;color:var(--gold);margin:13px 0 5px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{margin:0 0 13px}
-.headline{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
-button{background:#201a0c;color:var(--gold);border:1px solid #6a5424;border-radius:8px;padding:10px 12px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-.primary{width:100%;margin:0 0 13px;background:var(--gold);color:#090909;padding:14px}
-.signal{font-size:29px;font-weight:900;margin:8px 0}
-.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.muted{color:var(--muted)}
-.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
-.metric{padding:10px;background:#191919;border:1px solid #292929;border-radius:8px;min-width:0}
-.value{font-size:14px;font-weight:bold;overflow-wrap:anywhere}
-.label{font-size:10px;margin-bottom:5px}
-.record{padding:9px 0;border-bottom:1px solid #292929;overflow-wrap:anywhere}
-.record:last-child{border-bottom:0}
-.record strong{display:block;color:var(--gold);font-size:11px;text-transform:capitalize}
-.record span{font-size:13px;overflow-wrap:anywhere}
-.message{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
-.error{color:var(--red);white-space:pre-wrap}
-.status{font-size:11px;padding:5px 9px;border:1px solid var(--line);border-radius:20px;color:var(--muted)}
-footer{text-align:center;color:var(--muted);font-size:10px;padding:20px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.hero,.card{padding:13px}.brand{font-size:16px}}
-</style>
-</head>
-<body>
-<header>
- <div class="head">
-  <div class="brand">GOLDBOT-ZA</div>
-  <div class="owner">OWNED BY<br><strong>STACKS CO.</strong></div>
- </div>
-</header>
-<main>
- <section class="hero">
-  <div class="eyebrow">XAU/USD · GOLD SPOT PRICE</div>
-  <div class="price" id="price">Loading…</div>
-  <div class="message" id="priceInfo">Connecting to price service…</div>
-  <div style="margin-top:12px"><span class="status" id="connection">CONNECTING</span></div>
-  <div class="message" style="margin-top:8px">Updated: <span id="updated">—</span></div>
- </section>
-
- <button id="refresh" class="primary" onclick="refreshAll()">↻ REFRESH ALL DATA</button>
-
- <div class="grid">
-  <section class="card">
-   <div class="headline"><h2>Current Signal</h2><button onclick="loadSignal()">Refresh</button></div>
-   <div id="signal" class="signal gold">—</div>
-   <div id="reason" class="message">Waiting for signal engine…</div>
-   <div class="metrics">
-    <div class="metric"><div class="label">ENTRY</div><div id="entry" class="value">—</div></div>
-    <div class="metric"><div class="label">STOP LOSS</div><div id="sl" class="value red">—</div></div>
-    <div class="metric"><div class="label">TAKE PROFIT</div><div id="tp" class="value green">—</div></div>
-   </div>
-   <div class="metrics">
-    <div class="metric"><div class="label">RISK : REWARD</div><div id="rr" class="value">—</div></div>
-    <div class="metric"><div class="label">MARKET</div><div class="value">XAU/USD</div></div>
-    <div class="metric"><div class="label">GENERATED</div><div id="signalTime" class="value">—</div></div>
-   </div>
-   <div id="signalError" class="message error"></div>
-  </section>
-
-  <section class="card">
-   <div class="headline"><h2>Multi-Timeframe Analysis</h2><button onclick="loadAnalysis()">Refresh</button></div>
-   <div id="analysis" class="message">Loading analysis…</div>
-   <div id="analysisError" class="message error"></div>
-  </section>
- </div>
-
- <section class="card">
-  <div class="headline"><h2>Gold Candle Feed</h2><button onclick="loadCandles()">Refresh</button></div>
-  <div id="candles" class="message">Loading daily, 4H and 1H candles…</div>
-  <div id="candlesError" class="message error"></div>
- </section>
-
- <section class="card">
-  <div class="headline"><h2>Trade Journal</h2><button onclick="loadJournal()">Refresh</button></div>
-  <div id="journal" class="message">Loading journal records…</div>
-  <div id="journalError" class="message error"></div>
- </section>
-
- <section class="card">
-  <div class="headline"><h2>Performance Tracker</h2><button onclick="loadPerformance()">Statistics</button></div>
-  <div class="metrics">
-   <div class="metric"><div class="label">TOTAL TRADES</div><div id="total" class="value">—</div></div>
-   <div class="metric"><div class="label">WINS</div><div id="wins" class="value green">—</div></div>
-   <div class="metric"><div class="label">LOSSES</div><div id="losses" class="value red">—</div></div>
-  </div>
-  <div class="metrics">
-   <div class="metric"><div class="label">OPEN TRADES</div><div id="open" class="value">—</div></div>
-   <div class="metric"><div class="label">CLOSED</div><div id="closed" class="value">—</div></div>
-   <div class="metric"><div class="label">CANCELLED</div><div id="cancelled" class="value">—</div></div>
-  </div>
-  <div class="metrics">
-   <div class="metric"><div class="label">WIN RATE</div><div id="winrate" class="value gold">—</div></div>
-   <div class="metric"><div class="label">SIMULATED NET R</div><div id="netr" class="value gold">—</div></div>
-   <div class="metric"><div class="label">MODE</div><div id="mode" class="value">—</div></div>
-  </div>
-  <div id="performance" class="message" style="margin-top:12px"></div>
-  <div id="performanceError" class="message error"></div>
- </section>
-
- <section class="card">
-  <h2>Service Diagnostics</h2>
-  <div id="diagnostics" class="message">Waiting for requests…</div>
- </section>
-
- <footer>GOLDBOT-ZA · STACKS CO.<br>Informational signals and paper-trading statistics. No live trades are placed.</footer>
-</main>
-
-<script>
-"use strict";
-
-/* Existing Supabase project and public key */
-const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ";
-
-const FN = {
-  price: ["gold-price-public", "gold-price"],
-  candles: "gold-candles",
-  analysis: "market-analysis-v2",
-  signal: "market-signal-v2",
-  journal: ["trade-journal", "trading-journal"],
-  performance: "performance-tracker"
-};
-
-const $ = id => document.getElementById(id);
-const diagnostics = [];
-
-function safe(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  <meta name="theme-color" content="#090b10">  
+  <meta name="description" content="GoldBot-ZA gold market intelligence and paper trading dashboard.">  
+  <title>GoldBot-ZA | Stacks Co.</title>   
+ <style>   
+:root {    
+  --bg: #07080b;    
+  --panel: #101319;    
+  --panel2: #0b0e13;    
+  --gold: #f4c95d;    
+  --muted: #9299a8;    
+  --green: #42e6a4;    
+  --red: #ff6478;    
+  --border: rgba(244, 201, 93, .15);    
+}    html {
+scroll-behavior: smooth;
+scroll-padding-top: 90px;
 }
 
-function money(value) {
-  if (value === undefined || value === null || value === "") return "—";
-  const n = Number(value);
-  return Number.isFinite(n)
-    ? n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})
-    : safe(value);
+body {
+background:
+radial-gradient(ellipse at 50% -15%, rgba(244, 201, 93, .09), transparent 48%),
+var(--bg);
+color: #f5f5f7;
+letter-spacing: .05px;
 }
 
-function first(obj, keys) {
-  if (!obj || typeof obj !== "object") return undefined;
-  for (const key of keys) {
-    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
-      return obj[key];
-    }
-  }
-  return undefined;
+header {
+padding: 17px 20px;
+background: rgba(7, 8, 11, .92);
+border-bottom: 1px solid var(--border);
+box-shadow: 0 8px 30px rgba(0, 0, 0, .2);
+backdrop-filter: blur(18px);
 }
 
-function findDeep(obj, keys, depth = 0) {
-  if (!obj || typeof obj !== "object" || depth > 6) return undefined;
-  const direct = first(obj, keys);
-  if (direct !== undefined) return direct;
-
-  for (const value of Object.values(obj)) {
-    if (value && typeof value === "object") {
-      const result = findDeep(value, keys, depth + 1);
-      if (result !== undefined) return result;
-    }
-  }
-  return undefined;
+.brand {
+font-size: 22px;
+font-weight: 950;
+letter-spacing: -1px;
 }
 
-function showError(id, error) {
-  $(id).textContent = error ? String(error.message || error) : "";
+.brand span {
+color: var(--gold);
+text-shadow: 0 0 22px rgba(244, 201, 93, .22);
 }
 
-function logService(name, message, ok) {
-  diagnostics.unshift({
-    name,
-    message: String(message),
-    ok,
-    time: new Date().toLocaleTimeString()
-  });
-  if (diagnostics.length > 12) diagnostics.pop();
-
-  $("diagnostics").innerHTML = diagnostics.map(item =>
-    `<div class="record">
-      <strong class="${item.ok ? "green" : "red"}">${safe(item.name)} · ${item.ok ? "OK" : "ERROR"}</strong>
-      <span>${safe(item.message)}<br><span class="muted">${safe(item.time)}</span></span>
-    </div>`
-  ).join("");
+.status {
+padding: 7px 10px;
+border: 1px solid var(--border);
+border-radius: 30px;
+background: rgba(255, 255, 255, .025);
+font-weight: 750;
 }
 
-/*
- * Use GET for the existing read endpoints.
- * Send both standard Supabase headers.
- * If an endpoint requires a legacy JWT rather than a publishable key,
- * Supabase must be configured to accept the intended public request.
- */
-async function request(functionName, query = "") {
-  const url = `${SUPABASE_URL}/functions/v1/${functionName}${query}`;
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
-
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Accept": "application/json"
-      },
-      cache: "no-store",
-      signal: controller.signal
-    });
-
-    const raw = await response.text();
-    let data;
-
-    try {
-      data = raw ? JSON.parse(raw) : {};
-    } catch {
-      throw new Error(`${functionName}: HTTP ${response.status}; response was not JSON: ${raw.slice(0,180)}`);
-    }
-
-    if (!response.ok) {
-      const detail = data.details
-        ? (typeof data.details === "string" ? data.details : JSON.stringify(data.details))
-        : "";
-      throw new Error(
-        `${functionName}: HTTP ${response.status} — ` +
-        `${data.message || data.error || data.error_description || detail || raw || "Request failed"}`
-      );
-    }
-
-    return data;
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error(`${functionName}: request timed out.`);
-    }
-    throw error;
-  } finally {
-    clearTimeout(timer);
-  }
+.status.ok {
+border-color: rgba(66, 230, 164, .25);
+background: rgba(66, 230, 164, .06);
 }
 
-async function tryFunctions(names) {
-  let lastError;
-  for (const name of names) {
-    try {
-      return {name, data: await request(name)};
-    } catch (error) {
-      lastError = error;
-      // Only try the alternate slug after a missing endpoint.
-      if (!String(error.message).includes("HTTP 404")) throw error;
-    }
-  }
-  throw lastError || new Error("No endpoint was configured.");
+.status.bad {
+border-color: rgba(255, 100, 120, .25);
+background: rgba(255, 100, 120, .06);
 }
 
-function renderObject(obj, depth = 0) {
-  if (obj === null || obj === undefined || obj === "") return "—";
-  if (depth > 5) return safe(String(obj));
-
-  if (Array.isArray(obj)) {
-    if (!obj.length) return "No records returned.";
-    return obj.map((item, i) =>
-      `<div class="record"><strong>Record ${i + 1}</strong><span>${renderObject(item, depth + 1)}</span></div>`
-    ).join("");
-  }
-
-  if (typeof obj === "object") {
-    const entries = Object.entries(obj).filter(([key]) =>
-      !["success", "error"].includes(key.toLowerCase())
-    );
-    if (!entries.length) return "No additional details.";
-    return entries.map(([key, value]) =>
-      `<div class="record"><strong>${safe(key.replace(/_/g, " "))}</strong><span>${renderObject(value, depth + 1)}</span></div>`
-    ).join("");
-  }
-
-  const text = String(obj);
-  const cls = text.toLowerCase().includes("bullish") || text.toUpperCase() === "BUY"
-    ? "green"
-    : text.toLowerCase().includes("bearish") || text.toUpperCase() === "SELL"
-      ? "red" : "";
-
-  return `<span class="${cls}">${safe(text)}</span>`;
+main {
+max-width: 1050px;
+padding: 28px 20px 125px;
 }
 
-async function loadPrice() {
-  try {
-    const result = await tryFunctions(FN.price);
-    const data = result.data;
-    const price = findDeep(data, ["price", "spot_price", "current_price", "mid", "midpoint", "gold_price"]);
-
-    if (price === undefined || !Number.isFinite(Number(price))) {
-      throw new Error(`${result.name} responded but no numeric price field was found.`);
-    }
-
-    $("price").textContent = "$" + money(price);
-    const bid = findDeep(data, ["bid", "bid_price"]);
-    const ask = findDeep(data, ["ask", "ask_price"]);
-    const source = findDeep(data, ["source", "data_source", "provider"]) || result.name;
-    const stamp = findDeep(data, ["updated_at", "timestamp", "as_of", "last_updated"]);
-
-    $("priceInfo").textContent =
-      `Source: ${source}` +
-      (bid !== undefined ? ` · Bid ${money(bid)}` : "") +
-      (ask !== undefined ? ` · Ask ${money(ask)}` : "");
-
-    $("updated").textContent = stamp ? new Date(stamp).toLocaleString() : new Date().toLocaleString();
-    logService("Gold price", `${result.name} returned ${money(price)}`, true);
-    return true;
-  } catch (error) {
-    $("price").textContent = "Unavailable";
-    $("priceInfo").textContent = error.message;
-    logService("Gold price", error.message, false);
-    throw error;
-  }
+.eyebrow {
+font-size: 10px;
+letter-spacing: 2px;
+line-height: 1.7;
 }
 
-async function loadSignal() {
-  showError("signalError", "");
-  try {
-    const data = await request(FN.signal);
-    const signal = String(first(data, ["signal", "direction", "action"]) || "NO TRADE").toUpperCase();
-    const noTrade = signal.includes("NO TRADE") || signal.includes("NO SIGNAL") || signal === "NONE";
-    const direction = noTrade ? "NO TRADE" : signal.includes("BUY") ? "BUY" : signal.includes("SELL") ? "SELL" : signal;
-
-    $("signal").textContent = direction;
-    $("signal").className = "signal " + (direction === "BUY" ? "green" : direction === "SELL" ? "red" : "gold");
-    $("reason").textContent = first(data, ["reason", "message", "details", "risk_note"]) || "No reason supplied by the signal engine.";
-
-    const setup = data.trade_setup || data.setup || data;
-    $("entry").textContent = noTrade ? "—" : money(first(setup, ["entry", "entry_price", "entryPrice"]));
-    $("sl").textContent = noTrade ? "—" : money(first(setup, ["stop_loss", "sl", "stopLoss"]));
-    $("tp").textContent = noTrade ? "—" : money(first(setup, ["take_profit", "tp", "takeProfit"]));
-    $("rr").textContent = noTrade ? "—" : (first(setup, ["risk_to_reward", "rr", "risk_reward"]) ?? "—");
-
-    const generated = first(data, ["generated_at", "created_at", "timestamp"]);
-    $("signalTime").textContent = generated ? new Date(generated).toLocaleTimeString() : "—";
-
-    logService("Signal engine", `Signal: ${direction}`, true);
-  } catch (error) {
-    $("signal").textContent = "UNAVAILABLE";
-    $("signal").className = "signal red";
-    $("reason").textContent = "The signal endpoint failed.";
-    $("entry").textContent = $("sl").textContent = $("tp").textContent = $("rr").textContent = "—";
-    showError("signalError", error.message);
-    logService("Signal engine", error.message, false);
-    throw error;
-  }
+main > .eyebrow {
+color: var(--gold);
+font-weight: 850;
 }
 
-async function loadAnalysis() {
-  showError("analysisError", "");
-  $("analysis").innerHTML = "Loading analysis…";
-
-  try {
-    const data = await request(FN.analysis);
-    $("analysis").innerHTML = renderObject(data);
-    logService("Market analysis", "Analysis response received", true);
-  } catch (error) {
-    $("analysis").textContent = "Analysis unavailable.";
-    showError("analysisError", error.message);
-    logService("Market analysis", error.message, false);
-    throw error;
-  }
+.hero {
+position: relative;
+overflow: hidden;
+margin-top: 19px;
+padding: 29px 25px;
+border: 1px solid rgba(244, 201, 93, .3);
+border-radius: 24px;
+background:
+radial-gradient(ellipse at 100% 0%, rgba(244, 201, 93, .15), transparent 48%),
+linear-gradient(140deg, #1c1a13 0%, #11141b 55%, #0b0e13 100%);
+box-shadow: 0 15px 45px rgba(0, 0, 0, .25);
 }
 
-async function loadCandles() {
-  showError("candlesError", "");
-  $("candles").innerHTML = "Loading candles…";
-
-  try {
-    const intervals = ["1d", "4h", "1h"];
-    const results = await Promise.allSettled(intervals.map(async interval => ({
-      interval,
-      data: await request(FN.candles, `?interval=${encodeURIComponent(interval)}`)
-    })));
-
-    $("candles").innerHTML = results.map((result, index) => {
-      const interval = intervals[index];
-      if (result.status === "rejected") {
-        return `<div class="record"><strong>${safe(interval)}</strong><span class="error">${safe(result.reason.message)}</span></div>`;
-      }
-
-      const data = result.value.data;
-      const bars = Array.isArray(data.bars) ? data.bars : [];
-      const latest = bars.length ? bars[bars.length - 1] : null;
-
-      return `<div class="record">
-        <strong>${safe(interval)} · ${safe(data.symbol || "XAU/USD")}</strong>
-        <span>Candles: ${bars.length || data.count || 0}<br>
-        Latest close: ${latest ? money(latest.close) : "—"}<br>
-        Latest candle: ${latest ? safe(latest.bar_start || "Time not supplied") : "—"}<br>
-        Source: ${safe(data.source || "—")}<br>
-        Status: ${safe(data.data_state || data.note || "Response received")}</span>
-      </div>`;
-    }).join("");
-
-    const failures = results.filter(r => r.status === "rejected").length;
-    logService("Gold candles", `${3 - failures}/3 intervals responded`, failures === 0);
-  } catch (error) {
-    showError("candlesError", error.message);
-    logService("Gold candles", error.message, false);
-    throw error;
-  }
+.hero::after {
+content: "Au";
+position: absolute;
+right: 20px;
+top: 12px;
+color: rgba(244, 201, 93, .055);
+font-size: clamp(95px, 18vw, 165px);
+font-weight: 950;
+letter-spacing: -10px;
+line-height: 1;
+pointer-events: none;
 }
 
-async function loadJournal() {
-  showError("journalError", "");
-  $("journal").innerHTML = "Loading journal…";
-
-  try {
-    const result = await tryFunctions(FN.journal);
-    const data = result.data;
-    const records = Array.isArray(data.records) ? data.records : Array.isArray(data) ? data : [];
-
-    $("journal").innerHTML = records.length
-      ? renderObject(records)
-      : renderObject(data);
-
-    logService("Trade journal", `${result.name} responded · ${data.count ?? records.length} record(s)`, true);
-  } catch (error) {
-    $("journal").textContent = "Journal unavailable.";
-    showError("journalError", error.message);
-    logService("Trade journal", error.message, false);
-    throw error;
-  }
+.hero > * {
+position: relative;
+z-index: 1;
 }
 
-async function loadPerformance() {
-  showError("performanceError", "");
-
-  try {
-    const data = await request(FN.performance);
-    const total = first(data, ["total_trades"]);
-    const wins = first(data, ["wins"]);
-    const losses = first(data, ["losses"]);
-    const open = first(data, ["open_trades"]);
-    const closed = first(data, ["closed_trades"]);
-    const cancelled = first(data, ["cancelled"]);
-    const rate = first(data, ["win_rate_percent"]);
-    const netR = first(data, ["simulated_net_R", "simulated_net_r"]);
-
-    $("total").textContent = total ?? "—";
-    $("wins").textContent = wins ?? "—";
-    $("losses").textContent = losses ?? "—";
-    $("open").textContent = open ?? "—";
-    $("closed").textContent = closed ?? "—";
-    $("cancelled").textContent = cancelled ?? "—";
-    $("winrate").textContent = rate === undefined ? "—" : `${money(rate)}%`;
-    $("netr").textContent = netR === undefined ? "—" : `${Number(netR) > 0 ? "+" : ""}${money(netR)}R`;
-    $("mode").textContent = data.mode || "—";
-    $("performance").textContent = data.note || "Performance statistics received.";
-
-    logService("Performance tracker", "Statistics response received", true);
-  } catch (error) {
-    showError("performanceError", error.message);
-    logService("Performance tracker", error.message, false);
-    throw error;
-  }
+.price {
+margin: 19px 0 12px;
+font-size: clamp(39px, 9vw, 66px);
+font-weight: 950;
+letter-spacing: -2px;
+color: var(--gold);
+text-shadow: 0 0 35px rgba(244, 201, 93, .12);
 }
 
-async function refreshAll() {
-  const button = $("refresh");
-  button.disabled = true;
-  button.textContent = "REFRESHING…";
-  $("connection").textContent = "REFRESHING";
-
-  const jobs = [
-    loadPrice,
-    loadSignal,
-    loadAnalysis,
-    loadCandles,
-    loadJournal,
-    loadPerformance
-  ];
-
-  const results = await Promise.allSettled(jobs.map(job => job()));
-  const failed = results.filter(result => result.status === "rejected").length;
-
-  $("connection").textContent = failed === 0
-    ? "ALL SERVICES RESPONDING"
-    : `${failed} REQUEST(S) FAILED`;
-
-  $("updated").textContent = new Date().toLocaleString();
-  button.disabled = false;
-  button.textContent = "↻ REFRESH ALL DATA";
+.quotes {
+gap: 14px;
+margin-top: 25px;
 }
 
-window.addEventListener("DOMContentLoaded", refreshAll);
-</script>
-</body>
-</html>
+.quote {
+padding: 15px;
+border: 1px solid rgba(244, 201, 93, .12);
+border-radius: 13px;
+background: rgba(0, 0, 0, .17);
+}
+
+.quote-value {
+margin-top: 8px;
+font-size: clamp(17px, 4vw, 23px);
+font-weight: 900;
+overflow-wrap: anywhere;
+}
+
+.grid {
+gap: 13px;
+margin-top: 15px;
+}
+
+.panel {
+padding: 19px;
+border: 1px solid var(--border);
+border-radius: 19px;
+background: linear-gradient(145deg, rgba(20, 24, 33, .98), rgba(12, 15, 21, .98));
+box-shadow: 0 8px 25px rgba(0, 0, 0, .12);
+transition: border-color .2s ease, transform .2s ease;
+}
+
+.panel:hover {
+border-color: rgba(244, 201, 93, .3);
+}
+
+.metric {
+margin-top: 13px;
+font-size: clamp(26px, 6vw, 34px);
+font-weight: 950;
+letter-spacing: -1px;
+}
+
+.signal {
+margin-top: 17px;
+font-size: clamp(27px, 6vw, 36px);
+font-weight: 950;
+letter-spacing: -1px;
+}
+
+.signal.buy {
+text-shadow: 0 0 25px rgba(66, 230, 164, .12);
+}
+
+.signal.sell {
+text-shadow: 0 0 25px rgba(255, 100, 120, .12);
+}
+
+.signal.wait {
+text-shadow: 0 0 25px rgba(244, 201, 93, .1);
+}
+
+.signal-reason {
+margin-top: 17px;
+padding: 13px;
+border: 1px solid rgba(255, 255, 255, .045);
+border-radius: 12px;
+background: var(--panel2);
+line-height: 1.75;
+}
+
+.section-heading {
+margin-top: 34px;
+margin-bottom: 14px;
+}
+
+.section-heading h2 {
+font-size: 19px;
+font-weight: 900;
+letter-spacing: -.45px;
+}
+
+button {
+min-height: 41px;
+padding: 11px 15px;
+border: 1px solid rgba(244, 201, 93, .35);
+border-radius: 12px;
+background: linear-gradient(135deg, #3b3019, #211c12);
+color: var(--gold);
+font-weight: 850;
+transition: background .2s ease, border-color .2s ease;
+}
+
+button:hover:not(:disabled) {
+border-color: var(--gold);
+background: linear-gradient(135deg, #51401d, #2a2213);
+}
+
+button:active:not(:disabled) {
+transform: scale(.98);
+}
+
+.stats-grid {
+gap: 20px 15px;
+padding-top: 19px;
+}
+
+.stat-label {
+font-size: 11px;
+line-height: 1.6;
+}
+
+.stat-value {
+margin-top: 8px;
+font-size: clamp(20px, 4vw, 27px);
+font-weight: 950;
+letter-spacing: -.5px;
+}
+
+.analysis-summary {
+padding: 16px;
+border: 1px solid rgba(244, 201, 93, .1);
+border-radius: 14px;
+background: linear-gradient(135deg, rgba(244, 201, 93, .045), var(--panel2));
+line-height: 1.8;
+}
+
+.tf-card {
+padding: 16px;
+border: 1px solid var(--border);
+border-radius: 15px;
+background: linear-gradient(145deg, #11151d, #0b0e13);
+}
+
+.trend {
+padding: 6px 10px;
+border-radius: 30px;
+background: rgba(255, 255, 255, .025);
+letter-spacing: .5px;
+}
+
+.trend.bullish {
+border-color: rgba(66, 230, 164, .2);
+background: rgba(66, 230, 164, .06);
+}
+
+.trend.bearish {
+border-color: rgba(255, 100, 120, .2);
+background: rgba(255, 100, 120, .06);
+}
+
+.trend.neutral {
+border-color: rgba(244, 201, 93, .2);
+background: rgba(244, 201, 93, .05);
+}
+
+.indicator-grid {
+gap: 15px 12px;
+}
+
+.indicator-value {
+margin-top: 6px;
+font-weight: 850;
+line-height: 1.5;
+}
+
+.trade {
+padding: 18px 0;
+border-bottom-color: rgba(255, 255, 255, .07);
+}
+
+.trade-direction {
+font-size: 14px;
+letter-spacing: .1px;
+}
+
+.pill {
+padding: 6px 10px;
+border-color: rgba(244, 201, 93, .18);
+background: rgba(244, 201, 93, .045);
+color: var(--gold);
+}
+
+.trade-details {
+gap: 16px;
+margin-top: 17px;
+}
+
+.trade-time {
+margin-top: 16px;
+line-height: 1.7;
+}
+
+.message {
+line-height: 1.8;
+overflow-wrap: anywhere;
+}
+
+.error {
+margin-top: 12px;
+padding: 13px;
+border-color: rgba(255, 100, 120, .28);
+border-radius: 12px;
+background: rgba(255, 100, 120, .065);
+}
+
+nav {
+justify-content: space-around;
+gap: 4px;
+padding: 11px 6px calc(11px + env(safe-area-inset-bottom));
+border-top: 1px solid rgba(244, 201, 93, .18);
+background: rgba(10, 12, 17, .96);
+box-shadow: 0 -10px 35px rgba(0, 0, 0, .3);
+backdrop-filter: blur(20px);
+}
+
+nav a {
+flex: 1;
+padding: 5px 1px;
+border-radius: 10px;
+font-size: 11px;
+font-weight: 750;
+line-height: 1.8;
+transition: color .2s ease, background .2s ease;
+}
+
+nav a:hover,
+nav a:focus {
+background: rgba(244, 201, 93, .07);
+color: var(--gold);
+}
+
+footer {
+margin-top: 35px;
+padding-top: 20px;
+border-top: 1px solid var(--border);
+line-height: 2;
+}
+
+@media (min-width: 620px) {
+main {
+padding: 32px 24px 125px;
+}
+
+.grid {
+gap: 15px;
+}
+
+.panel {
+padding: 21px;
+}
+
+.timeframes {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.indicator-grid {
+grid-template-columns: 1fr;
+}
+}
+
+@media (max-width: 420px) {
+header {
+padding: 15px 12px;
+}
+
+.brand {
+font-size: 19px;
+}
+
+.status {
+padding: 6px 8px;
+font-size: 10px;
+}
+
+main {
+padding: 22px 12px 120px;
+}
+
+.hero {
+padding: 23px 17px;
+border-radius: 20px;
+}
+
+.panel {
+padding: 14px;
+border-radius: 15px;
+}
+
+.grid {
+gap: 10px;
+}
+
+.quotes {
+gap: 9px;
+}
+
+.quote {
+padding: 11px;
+}
+
+nav a {
+font-size: 10px;
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+*,
+*::before,
+*::after {
+scroll-behavior: auto !important;
+transition: none !important;
+}
+}
+
+  <style>  
+    :root {  
+      color-scheme: dark;  
+      --bg: #090b10;  
+      --panel: #141821;  
+      --panel2: #10141c;  
+      --gold: #e7bd55;  
+      --muted: #9299a8;  
+      --green: #36d399;  
+      --red: #ff6878;  
+      --border: #292e39;  
+    }  
+    * { box-sizing: border-box; }  
+    html { scroll-behavior: smooth; }  
+    body {  
+      margin: 0; background: var(--bg); color: #f6f7fb;  
+      font-family: system-ui, -apple-system, sans-serif;  
+    }  
+    header {  
+      position: sticky; top: 0; z-index: 5; display: flex;  
+      justify-content: space-between; align-items: center; gap: 10px;  
+      padding: 17px 16px; background: rgba(9,11,16,.96);  
+      border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);  
+    }  
+    .brand { font-size: 21px; font-weight: 900; letter-spacing: -.5px; }  
+    .brand span { color: var(--gold); }  
+    .status { font-size: 11px; color: var(--muted); text-align: right; }  
+    .status.ok { color: var(--green); }  
+    .status.bad { color: var(--red); }  
+    main { width: 100%; max-width: 850px; margin: auto; padding: 22px 15px 105px; }  
+    .eyebrow {  
+      color: var(--muted); font-size: 10px; font-weight: 750;  
+      letter-spacing: 1.6px; text-transform: uppercase;  
+    }  
+    .muted { color: var(--muted); }  
+    .small { font-size: 12px; line-height: 1.65; }  
+    .gold { color: var(--gold); }  
+    .green { color: var(--green); }  
+    .red { color: var(--red); }  
+    .hero {  
+      margin-top: 14px; padding: 23px 20px; border: 1px solid #51452b;  
+      border-radius: 21px; background: linear-gradient(135deg, #292315, #141821 72%);  
+    }  
+    .price {  
+      margin: 12px 0; color: var(--gold);  
+      font-size: clamp(36px, 9vw, 54px); font-weight: 900;  
+      line-height: 1.1; overflow-wrap: anywhere;  
+    }  
+    .quotes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 21px; }  
+    .quote { padding-top: 13px; border-top: 1px solid #51452b; }  
+    .quote-value { margin-top: 5px; font-size: 18px; font-weight: 800; }  
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 13px; }  
+    .panel {  
+      min-width: 0; padding: 16px; background: var(--panel);  
+      border: 1px solid var(--border); border-radius: 16px;  
+    }  
+    .wide { grid-column: 1 / -1; }  
+    .metric { margin-top: 9px; font-size: clamp(23px, 6vw, 30px); font-weight: 900; overflow-wrap: anywhere; }  
+    .signal { margin: 13px 0 7px; font-size: 31px; font-weight: 950; letter-spacing: -.5px; }  
+    .signal.buy { color: var(--green); }  
+    .signal.sell { color: var(--red); }  
+    .signal.wait { color: var(--gold); }  
+    .signal-reason {  
+      margin-top: 13px; padding: 11px; border-radius: 10px;  
+      background: var(--panel2); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere;  
+    }  
+    h2 { margin: 27px 0 12px; font-size: 17px; }  
+    h3 { margin: 0; font-size: 14px; }  
+    .section-heading {  
+      display: flex; align-items: center; justify-content: space-between;  
+      gap: 12px; margin-top: 28px; margin-bottom: 12px;  
+    }  
+    .section-heading h2 { margin: 0; }  
+    button {  
+      cursor: pointer; padding: 10px 13px; border: 1px solid #51452b;  
+      border-radius: 10px; background: #292315; color: var(--gold);  
+      font-size: 12px; font-weight: 800;  
+    }  
+    button:disabled { opacity: .55; }  
+    .stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px 12px; margin-top: 20px; }  
+    .stat-label { color: var(--muted); font-size: 11px; }  
+    .stat-value { margin-top: 5px; font-size: 21px; font-weight: 850; overflow-wrap: anywhere; }  
+    .timeframes { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }  
+    .tf-card { min-width: 0; padding: 15px; background: var(--panel2); border: 1px solid var(--border); border-radius: 13px; }  
+    .tf-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 13px; }  
+    .trend { padding: 5px 9px; border: 1px solid var(--border); border-radius: 30px; font-size: 10px; font-weight: 850; }  
+    .trend.bullish { color: var(--green); }  
+    .trend.bearish { color: var(--red); }  
+    .trend.neutral { color: var(--gold); }  
+    .indicator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }  
+    .indicator-label { color: var(--muted); font-size: 10px; }  
+    .indicator-value { margin-top: 4px; font-size: 14px; font-weight: 750; overflow-wrap: anywhere; }  
+    .analysis-summary { padding: 13px; border-radius: 12px; background: var(--panel2); line-height: 1.65; font-size: 13px; overflow-wrap: anywhere; }  
+    .trade { padding: 15px 0; border-bottom: 1px solid var(--border); }  
+    .trade:last-child { border-bottom: 0; }  
+    .trade-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 9px; }  
+    .trade-direction { font-size: 14px; font-weight: 850; }  
+    .pill { display: inline-block; padding: 4px 8px; border: 1px solid var(--border); border-radius: 30px; font-size: 10px; font-weight: 750; }  
+    .trade-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 13px; }  
+    .trade-time { margin-top: 12px; font-size: 11px; color: var(--muted); }  
+    .message { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }  
+    .error { padding: 11px; border: 1px solid #62333a; border-radius: 10px; background: #24151a; color: #ffadb6; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }  
+    .hidden { display: none !important; }  
+    nav {  
+      position: fixed; z-index: 10; bottom: 0; left: 0; right: 0;  
+      display: flex; justify-content: space-around;  
+      padding: 12px 3px calc(12px + env(safe-area-inset-bottom));  
+      background: #11151d; border-top: 1px solid var(--border);  
+    }  
+    nav a { color: var(--muted); text-align: center; text-decoration: none; font-size: 11px; line-height: 1.7; }  
+    nav a:focus, nav a:hover { color: var(--gold); }  
+    footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 11px; line-height: 1.8; }  
+    @media (min-width: 620px) {  
+      main { padding: 28px 22px 110px; }  
+      .timeframes { grid-template-columns: repeat(3, minmax(0, 1fr)); }  
+      .indicator-grid { grid-template-columns: 1fr; }  
+      .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }  
+    }  
+    @media (max-width: 360px) {  
+      header { padding: 15px 10px; }  
+      .brand { font-size: 18px; }  
+      main { padding-left: 10px; padding-right: 10px; }  
+      .panel { padding: 13px; }  
+    }  
+  </style>  </head>  
+<body id="top">  
+  <header>  
+    <div class="brand">GOLD<span>BOT</span>-ZA</div>  
+    <div id="connectionStatus" class="status">● Connecting...</div>  
+  </header>    <main>  
+    <div class="eyebrow">Stacks Co. · Gold intelligence terminal</div>  <section class="hero" id="gold">  
+  <div class="eyebrow">Gold spot price · XAU/USD</div>  
+  <div id="goldPrice" class="price">Loading...</div>  
+  <div id="priceNote" class="small muted">Connecting to market data...</div>  
+  <div class="quotes">  
+    <div class="quote"><div class="eyebrow">BID PRICE</div><div id="goldBid" class="quote-value">—</div></div>  
+    <div class="quote"><div class="eyebrow">ASK PRICE</div><div id="goldAsk" class="quote-value">—</div></div>  
+  </div>  
+</section>  
+
+<div class="grid">  
+  <section class="panel" id="signals">  
+    <div class="eyebrow">Current trading signal</div>  
+    <div id="signal" class="signal wait">LOADING</div>  
+    <div id="signalSubtitle" class="small muted">Waiting for signal engine...</div>  
+    <div id="signalReason" class="signal-reason">Retrieving signal explanation...</div>  
+    <div id="signalSetup" class="message"></div>  
+  </section>  
+  <section class="panel">  
+    <div class="eyebrow">Open trades</div><div id="openTrades" class="metric">—</div>  
+    <div class="small muted">Currently marked OPEN</div><div class="message" id="cancelledTrades">Cancelled: —</div>  
+  </section>  
+  <section class="panel">  
+    <div class="eyebrow">Win rate</div><div id="winRate" class="metric gold">—</div>  
+    <div class="small muted">Closed trades only</div>  
+  </section>  
+  <section class="panel">  
+    <div class="eyebrow">Completed trades</div><div id="completedTrades" class="metric">—</div>  
+    <div class="small muted">Wins + losses</div>  
+  </section>  
+</div>  
+
+<div class="section-heading" id="analysis">  
+  <h2>Market intelligence</h2><span id="analysisUpdated" class="small muted"></span>  
+</div>  
+<section class="panel">  
+  <div class="eyebrow">Multi-timeframe analysis</div>  
+  <div id="analysisSummary" class="analysis-summary" style="margin-top:12px">Loading market analysis...</div>  
+  <div id="timeframes" class="timeframes"></div>  
+  <div id="analysisError" class="message"></div>  
+</section>  
+
+<div class="section-heading" id="performance">  
+  <h2>Performance centre</h2><button id="refreshButton" type="button">Refresh all</button>  
+</div>  
+<section class="panel">  
+  <div class="eyebrow">Paper trading performance</div>  
+  <div id="performanceMode" class="message">Loading performance tracker...</div>  
+  <div class="stats-grid">  
+    <div><div class="stat-label">Total journal trades</div><div id="totalTrades" class="stat-value">—</div></div>  
+    <div><div class="stat-label">Wins</div><div id="wins" class="stat-value green">—</div></div>  
+    <div><div class="stat-label">Losses</div><div id="losses" class="stat-value red">—</div></div>  
+    <div><div class="stat-label">Simulated net R</div><div id="netR" class="stat-value gold">—</div></div>  
+    <div><div class="stat-label">Closed trades</div><div id="closedTrades" class="stat-value">—</div></div>  
+    <div><div class="stat-label">Cancelled</div><div id="cancelledCount" class="stat-value">—</div></div>  
+  </div>  
+  <div id="performanceError" class="message"></div>  
+</section>  
+
+<div class="section-heading" id="journal"><h2>Recent trades</h2><span id="journalCount" class="small muted">Loading...</span></div>  
+<section class="panel">  
+  <div id="tradeList"><p class="message">Loading trade journal...</p></div>  
+  <div id="journalError" class="message"></div>  
+</section>  
+
+<footer>  
+  GOLD BOT-ZA · STACKS CO.<br>  
+  Market data by Standard Bullion<br>  
+  Prices are informational. Signals are not guaranteed outcomes.  
+  <div id="lastRefresh" style="margin-top:8px"></div>  
+</footer>
+
+  </main>    <nav>  
+    <a href="#top">⌂<br>Home</a><a href="#gold">◈<br>Gold</a>  
+    <a href="#signals">↗<br>Signals</a><a href="#analysis">⌁<br>Analysis</a>  
+    <a href="#performance">▤<br>Stats</a>  
+  </nav>    <script>  
+    "use strict";  
+  
+    const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";  
+    const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";  
+  
+    const ENDPOINTS = {  
+      price: "gold-price-public",  
+      signal: "market-signal-v2",  
+      analysis: "market-analysis-v2",  
+      journal: "trade-journal",  
+      performance: "performance-tracker"  
+    };  
+  
+    const $ = id => document.getElementById(id);  
+    let lastGoodPrice = null;  
+    let refreshInProgress = false;  
+  
+    function setText(id, value) {  
+      $(id).textContent = value === undefined || value === null || value === ""  
+        ? "—" : String(value);  
+    }  
+  
+    function fmtMoney(value) {  
+      if (value === null || value === undefined || value === "") return "—";  
+      const n = Number(value);  
+      return Number.isFinite(n) ? "$" + n.toLocaleString("en-US", {  
+        minimumFractionDigits: 2, maximumFractionDigits: 2  
+      }) : "—";  
+    }  
+  
+    function fmtNumber(value, decimals = 2) {  
+      if (value === null || value === undefined || value === "") return "—";  
+      const n = Number(value);  
+      return Number.isFinite(n) ? n.toLocaleString("en-US", {  
+        minimumFractionDigits: decimals, maximumFractionDigits: decimals  
+      }) : "—";  
+    }  
+  
+    function fmtDate(value) {  
+      if (!value) return "Time not supplied";  
+      const d = new Date(value);  
+      return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();  
+    }  
+  
+    function first(object, keys) {  
+      if (!object || typeof object !== "object") return undefined;  
+      for (const key of keys) {  
+        if (object[key] !== undefined && object[key] !== null) return object[key];  
+      }  
+      return undefined;  
+    }  
+  
+    async function callFunction(name) {  
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {  
+        method: "GET",  
+        headers: { "apikey": SUPABASE_KEY },  
+        cache: "no-store"  
+      });  
+  
+      const raw = await response.text();  
+      let data;  
+      try {  
+        data = raw ? JSON.parse(raw) : {};  
+      } catch {  
+        throw new Error(`HTTP ${response.status}: function did not return JSON.`);  
+      }  
+  
+      if (!response.ok) {  
+        const details = data.details  
+          ? " " + (Array.isArray(data.details) ? data.details.join(" | ") : JSON.stringify(data.details))  
+          : "";  
+        throw new Error(`HTTP ${response.status}: ${data.error || data.message || "Request failed"}${details}`);  
+      }  
+      return data;  
+    }  
+  
+    function showError(id, error) {  
+      $(id).textContent = error instanceof Error ? error.message : String(error);  
+      $(id).classList.add("error");  
+    }  
+  
+    function clearError(id) {  
+      $(id).textContent = "";  
+      $(id).classList.remove("error");  
+    }  
+  
+    async function loadPrice() {  
+      try {  
+        const data = await callFunction(ENDPOINTS.price);  
+        if (data.success === false) throw new Error(data.error || "Price provider returned an error.");  
+        const price = first(data, ["price", "mid", "midpoint"]);  
+        if (!Number.isFinite(Number(price))) throw new Error("Price response did not contain a valid price.");  
+  
+        lastGoodPrice = data;  
+        setText("goldPrice", fmtMoney(price));  
+        setText("goldBid", fmtMoney(data.bid));  
+        setText("goldAsk", fmtMoney(data.ask));  
+        setText("priceNote", `${data.market || "XAU/USD"} · ${data.updated ? "Updated " + fmtDate(data.updated) : "Latest available quote"}`);  
+      } catch (error) {  
+        if (!lastGoodPrice) setText("goldPrice", "Unavailable");  
+        setText("priceNote", error.message);  
+      }  
+    }  
+  
+    function normaliseSignal(value) {  
+      const s = String(value || "").toUpperCase().replace(/[_-]+/g, " ").trim();  
+      if (s === "BUY" || s.includes("BUY ")) return "BUY";  
+      if (s === "SELL" || s.includes("SELL ")) return "SELL";  
+      if (s === "WAIT" || s.includes("WAIT")) return "WAIT";  
+      if (s.includes("NO TRADE") || s.includes("NO SIGNAL")) return "NO TRADE";  
+      return s || "NO TRADE";  
+    }  
+  
+    async function loadSignal() {  
+      try {  
+        const data = await callFunction(ENDPOINTS.signal);  
+        const signal = normaliseSignal(first(data, ["signal", "direction", "action"]));  
+        setText("signal", signal);  
+        $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");  
+        setText("signalSubtitle", data.market || "XAU/USD");  
+        setText("signalReason", first(data, ["reason", "message", "summary"]) ||  
+          (data.success === false ? data.error || "Signal engine reported a problem." : "Signal received. Review all conditions before trading."));  
+        const setup = data.trade_setup || data.setup;  
+        setText("signalSetup", setup && typeof setup === "object"  
+          ? `Entry: ${fmtMoney(setup.entry)} · Stop loss: ${fmtMoney(setup.stop_loss)} · Take profit: ${fmtMoney(setup.take_profit)} · R:R ${setup.risk_to_reward || "—"}`  
+          : "No trade setup supplied by the signal engine.");  
+      } catch (error) {  
+        setText("signal", "UNAVAILABLE");  
+        $("signal").className = "signal wait";  
+        setText("signalSubtitle", "Signal engine connection failed.");  
+        showError("signalReason", error);  
+        setText("signalSetup", "");  
+      }  
+    }  
+  
+    function extractFrames(data) {  
+      // Accept direct response, nested data, or a JSON-encoded response.  
+      let root = data;  
+      for (let i = 0; i < 3; i++) {  
+        if (typeof root === "string") {  
+          try { root = JSON.parse(root); } catch { break; }  
+        }  
+        if (root && root.timeframes) break;  
+        if (root && root.data && typeof root.data === "object") root = root.data;  
+        else if (root && root.result && typeof root.result === "object") root = root.result;  
+        else break;  
+      }  
+  
+      const frames = root?.timeframes || root?.timeFrames || root?.timeframes_data || {};  
+      const daily = frames.daily || frames["1d"] || frames.D1 || frames.day;  
+      const fourHour = frames.four_hour || frames.fourHour || frames["4h"] || frames.H4;  
+      const hourly = frames.one_hour || frames.hourly || frames.oneHour || frames["1h"] || frames.H1;  
+  
+      return { root, daily, fourHour, hourly };  
+    }  
+  
+    function timeframeCard(title, tf) {  
+      const card = document.createElement("article");  
+      card.className = "tf-card";  
+  
+      if (!tf || typeof tf !== "object" || Object.keys(tf).length === 0) {  
+        const head = document.createElement("div");  
+        head.className = "tf-head";  
+        const heading = document.createElement("h3");  
+        heading.textContent = title;  
+        const badge = document.createElement("span");  
+        badge.className = "trend neutral";  
+        badge.textContent = "NO DATA";  
+        head.append(heading, badge);  
+  
+        const message = document.createElement("div");  
+        message.className = "message";  
+        message.textContent = "No timeframe object found in the market-analysis response.";  
+        card.append(head, message);  
+        return card;  
+      }  
+  
+      const head = document.createElement("div");  
+      head.className = "tf-head";  
+      const heading = document.createElement("h3");  
+      heading.textContent = title;  
+  
+      const trend = String(tf.trend || "NEUTRAL").toUpperCase();  
+      const badge = document.createElement("span");  
+      badge.className = "trend " + (trend === "BULLISH" ? "bullish" : trend === "BEARISH" ? "bearish" : "neutral");  
+      badge.textContent = trend;  
+      head.append(heading, badge);  
+  
+      const indicators = document.createElement("div");  
+      indicators.className = "indicator-grid";  
+  
+      const close = first(tf, ["latest_close", "latestClose", "close", "last_close"]);  
+      const sma20 = first(tf, ["sma20", "sma_20", "SMA20"]);  
+      const sma50 = first(tf, ["sma50", "sma_50", "SMA50"]);  
+      const rsi14 = first(tf, ["rsi14", "rsi_14", "RSI14"]);  
+      const records = first(tf, ["records_used", "recordsUsed", "count", "candles"]);  
+      const candleTime = first(tf, ["latest_candle_time", "latestTime", "latest_time", "last_candle_time"]);  
+  
+      const values = [  
+        ["Latest close", fmtMoney(close)],  
+        ["SMA 20", fmtMoney(sma20)],  
+        ["SMA 50", fmtMoney(sma50)],  
+        ["RSI 14", fmtNumber(rsi14)],  
+        ["Candles used", records ?? "—"],  
+        ["Last candle", candleTime ? fmtDate(candleTime) : "—"]  
+      ];  
+  
+      for (const [label, value] of values) {  
+        const item = document.createElement("div");  
+        const labelEl = document.createElement("div");  
+        labelEl.className = "indicator-label";  
+        labelEl.textContent = label;  
+        const valueEl = document.createElement("div");  
+        valueEl.className = "indicator-value";  
+        valueEl.textContent = String(value);  
+        item.append(labelEl, valueEl);  
+        indicators.appendChild(item);  
+      }  
+  
+      card.append(head, indicators);  
+  
+      if (tf.available === false) {  
+        const warning = document.createElement("div");  
+        warning.className = "message";  
+        warning.textContent = "Insufficient candles for all indicators.";  
+        card.appendChild(warning);  
+      }  
+      return card;  
+    }  
+  
+    async function loadAnalysis() {  
+      const holder = $("timeframes");  
+      holder.replaceChildren();  
+      clearError("analysisError");  
+  
+      try {  
+        const data = await callFunction(ENDPOINTS.analysis);  
+        if (data.success === false) throw new Error(data.error || "Market analysis failed.");  
+  
+        const { root, daily, fourHour, hourly } = extractFrames(data);  
+        $("analysisSummary").textContent = root?.summary || root?.message ||  
+          "Multi-timeframe analysis from the market-analysis function.";  
+        setText("analysisUpdated", root?.updated_at || root?.updatedAt ? fmtDate(root.updated_at || root.updatedAt) : "");  
+  
+        holder.append(  
+          timeframeCard("Daily · 1D", daily),  
+          timeframeCard("Four hour · 4H", fourHour),  
+          timeframeCard("One hour · 1H", hourly)  
+        );  
+  
+        if (!daily && !fourHour && !hourly) {  
+          $("analysisSummary").textContent =  
+            "The market-analysis endpoint responded, but no timeframe objects were found. Check the response structure and deployed function version.";  
+          showError("analysisError", `Response keys: ${Object.keys(root || data).join(", ") || "none"}`);  
+        }  
+      } catch (error) {  
+        $("analysisSummary").textContent = "Market analysis could not be loaded.";  
+        showError("analysisError", error);  
+      }  
+    }  
+  
+    async function loadPerformance() {  
+      clearError("performanceError");  
+      try {  
+        const data = await callFunction(ENDPOINTS.performance);  
+        if (data.success === false) throw new Error(data.error || "Performance tracker failed.");  
+  
+        setText("performanceMode", data.mode || "Performance tracker connected");  
+        setText("totalTrades", data.total_trades);  
+        setText("wins", data.wins);  
+        setText("losses", data.losses);  
+        setText("openTrades", data.open_trades);  
+        setText("completedTrades", data.closed_trades);  
+        setText("closedTrades", data.closed_trades);  
+        setText("cancelledTrades", `Cancelled: ${data.cancelled ?? "—"}`);  
+        setText("cancelledCount", data.cancelled);  
+        setText("winRate", data.win_rate_percent === undefined ? "—" : `${fmtNumber(data.win_rate_percent)}%`);  
+        setText("netR", data.simulated_net_R === undefined ? "—" : `${Number(data.simulated_net_R) > 0 ? "+" : ""}${fmtNumber(data.simulated_net_R)}R`);  
+  
+        if (data.note) setText("performanceMode", `${data.mode || "Tracker connected"} · ${data.note}`);  
+      } catch (error) {  
+        showError("performanceError", error);  
+        if ($("performanceMode").textContent.startsWith("Loading")) {  
+          $("performanceMode").textContent = "Performance tracker unavailable.";  
+        }  
+      }  
+    }  
+  
+    function renderJournal(records) {  
+      const holder = $("tradeList");  
+      holder.replaceChildren();  
+  
+      if (!records.length) {  
+        const empty = document.createElement("p");  
+        empty.className = "message";  
+        empty.textContent = "No journal records were returned.";  
+        holder.appendChild(empty);  
+        return;  
+      }  
+  
+      for (const record of records) {  
+        const trade = document.createElement("article");  
+        trade.className = "trade";  
+        const head = document.createElement("div");  
+        head.className = "trade-head";  
+  
+        const direction = document.createElement("strong");  
+        direction.className = "trade-direction " + (record.direction === "BUY" ? "green" : record.direction === "SELL" ? "red" : "");  
+        direction.textContent = `${record.market || "XAU/USD"} · ${record.direction || "UNKNOWN"}`;  
+  
+        const outcome = document.createElement("span");  
+        outcome.className = "pill";  
+        outcome.textContent = record.outcome || "UNKNOWN";  
+        head.append(direction, outcome);  
+  
+        const details = document.createElement("div");  
+        details.className = "trade-details";  
+        const fields = [  
+          ["Entry", fmtMoney(record.entry)],  
+          ["Stop loss", fmtMoney(record.stop_loss)],  
+          ["Take profit", fmtMoney(record.take_profit)],  
+          ["Risk : reward", record.risk_to_reward || "—"],  
+          ["Trend", record.trend || "—"]  
+        ];  
+  
+        for (const [label, value] of fields) {  
+          const item = document.createElement("div");  
+          const labelEl = document.createElement("div");  
+          labelEl.className = "indicator-label";  
+          labelEl.textContent = label;  
+          const valueEl = document.createElement("div");  
+          valueEl.className = "indicator-value";  
+          valueEl.textContent = String(value);  
+          item.append(labelEl, valueEl);  
+          details.appendChild(item);  
+        }  
+  
+        const time = document.createElement("div");  
+        time.className = "trade-time";  
+        time.textContent = fmtDate(record.created_at || record.signal_time);  
+        trade.append(head, details, time);  
+  
+        if (record.notes) {  
+          const notes = document.createElement("div");  
+          notes.className = "message";  
+          notes.textContent = record.notes;  
+          trade.appendChild(notes);  
+        }  
+        holder.appendChild(trade);  
+      }  
+    }  
+  
+    async function loadJournal() {  
+      clearError("journalError");  
+      try {  
+        const data = await callFunction(ENDPOINTS.journal);  
+        if (data.success === false) throw new Error(data.error || "Trade journal failed.");  
+        const records = Array.isArray(data.records) ? data.records : Array.isArray(data) ? data : [];  
+        renderJournal(records);  
+        setText("journalCount", `${data.count ?? records.length} records`);  
+      } catch (error) {  
+        showError("journalError", error);  
+        setText("journalCount", "Unavailable");  
+      }  
+    }  
+  
+    async function refreshDashboard() {  
+      if (refreshInProgress) return;  
+      refreshInProgress = true;  
+      const button = $("refreshButton");  
+      button.disabled = true;  
+      button.textContent = "Refreshing...";  
+      $("connectionStatus").textContent = "● Updating";  
+      $("connectionStatus").className = "status";  
+  
+      try {  
+        await Promise.allSettled([  
+          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal()  
+        ]);  
+  
+        const priceOk = $("goldPrice").textContent !== "Unavailable";  
+        const signalOk = $("signal").textContent !== "UNAVAILABLE";  
+        const status = $("connectionStatus");  
+  
+        if (priceOk && signalOk) {  
+          status.textContent = "● Core services connected";  
+          status.className = "status ok";  
+        } else {  
+          status.textContent = "● Some services need attention";  
+          status.className = "status bad";  
+        }  
+        setText("lastRefresh", `Dashboard refreshed ${new Date().toLocaleTimeString()}`);  
+      } finally {  
+        button.disabled = false;  
+        button.textContent = "Refresh all";  
+        refreshInProgress = false;  
+      }  
+    }  
+  
+    $("refreshButton").addEventListener("click", refreshDashboard);  
+    refreshDashboard();  
+    setInterval(refreshDashboard, 60000);  
+  </script>  </body>  
+   </html>
