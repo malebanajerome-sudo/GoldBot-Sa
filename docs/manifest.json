@@ -3,7 +3,7 @@
   "id": "./",
   "name": "GoldBot-ZA | Stacks Co.",
   "short_name": "GoldBot-ZA",
-  "description": "Gold trading signals and paper trading dashboard.",
+  "description": "GoldBot-ZA gold market intelligence and paper trading dashboard.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -23,6 +23,36 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshot-price.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Live Gold Price Dashboard"
+    },
+    {
+      "src": "./screenshot-signal.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Gold Trading Signal"
+    },
+    {
+      "src": "./screenshot-analysis.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Multi-Timeframe Market Analysis"
+    },
+    {
+      "src": "./screenshot-performance-tracker.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Paper Trading Performance Tracker"
     }
   ]
 }
