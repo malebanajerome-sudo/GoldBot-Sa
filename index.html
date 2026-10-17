@@ -6,7 +6,440 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090b10">
   <meta name="description" content="GoldBot-ZA gold market intelligence and paper trading dashboard.">
-  <title>GoldBot-ZA | Stacks Co.</title>
+  <title>GoldBot-ZA | Stacks Co.</title> 
+  
+:root {  
+  --bg: #07080b;  
+  --panel: #101319;  
+  --panel2: #0b0e13;  
+  --gold: #f4c95d;  
+  --muted: #9299a8;  
+  --green: #42e6a4;  
+  --red: #ff6478;  
+  --border: rgba(244, 201, 93, .15);  
+}  
+
+html {  
+  scroll-behavior: smooth;  
+  scroll-padding-top: 90px;  
+}  
+
+body {  
+  background:  
+    radial-gradient(ellipse at 50% -15%, rgba(244, 201, 93, .09), transparent 48%),  
+    var(--bg);  
+  color: #f5f5f7;  
+  letter-spacing: .05px;  
+}  
+
+header {  
+  padding: 17px 20px;  
+  background: rgba(7, 8, 11, .92);  
+  border-bottom: 1px solid var(--border);  
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .2);  
+  backdrop-filter: blur(18px);  
+}  
+
+.brand {  
+  font-size: 22px;  
+  font-weight: 950;  
+  letter-spacing: -1px;  
+}  
+
+.brand span {  
+  color: var(--gold);  
+  text-shadow: 0 0 22px rgba(244, 201, 93, .22);  
+}  
+
+.status {  
+  padding: 7px 10px;  
+  border: 1px solid var(--border);  
+  border-radius: 30px;  
+  background: rgba(255, 255, 255, .025);  
+  font-weight: 750;  
+}  
+
+.status.ok {  
+  border-color: rgba(66, 230, 164, .25);  
+  background: rgba(66, 230, 164, .06);  
+}  
+
+.status.bad {  
+  border-color: rgba(255, 100, 120, .25);  
+  background: rgba(255, 100, 120, .06);  
+}  
+
+main {  
+  max-width: 1050px;  
+  padding: 28px 20px 125px;  
+}  
+
+.eyebrow {  
+  font-size: 10px;  
+  letter-spacing: 2px;  
+  line-height: 1.7;  
+}  
+
+main > .eyebrow {  
+  color: var(--gold);  
+  font-weight: 850;  
+}  
+
+.hero {  
+  position: relative;  
+  overflow: hidden;  
+  margin-top: 19px;  
+  padding: 29px 25px;  
+  border: 1px solid rgba(244, 201, 93, .3);  
+  border-radius: 24px;  
+  background:  
+    radial-gradient(ellipse at 100% 0%, rgba(244, 201, 93, .15), transparent 48%),  
+    linear-gradient(140deg, #1c1a13 0%, #11141b 55%, #0b0e13 100%);  
+  box-shadow: 0 15px 45px rgba(0, 0, 0, .25);  
+}  
+
+.hero::after {  
+  content: "Au";  
+  position: absolute;  
+  right: 20px;  
+  top: 12px;  
+  color: rgba(244, 201, 93, .055);  
+  font-size: clamp(95px, 18vw, 165px);  
+  font-weight: 950;  
+  letter-spacing: -10px;  
+  line-height: 1;  
+  pointer-events: none;  
+}  
+
+.hero > * {  
+  position: relative;  
+  z-index: 1;  
+}  
+
+.price {  
+  margin: 19px 0 12px;  
+  font-size: clamp(39px, 9vw, 66px);  
+  font-weight: 950;  
+  letter-spacing: -2px;  
+  color: var(--gold);  
+  text-shadow: 0 0 35px rgba(244, 201, 93, .12);  
+}  
+
+.quotes {  
+  gap: 14px;  
+  margin-top: 25px;  
+}  
+
+.quote {  
+  padding: 15px;  
+  border: 1px solid rgba(244, 201, 93, .12);  
+  border-radius: 13px;  
+  background: rgba(0, 0, 0, .17);  
+}  
+
+.quote-value {  
+  margin-top: 8px;  
+  font-size: clamp(17px, 4vw, 23px);  
+  font-weight: 900;  
+  overflow-wrap: anywhere;  
+}  
+
+.grid {  
+  gap: 13px;  
+  margin-top: 15px;  
+}  
+
+.panel {  
+  padding: 19px;  
+  border: 1px solid var(--border);  
+  border-radius: 19px;  
+  background: linear-gradient(145deg, rgba(20, 24, 33, .98), rgba(12, 15, 21, .98));  
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .12);  
+  transition: border-color .2s ease, transform .2s ease;  
+}  
+
+.panel:hover {  
+  border-color: rgba(244, 201, 93, .3);  
+}  
+
+.metric {  
+  margin-top: 13px;  
+  font-size: clamp(26px, 6vw, 34px);  
+  font-weight: 950;  
+  letter-spacing: -1px;  
+}  
+
+.signal {  
+  margin-top: 17px;  
+  font-size: clamp(27px, 6vw, 36px);  
+  font-weight: 950;  
+  letter-spacing: -1px;  
+}  
+
+.signal.buy {  
+  text-shadow: 0 0 25px rgba(66, 230, 164, .12);  
+}  
+
+.signal.sell {  
+  text-shadow: 0 0 25px rgba(255, 100, 120, .12);  
+}  
+
+.signal.wait {  
+  text-shadow: 0 0 25px rgba(244, 201, 93, .1);  
+}  
+
+.signal-reason {  
+  margin-top: 17px;  
+  padding: 13px;  
+  border: 1px solid rgba(255, 255, 255, .045);  
+  border-radius: 12px;  
+  background: var(--panel2);  
+  line-height: 1.75;  
+}  
+
+.section-heading {  
+  margin-top: 34px;  
+  margin-bottom: 14px;  
+}  
+
+.section-heading h2 {  
+  font-size: 19px;  
+  font-weight: 900;  
+  letter-spacing: -.45px;  
+}  
+
+button {  
+  min-height: 41px;  
+  padding: 11px 15px;  
+  border: 1px solid rgba(244, 201, 93, .35);  
+  border-radius: 12px;  
+  background: linear-gradient(135deg, #3b3019, #211c12);  
+  color: var(--gold);  
+  font-weight: 850;  
+  transition: background .2s ease, border-color .2s ease;  
+}  
+
+button:hover:not(:disabled) {  
+  border-color: var(--gold);  
+  background: linear-gradient(135deg, #51401d, #2a2213);  
+}  
+
+button:active:not(:disabled) {  
+  transform: scale(.98);  
+}  
+
+.stats-grid {  
+  gap: 20px 15px;  
+  padding-top: 19px;  
+}  
+
+.stat-label {  
+  font-size: 11px;  
+  line-height: 1.6;  
+}  
+
+.stat-value {  
+  margin-top: 8px;  
+  font-size: clamp(20px, 4vw, 27px);  
+  font-weight: 950;  
+  letter-spacing: -.5px;  
+}  
+
+.analysis-summary {  
+  padding: 16px;  
+  border: 1px solid rgba(244, 201, 93, .1);  
+  border-radius: 14px;  
+  background: linear-gradient(135deg, rgba(244, 201, 93, .045), var(--panel2));  
+  line-height: 1.8;  
+}  
+
+.tf-card {  
+  padding: 16px;  
+  border: 1px solid var(--border);  
+  border-radius: 15px;  
+  background: linear-gradient(145deg, #11151d, #0b0e13);  
+}  
+
+.trend {  
+  padding: 6px 10px;  
+  border-radius: 30px;  
+  background: rgba(255, 255, 255, .025);  
+  letter-spacing: .5px;  
+}  
+
+.trend.bullish {  
+  border-color: rgba(66, 230, 164, .2);  
+  background: rgba(66, 230, 164, .06);  
+}  
+
+.trend.bearish {  
+  border-color: rgba(255, 100, 120, .2);  
+  background: rgba(255, 100, 120, .06);  
+}  
+
+.trend.neutral {  
+  border-color: rgba(244, 201, 93, .2);  
+  background: rgba(244, 201, 93, .05);  
+}  
+
+.indicator-grid {  
+  gap: 15px 12px;  
+}  
+
+.indicator-value {  
+  margin-top: 6px;  
+  font-weight: 850;  
+  line-height: 1.5;  
+}  
+
+.trade {  
+  padding: 18px 0;  
+  border-bottom-color: rgba(255, 255, 255, .07);  
+}  
+
+.trade-direction {  
+  font-size: 14px;  
+  letter-spacing: .1px;  
+}  
+
+.pill {  
+  padding: 6px 10px;  
+  border-color: rgba(244, 201, 93, .18);  
+  background: rgba(244, 201, 93, .045);  
+  color: var(--gold);  
+}  
+
+.trade-details {  
+  gap: 16px;  
+  margin-top: 17px;  
+}  
+
+.trade-time {  
+  margin-top: 16px;  
+  line-height: 1.7;  
+}  
+
+.message {  
+  line-height: 1.8;  
+  overflow-wrap: anywhere;  
+}  
+
+.error {  
+  margin-top: 12px;  
+  padding: 13px;  
+  border-color: rgba(255, 100, 120, .28);  
+  border-radius: 12px;  
+  background: rgba(255, 100, 120, .065);  
+}  
+
+nav {  
+  justify-content: space-around;  
+  gap: 4px;  
+  padding: 11px 6px calc(11px + env(safe-area-inset-bottom));  
+  border-top: 1px solid rgba(244, 201, 93, .18);  
+  background: rgba(10, 12, 17, .96);  
+  box-shadow: 0 -10px 35px rgba(0, 0, 0, .3);  
+  backdrop-filter: blur(20px);  
+}  
+
+nav a {  
+  flex: 1;  
+  padding: 5px 1px;  
+  border-radius: 10px;  
+  font-size: 11px;  
+  font-weight: 750;  
+  line-height: 1.8;  
+  transition: color .2s ease, background .2s ease;  
+}  
+
+nav a:hover,  
+nav a:focus {  
+  background: rgba(244, 201, 93, .07);  
+  color: var(--gold);  
+}  
+
+footer {  
+  margin-top: 35px;  
+  padding-top: 20px;  
+  border-top: 1px solid var(--border);  
+  line-height: 2;  
+}  
+
+@media (min-width: 620px) {  
+  main {  
+    padding: 32px 24px 125px;  
+  }  
+
+  .grid {  
+    gap: 15px;  
+  }  
+
+  .panel {  
+    padding: 21px;  
+  }  
+
+  .timeframes {  
+    grid-template-columns: repeat(3, minmax(0, 1fr));  
+  }  
+
+  .indicator-grid {  
+    grid-template-columns: 1fr;  
+  }  
+}  
+
+@media (max-width: 420px) {  
+  header {  
+    padding: 15px 12px;  
+  }  
+
+  .brand {  
+    font-size: 19px;  
+  }  
+
+  .status {  
+    padding: 6px 8px;  
+    font-size: 10px;  
+  }  
+
+  main {  
+    padding: 22px 12px 120px;  
+  }  
+
+  .hero {  
+    padding: 23px 17px;  
+    border-radius: 20px;  
+  }  
+
+  .panel {  
+    padding: 14px;  
+    border-radius: 15px;  
+  }  
+
+  .grid {  
+    gap: 10px;  
+  }  
+
+  .quotes {  
+    gap: 9px;  
+  }  
+
+  .quote {  
+    padding: 11px;  
+  }  
+
+  nav a {  
+    font-size: 10px;  
+  }  
+}  
+
+@media (prefers-reduced-motion: reduce) {  
+  *,  
+  *::before,  
+  *::after {  
+    scroll-behavior: auto !important;  
+    transition: none !important;  
+  }  
+}
   <style>
     :root {
       color-scheme: dark;
