@@ -1,43 +1,69 @@
-
-/* =========================================================
+/* ============================================================
    GoldBot-ZA | Stacks Co.
-   Resilient Progressive Web App Service Worker
-   ========================================================= */
+   Advanced Offline-First Progressive Web App Service Worker
+   ============================================================ */
 
 "use strict";
 
-const VERSION = "goldbot-za-v3";
-const SHELL_CACHE = `${VERSION}-shell`;
-const ASSET_CACHE = `${VERSION}-assets`;
-const IMAGE_CACHE = `${VERSION}-images`;
+/* ---------- VERSIONED CACHES ---------- */
 
-const APP_ROOT = new URL("./", self.registration.scope);
+const VERSION = "v4";
+const PREFIX = "goldbot-za";
+
+const SHELL_CACHE = `${PREFIX}-${VERSION}-shell`;
+const ASSET_CACHE = `${PREFIX}-${VERSION}-assets`;
+const IMAGE_CACHE = `${PREFIX}-${VERSION}-images`;
+
+const SCOPE_URL = self.registration.scope;
+const APP_ROOT = new URL("./", SCOPE_URL);
+const INDEX_URL = new URL("./index.html", SCOPE_URL).href;
+const OFFLINE_URL = new URL("./offline.html", SCOPE_URL).href;
+
+const NETWORK_TIMEOUT = 6000;
+const MAX_IMAGE_ENTRIES = 40;
 
 const SHELL_FILES = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  APP_ROOT.href,
+  INDEX_URL,
+  new URL("./manifest.json", SCOPE_URL).href
 ];
 
-const MAX_IMAGE_ENTRIES = 40;
-const NETWORK_TIMEOUT_MS = 5000;
+/* ---------- HELPERS ---------- */
 
 function isInsideApp(url) {
-  return url.origin === APP_ROOT.origin &&
-    url.pathname.startsWith(APP_ROOT.pathname);
+  return (
+    url.origin === APP_ROOT.origin &&
+    url.pathname.startsWith(APP_ROOT.pathname)
+  );
 }
 
 function isBackendRequest(url) {
   return (
     url.hostname.endsWith(".supabase.co") ||
-    url.pathname.includes("/functions/") ||
-    url.pathname.includes("/rest/") ||
-    url.pathname.includes("/auth/") ||
-    url.pathname.includes("/storage/") ||
-    url.pathname.includes("/realtime/")
+    /\/(functions|rest|auth|storage|realtime)\//i.test(url.pathname)
   );
+}
+
+function isCacheableResponse(response) {
+  if (
+    !response ||
+    response.status !== 200 ||
+    response.type !== "basic"
+  ) {
+    return false;
+  }
+
+  const cacheControl =
+    response.headers.get("Cache-Control") || "";
+
+  if (
+    response.headers.has("Set-Cookie") ||
+    /\b(no-store|private)\b/i.test(cacheControl)
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 function isSensitiveRequest(request) {
@@ -49,17 +75,23 @@ function isSensitiveRequest(request) {
   );
 }
 
-function isCacheableResponse(response) {
-  return (
-    response &&
-    response.status === 200 &&
-    response.type === "basic" &&
-    !response.headers.has("Set-Cookie") &&
-    response.headers.get("Cache-Control")?.includes("no-store") !== true
+async function fetchWithTimeout(request) {
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    NETWORK_TIMEOUT
   );
+
+  try {
+    return await fetch(request, {
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
-async function putSafely(cacheName, request, response) {
+async function safeCachePut(cacheName, request, response) {
   if (!isCacheableResponse(response)) return;
 
   try {
@@ -70,93 +102,117 @@ async function putSafely(cacheName, request, response) {
   }
 }
 
-async function trimCache(cacheName, maxEntries) {
+async function safeCacheMatch(cacheName, request) {
+  try {
+    const cache = await caches.open(cacheName);
+    return await cache.match(request);
+  } catch (error) {
+    console.warn("[GoldBot-ZA] Cache read failed:", error);
+    return null;
+  }
+}
+
+async function trimCache(cacheName, limit) {
   try {
     const cache = await caches.open(cacheName);
     const keys = await cache.keys();
 
-    while (keys.length > maxEntries) {
+    while (keys.length > limit) {
       const oldest = keys.shift();
       if (oldest) await cache.delete(oldest);
     }
   } catch (error) {
-    console.warn("[GoldBot-ZA] Cache cleanup failed:", error);
+    console.warn("[GoldBot-ZA] Cache trimming failed:", error);
   }
 }
 
-async function networkWithTimeout(request) {
-  let timer;
-
-  try {
-    return await Promise.race([
-      fetch(request),
-      new Promise((_, reject) => {
-        timer = setTimeout(
-          () => reject(new Error("Network timeout")),
-          NETWORK_TIMEOUT_MS
-        );
-      })
-    ]);
-  } finally {
-    clearTimeout(timer);
-  }
-}
+/* ---------- INSTALLATION ---------- */
 
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL_CACHE);
 
+    // Cache each shell file independently.
+    // A missing optional file must not break installation.
     await Promise.allSettled(
-      SHELL_FILES.map(async path => {
-        const url = new URL(path, self.registration.scope);
-
+      SHELL_FILES.map(async url => {
         try {
           const response = await fetch(
             new Request(url, { cache: "reload" })
           );
 
           if (isCacheableResponse(response)) {
-            await cache.put(url.href, response);
+            await cache.put(url, response);
           }
         } catch (error) {
           console.warn(
-            "[GoldBot-ZA] Shell asset unavailable:",
-            path
+            "[GoldBot-ZA] Shell file unavailable:",
+            url
           );
         }
       })
     );
 
+    // Offline fallback is optional. If offline.html exists,
+    // cache it; otherwise index.html remains the fallback.
+    try {
+      const response = await fetch(
+        new Request(OFFLINE_URL, { cache: "reload" })
+      );
+
+      if (isCacheableResponse(response)) {
+        await cache.put(OFFLINE_URL, response);
+      }
+    } catch {
+      console.info(
+        "[GoldBot-ZA] Using cached app shell as offline fallback."
+      );
+    }
+
     await self.skipWaiting();
   })());
 });
 
+/* ---------- ACTIVATION AND CLEANUP ---------- */
+
 self.addEventListener("activate", event => {
   event.waitUntil((async () => {
-    const keep = new Set([
+    const keepCaches = new Set([
       SHELL_CACHE,
       ASSET_CACHE,
       IMAGE_CACHE
     ]);
 
-    const names = await caches.keys();
+    const cacheNames = await caches.keys();
 
     await Promise.all(
-      names
+      cacheNames
         .filter(name =>
-          name.startsWith("goldbot-za-") && !keep.has(name)
+          name.startsWith(`${PREFIX}-`) &&
+          !keepCaches.has(name)
         )
         .map(name => caches.delete(name))
     );
 
+    if (self.registration.navigationPreload) {
+      try {
+        await self.registration.navigationPreload.enable();
+      } catch (error) {
+        console.warn(
+          "[GoldBot-ZA] Navigation preload unavailable:",
+          error
+        );
+      }
+    }
+
     await self.clients.claim();
 
-    const windows = await self.clients.matchAll({
+    const clients = await self.clients.matchAll({
       type: "window",
       includeUncontrolled: true
     });
 
-    for (const client of windows) {
+    for (const client of clients) {
       client.postMessage({
         type: "GOLDBOT_SW_ACTIVE",
         version: VERSION
@@ -165,48 +221,102 @@ self.addEventListener("activate", event => {
   })());
 });
 
-async function handleNavigation(request) {
+/* ---------- OFFLINE NAVIGATION FALLBACK ---------- */
+
+async function offlineFallback(request) {
+  // First try the originally requested page.
+  const requestedPage = await safeCacheMatch(
+    SHELL_CACHE,
+    request
+  );
+
+  if (requestedPage) return requestedPage;
+
+  // Then try the dedicated offline page.
+  const offlinePage = await safeCacheMatch(
+    SHELL_CACHE,
+    OFFLINE_URL
+  );
+
+  if (offlinePage) return offlinePage;
+
+  // Finally try the main cached application shell.
+  const appShell =
+    await safeCacheMatch(SHELL_CACHE, INDEX_URL) ||
+    await safeCacheMatch(SHELL_CACHE, APP_ROOT.href);
+
+  if (appShell) return appShell;
+
+  return new Response(
+    "<!doctype html><html lang='en'><meta charset='utf-8'>" +
+    "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
+    "<title>GoldBot-ZA Offline</title>" +
+    "<body style='background:#080808;color:#d4af37;font-family:sans-serif;padding:32px'>" +
+    "<h1>GoldBot-ZA</h1>" +
+    "<p>You are offline. Reconnect to load the application and live market data.</p>" +
+    "</body></html>",
+    {
+      status: 503,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store"
+      }
+    }
+  );
+}
+
+/* ---------- NAVIGATION: NETWORK FIRST ---------- */
+
+async function handleNavigation(request, event) {
   try {
-    const response = await networkWithTimeout(request);
+    let response = null;
+
+    // Use browser navigation preload if available.
+    if (event.preloadResponse) {
+      try {
+        response = await Promise.race([
+          event.preloadResponse,
+          new Promise(resolve =>
+            setTimeout(() => resolve(null), NETWORK_TIMEOUT)
+          )
+        ]);
+      } catch {
+        response = null;
+      }
+    }
+
+    if (!response) {
+      response = await fetchWithTimeout(request);
+    }
 
     if (response && response.status === 200) {
-      await putSafely(
+      // Store successful app navigation as the main shell.
+      await safeCachePut(
         SHELL_CACHE,
-        new URL("./index.html", self.registration.scope).href,
+        INDEX_URL,
         response
       );
     }
 
     return response;
   } catch {
-    const cache = await caches.open(SHELL_CACHE);
-
-    return (
-      await cache.match(request) ||
-      await cache.match(
-        new URL("./index.html", self.registration.scope).href
-      ) ||
-      new Response(
-        "GoldBot-ZA is offline. Reconnect to load the latest app and market data.",
-        {
-          status: 503,
-          headers: {
-            "Content-Type": "text/plain; charset=utf-8"
-          }
-        }
-      )
-    );
+    return await offlineFallback(request);
   }
 }
 
+/* ---------- STATIC ASSETS: STALE WHILE REVALIDATE ---------- */
+
 async function handleStaticAsset(request) {
-  const cache = await caches.open(ASSET_CACHE);
-  const cached = await cache.match(request);
+  const cached = await safeCacheMatch(
+    ASSET_CACHE,
+    request
+  );
 
   if (cached) {
-    fetch(request)
+    // Return cached asset immediately and refresh in background.
+    fetchWithTimeout(request)
       .then(response =>
-        putSafely(ASSET_CACHE, request, response)
+        safeCachePut(ASSET_CACHE, request, response)
       )
       .catch(() => {});
 
@@ -214,47 +324,70 @@ async function handleStaticAsset(request) {
   }
 
   try {
-    const response = await networkWithTimeout(request);
+    const response = await fetchWithTimeout(request);
 
-    if (isCacheableResponse(response)) {
-      await putSafely(ASSET_CACHE, request, response);
-    }
+    await safeCachePut(
+      ASSET_CACHE,
+      request,
+      response
+    );
 
     return response;
   } catch {
     return new Response("Asset unavailable offline.", {
-      status: 503
+      status: 503,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store"
+      }
     });
   }
 }
 
+/* ---------- IMAGES: CACHE FIRST ---------- */
+
 async function handleImage(request) {
-  const cache = await caches.open(IMAGE_CACHE);
-  const cached = await cache.match(request);
+  const cached = await safeCacheMatch(
+    IMAGE_CACHE,
+    request
+  );
 
   if (cached) return cached;
 
   try {
-    const response = await networkWithTimeout(request);
+    const response = await fetchWithTimeout(request);
 
-    if (isCacheableResponse(response)) {
-      await putSafely(IMAGE_CACHE, request, response);
-      await trimCache(IMAGE_CACHE, MAX_IMAGE_ENTRIES);
-    }
+    await safeCachePut(
+      IMAGE_CACHE,
+      request,
+      response
+    );
+
+    await trimCache(
+      IMAGE_CACHE,
+      MAX_IMAGE_ENTRIES
+    );
 
     return response;
   } catch {
-    return new Response("", { status: 503 });
+    return new Response("", {
+      status: 503,
+      headers: { "Cache-Control": "no-store" }
+    });
   }
 }
+
+/* ---------- REQUEST ROUTING ---------- */
 
 self.addEventListener("fetch", event => {
   const request = event.request;
 
+  // Never cache writes, POSTs, or other non-GET requests.
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
 
+  // Supabase and other external services bypass this worker.
   if (
     url.origin !== self.location.origin ||
     isBackendRequest(url) ||
@@ -265,11 +398,15 @@ self.addEventListener("fetch", event => {
 
   if (!isInsideApp(url)) return;
 
+  // Navigation requests receive the offline fallback.
   if (request.mode === "navigate") {
-    event.respondWith(handleNavigation(request));
+    event.respondWith(
+      handleNavigation(request, event)
+    );
     return;
   }
 
+  // Never treat JSON or document responses as static assets.
   if (
     request.destination === "document" ||
     request.headers.get("Accept")?.includes("application/json")
@@ -291,6 +428,8 @@ self.addEventListener("fetch", event => {
   }
 });
 
+/* ---------- APP COMMUNICATION ---------- */
+
 self.addEventListener("message", event => {
   if (event.data?.type === "SKIP_WAITING") {
     event.waitUntil(self.skipWaiting());
@@ -298,5 +437,12 @@ self.addEventListener("message", event => {
 
   if (event.data?.type === "CLEAR_IMAGE_CACHE") {
     event.waitUntil(caches.delete(IMAGE_CACHE));
+  }
+
+  if (event.data?.type === "GET_VERSION") {
+    event.source?.postMessage({
+      type: "GOLDBOT_SW_VERSION",
+      version: VERSION
+    });
   }
 });
