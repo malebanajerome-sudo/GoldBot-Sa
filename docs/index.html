@@ -675,7 +675,7 @@ return undefined;
 }
 
 async function callFunction(name) {
-const response = await fetch(${SUPABASE_URL}/functions/v1/${name}, {
+const response = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
 method: "GET",
 headers: { "apikey": SUPABASE_KEY },
 cache: "no-store"
@@ -686,14 +686,14 @@ let data;
 try {
 data = raw ? JSON.parse(raw) : {};
 } catch {
-throw new Error(HTTP ${response.status}: function did not return JSON.);
+throw new Error(`HTTP ${response.status}: function did not return JSON.`);
 }
 
 if (!response.ok) {
 const details = data.details
 ? " " + (Array.isArray(data.details) ? data.details.join(" | ") : JSON.stringify(data.details))
 : "";
-throw new Error(HTTP ${response.status}: ${data.error || data.message || "Request failed"}${details});
+throw new Error(`HTTP ${response.status}: ${data.error || data.message || "Request failed"}${details}`);
 }
 return data;
 }
@@ -747,7 +747,7 @@ setText("signalReason", first(data, ["reason", "message", "summary"]) ||
 (data.success === false ? data.error || "Signal engine reported a problem." : "Signal received. Review all conditions before trading."));
 const setup = data.trade_setup || data.setup;
 setText("signalSetup", setup && typeof setup === "object"
-? Entry: ${fmtMoney(setup.entry)} · Stop loss: ${fmtMoney(setup.stop_loss)} · Take profit: ${fmtMoney(setup.take_profit)} · R:R ${setup.risk_to_reward || "—"}
+? `Entry: ${fmtMoney(setup.entry)} · Stop loss: ${fmtMoney(setup.stop_loss)} · Take profit: ${fmtMoney(setup.take_profit)} · R:R ${setup.risk_to_reward || "—"}`
 : "No trade setup supplied by the signal engine.");
 } catch (error) {
 setText("signal", "UNAVAILABLE");
@@ -986,7 +986,7 @@ const data = await callFunction(ENDPOINTS.journal);
 if (data.success === false) throw new Error(data.error || "Trade journal failed.");
 const records = Array.isArray(data.records) ? data.records : Array.isArray(data) ? data : [];
 renderJournal(records);
-setText("journalCount", ${data.count ?? records.length} records);
+setText("journalCount", `${data.count ?? records.length} records`);
 } catch (error) {
 showError("journalError", error);
 setText("journalCount", "Unavailable");
