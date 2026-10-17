@@ -1,4 +1,3 @@
-
 {
   "id": "./",
   "name": "GoldBot-ZA | Stacks Co.",
@@ -27,28 +26,39 @@
   ],
   "screenshots": [
     {
-      "src": "./screenshot-price.png",
-      "sizes": "1889x1080",
+      "src": "./screenshot-1.png",
+      "sizes": "1080x2040",
       "type": "image/png",
-      "label": "Live Gold Price Dashboard"
+      "form_factor": "narrow",
+      "label": "GoldBot-ZA Dashboard"
     },
     {
-      "src": "./screenshot-signal.png",
-      "sizes": "2015x1080",
+      "src": "./screenshot-2.png",
+      "sizes": "1080x2040",
       "type": "image/png",
+      "form_factor": "narrow",
       "label": "Gold Trading Signal"
     },
     {
-      "src": "./screenshot-analysis.png",
-      "sizes": "2032x1080",
+      "src": "./screenshot-3.png",
+      "sizes": "1080x2040",
       "type": "image/png",
+      "form_factor": "narrow",
       "label": "Multi-Timeframe Market Analysis"
     },
     {
-      "src": "./screenshot-performance-tracker.png",
-      "sizes": "2038x1080",
+      "src": "./screenshot-4.png",
+      "sizes": "1080x2015",
       "type": "image/png",
-      "label": "Paper Trading Performance Tracker"
+      "form_factor": "narrow",
+      "label": "Paper Trading Performance"
+    },
+    {
+      "src": "./screenshot-5.png",
+      "sizes": "1080x1889",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Live Gold Price"
     }
   ]
 }
