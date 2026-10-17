@@ -428,6 +428,90 @@ self.addEventListener("fetch", event => {
   }
 });
 
+/* ---------- BACKGROUND SYNC ---------- */
+
+const BACKGROUND_SYNC_TAG = "goldbot-background-sync";
+const PERIODIC_SYNC_TAG = "goldbot-periodic-sync";
+
+async function notifyGoldBotClients(message) {
+  const clients = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true
+  });
+
+  for (const client of clients) {
+    client.postMessage(message);
+  }
+
+  return clients.length;
+}
+
+async function refreshAppShell() {
+  try {
+    const response = await fetch(
+      new Request(INDEX_URL, {
+        cache: "reload",
+        credentials: "same-origin"
+      })
+    );
+
+    if (isCacheableResponse(response)) {
+      await safeCachePut(
+        SHELL_CACHE,
+        INDEX_URL,
+        response
+      );
+
+      return true;
+    }
+  } catch (error) {
+    console.warn(
+      "[GoldBot-ZA] Background shell refresh failed:",
+      error
+    );
+  }
+
+  return false;
+}
+
+/*
+ * Background Sync:
+ * Ask the app to retry its own pending, safely queued operations.
+ * The app must implement idempotent retries for journal writes.
+ */
+self.addEventListener("sync", event => {
+  if (event.tag === BACKGROUND_SYNC_TAG) {
+    event.waitUntil((async () => {
+      await notifyGoldBotClients({
+        type: "GOLDBOT_BACKGROUND_SYNC",
+        action: "RETRY_PENDING_OPERATIONS"
+      });
+
+      // Refresh the app shell as an additional safe task.
+      await refreshAppShell();
+    })());
+  }
+});
+
+/*
+ * Periodic Background Sync:
+ * Refresh the app shell and notify open app windows to fetch
+ * fresh prices, analysis, signals and performance from Supabase.
+ * Never cache these live API responses in the service worker.
+ */
+self.addEventListener("periodicsync", event => {
+  if (event.tag === PERIODIC_SYNC_TAG) {
+    event.waitUntil((async () => {
+      await refreshAppShell();
+
+      await notifyGoldBotClients({
+        type: "GOLDBOT_PERIODIC_SYNC",
+        action: "REFRESH_LIVE_DATA"
+      });
+    })());
+  }
+});
+
 /* ---------- APP COMMUNICATION ---------- */
 
 self.addEventListener("message", event => {
