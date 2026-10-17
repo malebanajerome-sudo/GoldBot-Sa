@@ -441,7 +441,7 @@ scroll-behavior: auto !important;
 transition: none !important;
 }
 }
-</style>
+
   <style>  
     :root {  
       color-scheme: dark;  
@@ -1055,76 +1055,19 @@ transition: none !important;
 
 <script>
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", async () => {
-      try {
-        const registration = await navigator.serviceWorker.register(
-          "./service-worker.js"
-        );
-
-        console.log(
-          "GoldBot-ZA service worker registered:",
-          registration.scope
-        );
-
-        const readyRegistration =
-          await navigator.serviceWorker.ready;
-
-        // Background Sync
-        if ("sync" in readyRegistration) {
-          try {
-            await readyRegistration.sync.register(
-              "goldbot-background-sync"
-            );
-            console.log("Background Sync registered.");
-          } catch (error) {
-            console.warn("Background Sync unavailable:", error);
-          }
-        }
-
-        // Periodic Background Sync
-        if ("periodicSync" in readyRegistration) {
-          try {
-            const permission = await navigator.permissions.query({
-              name: "periodic-background-sync"
-            });
-
-            if (permission.state === "granted") {
-              await readyRegistration.periodicSync.register(
-                "goldbot-periodic-sync",
-                { minInterval: 6 * 60 * 60 * 1000 }
-              );
-              console.log("Periodic Background Sync registered.");
-            } else {
-              console.log(
-                "Periodic Sync permission not granted."
-              );
-            }
-          } catch (error) {
-            console.warn(
-              "Periodic Background Sync unavailable:",
-              error
-            );
-          }
-        }
-      } catch (error) {
-        console.error(
-          "GoldBot-ZA service worker registration failed:",
-          error
-        );
-      }
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then((registration) => {
+          console.log("GoldBot-ZA service worker registered:", registration.scope);
+        })
+        .catch((error) => {
+          console.error("Service worker registration failed:", error);
+        });
     });
   }
-
-    navigator.serviceWorker?.addEventListener("message", (event) => {
-    if (
-      event.data?.type === "GOLDBOT_PERIODIC_SYNC" &&
-      event.data?.action === "REFRESH_LIVE_DATA"
-    ) {
-      if (typeof refreshDashboard === "function") {
-        refreshDashboard();
-      }
-    }
-  });
 </script>
 </body>
+</html>
+
+</body>  
   </html>
