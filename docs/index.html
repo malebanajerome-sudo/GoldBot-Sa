@@ -645,6 +645,51 @@
     
 function formatAnalysis(data) {
   const root = data && typeof data === "object" ? data : {};
+  const payload = root.data ?? root.analysis ?? root;
+
+  function render(value) {
+    if (value === null || value === undefined || value === "") {
+      return "—";
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item, i) =>
+        `<div class="record"><strong>${i + 1}.</strong> ${render(item)}</div>`
+      ).join("");
+    }
+
+    if (typeof value === "object") {
+      return Object.entries(value)
+        .map(([key, item]) =>
+          `<div class="record">
+            <strong>${escapeHTML(key.replace(/_/g, " "))}:</strong>
+            ${render(item)}
+          </div>`
+        ).join("");
+    }
+
+    return escapeHTML(String(value));
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return `<p>${escapeHTML(String(payload ?? "No analysis available"))}</p>`;
+  }
+
+  const entries = Object.entries(payload).filter(([key]) =>
+    !["success", "error"].includes(key.toLowerCase())
+  );
+
+  if (!entries.length) {
+    return "<p>No analysis details were returned.</p>";
+  }
+
+  return entries.map(([key, value]) =>
+    `<div class="record">
+      <h3>${escapeHTML(key.replace(/_/g, " ").toUpperCase())}</h3>
+      ${render(value)}
+    </div>`
+  ).join("");
+}
 
   function readable(value, key = "") {
     if (value === null || value === undefined || value === "") {
