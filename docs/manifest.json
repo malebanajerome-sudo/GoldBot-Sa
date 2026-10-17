@@ -30,28 +30,24 @@
       "src": "./screenshot-price.png",
       "sizes": "1080x1889",
       "type": "image/png",
-      "form_factor": "narrow",
       "label": "Live Gold Price Dashboard"
     },
     {
       "src": "./screenshot-signal.png",
       "sizes": "1080x2015",
       "type": "image/png",
-      "form_factor": "narrow",
       "label": "Gold Trading Signal"
     },
     {
       "src": "./screenshot-analysis.png",
       "sizes": "1080x2032",
       "type": "image/png",
-      "form_factor": "narrow",
       "label": "Multi-Timeframe Market Analysis"
     },
     {
       "src": "./screenshot-performance-tracker.png",
       "sizes": "1080x2038",
       "type": "image/png",
-      "form_factor": "narrow",
       "label": "Paper Trading Performance Tracker"
     }
   ]
