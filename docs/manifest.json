@@ -26,36 +26,36 @@
   ],
   "screenshots": [
     {
-      "src": "./screenshot-1.png",
-      "sizes": "1080x2040",
+      "src": "./screenshot-1_1.png",
+      "sizes": "540x1200",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "GoldBot-ZA Dashboard"
+      "label": "Multi-Timeframe Analysis"
     },
     {
-      "src": "./screenshot-2.png",
-      "sizes": "1080x2040",
+      "src": "./screenshot-2_1.png",
+      "sizes": "540x1200",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Gold Trading Signal"
+      "label": "Performance Tracker"
     },
     {
-      "src": "./screenshot-3.png",
-      "sizes": "1080x2040",
+      "src": "./screenshot-3_1.png",
+      "sizes": "540x1200",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Multi-Timeframe Market Analysis"
+      "label": "Trade Journal"
     },
     {
-      "src": "./screenshot-4.png",
-      "sizes": "1080x2015",
+      "src": "./sceenshot-4_1.png",
+      "sizes": "540x1008",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Paper Trading Performance"
+      "label": "Trading Signal"
     },
     {
-      "src": "./screenshot-5.png",
-      "sizes": "1080x1889",
+      "src": "./screenshot-5_1.png",
+      "sizes": "540x945",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Live Gold Price"
