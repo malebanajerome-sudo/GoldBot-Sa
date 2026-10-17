@@ -642,7 +642,73 @@
       }
     }
 
-    function formatAnalysis(data) {
+    
+function formatAnalysis(data) {
+  const root = data && typeof data === "object" ? data : {};
+
+  function readable(value, key = "") {
+    if (value === null || value === undefined || value === "") {
+      return "—";
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item, index) =>
+        `<div class="record"><strong>${index + 1}.</strong> ${readable(item)}</div>`
+      ).join("");
+    }
+
+    if (typeof value === "object") {
+      return Object.entries(value)
+        .filter(([k]) => ![
+          "success", "error", "message", "available"
+        ].includes(k.toLowerCase()))
+        .map(([k, v]) =>
+          `<div class="record">
+            <strong>${escapeHTML(k.replace(/_/g, " "))}:</strong>
+            ${readable(v, k)}
+          </div>`
+        ).join("");
+    }
+
+    const text = String(value);
+    const safe = escapeHTML(text);
+
+    if (key.toLowerCase().includes("trend")) {
+      const trend = text.toUpperCase();
+      const colour = trend.includes("BULLISH")
+        ? "#56d68b"
+        : trend.includes("BEARISH")
+          ? "#ff7777"
+          : "#d4af37";
+
+      return `<span style="color:${colour};font-weight:bold">${safe}</span>`;
+    }
+
+    return safe;
+  }
+
+  const payload = root.data ?? root.analysis ?? root;
+
+  if (typeof payload !== "object" || payload === null) {
+    return `<p>${escapeHTML(payload)}</p>`;
+  }
+
+  const fields = Object.entries(payload).filter(([key]) =>
+    !["success", "error", "message"].includes(key.toLowerCase())
+  );
+
+  if (!fields.length) {
+    return "<p>No analysis details were returned.</p>";
+  }
+
+  return fields.map(([key, value]) =>
+    `<div class="record">
+      <h3>${escapeHTML(key.replace(/_/g, " ").toUpperCase())}</h3>
+      ${readable(value, key)}
+    </div>`
+  ).join("");
+}
+
       const root = asObject(data);
       const source = asObject(root.data || root.analysis || root);
       const excluded = new Set([
