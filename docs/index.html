@@ -793,7 +793,7 @@ transition: none !important;
       signal: "market-signal-v2",  
       analysis: "market-analysis-v2",  
       journal: "trade-journal",  
-      performance: "performance-tracker"
+      performance: "performance-tracker",
       dxy: "dxy-indicator"
     };  
   
@@ -869,7 +869,59 @@ transition: none !important;
       $(id).textContent = "";  
       $(id).classList.remove("error");  
     }  
-  
+  async function loadDXY() {
+  try {
+    const data = await callFunction(ENDPOINTS.dxy);
+
+    if (data.success === false) {
+      throw new Error(data.error || "DXY request failed.");
+    }
+
+    setText("dxy-value", fmtNumber(data.value, 3));
+
+    const change = Number(data.day_change_percent);
+    setText(
+      "dxy-change",
+      Number.isFinite(change)
+        ? `${change > 0 ? "+" : ""}${change.toFixed(3)}%`
+        : "—"
+    );
+
+    setText("dxy-bias", data.provider_direction || "Unavailable");
+
+    setText(
+      "dxy-gold-context",
+      change < 0 ? "Potential gold support" :
+      change > 0 ? "Potential gold pressure" : "Neutral"
+    );
+
+    const stale = data.stale === true;
+    setText(
+      "dxy-status",
+      stale ? "STALE DATA" : "CONNECTED"
+    );
+
+    setText(
+      "dxy-updated",
+      data.timestamp ? fmtDate(data.timestamp) : "—"
+    );
+
+    if (stale) {
+      setText(
+        "dxy-status",
+        `STALE · ${data.market_state || "UNKNOWN"}`
+      );
+    }
+  } catch (error) {
+    setText("dxy-value", "—");
+    setText("dxy-change", "—");
+    setText("dxy-bias", "Unavailable");
+    setText("dxy-gold-context", "Unconfirmed");
+    setText("dxy-status", "CONNECTION ERROR");
+    setText("dxy-updated", error.message);
+  }
+    }
+    
     async function loadPrice() {  
       try {  
         const data = await callFunction(ENDPOINTS.price);  
@@ -1269,10 +1321,10 @@ if (marketStatus === "MARKET CLOSED") {
 
   return "MARKET OPEN";
   }
-  }
+
 </script>
 </body>
 </html>
 
-</body>  
-                                                         </html>
+
+                                                         
