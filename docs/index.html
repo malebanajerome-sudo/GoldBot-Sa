@@ -761,7 +761,33 @@ transition: none !important;
       if (s.includes("NO TRADE") || s.includes("NO SIGNAL")) return "NO TRADE";  
       return s || "NO TRADE";  
     }  
-  
+  function getGoldMarketStatus() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Johannesburg",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(new Date());
+
+  const values = {};
+  for (const part of parts) {
+    values[part.type] = part.value;
+  }
+
+  const day = values.weekday;
+  const minutes = Number(values.hour) * 60 + Number(values.minute);
+
+  if (day === "Sat" || day === "Sun") {
+    return "MARKET CLOSED";
+  }
+
+  if (minutes >= 1380) {
+    return "MARKET CLOSED";
+  }
+
+  return "MARKET OPEN";
+    }
     async function loadSignal() {  
       try {  
         const data = await callFunction(ENDPOINTS.signal);  
