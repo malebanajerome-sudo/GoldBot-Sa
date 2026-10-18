@@ -1203,7 +1203,7 @@ if (marketStatus === "MARKET CLOSED") {
   
       try {  
         await Promise.allSettled([  
-          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal()  
+          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal(), loadDXY()  
         ]);  
   
         const priceOk = $("goldPrice").textContent !== "Unavailable";  
