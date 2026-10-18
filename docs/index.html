@@ -643,7 +643,141 @@ transition: none !important;
   Prices are informational. Signals are not guaranteed outcomes.  
   <div id="lastRefresh" style="margin-top:8px"></div>  
 </footer>
+<!-- DXY INDICATOR — STACKS CO. -->
+<section id="dxy-indicator" class="dxy-panel">
+  <div class="dxy-heading">
+    <div>
+      <span class="dxy-eyebrow">STACKS CO. · MARKET CONTEXT</span>
+      <h2>🇺🇸 DXY Indicator</h2>
+      <p>US Dollar Index</p>
+    </div>
+    <span id="dxy-status">WAITING FOR DATA</span>
+  </div>
 
+  <div class="dxy-price-card">
+    <div>
+      <small>DXY VALUE</small>
+      <strong id="dxy-value">—</strong>
+    </div>
+    <div class="dxy-change-card">
+      <small>CHANGE</small>
+      <strong id="dxy-change">—</strong>
+    </div>
+  </div>
+
+  <div class="dxy-grid">
+    <div class="dxy-stat">
+      <small>DOLLAR BIAS</small>
+      <strong id="dxy-bias">Awaiting data</strong>
+    </div>
+    <div class="dxy-stat">
+      <small>GOLD CONTEXT</small>
+      <strong id="dxy-gold-context">Unconfirmed</strong>
+    </div>
+  </div>
+
+  <div class="dxy-updated">
+    <span>Last updated</span>
+    <span id="dxy-updated">—</span>
+  </div>
+
+  <p class="dxy-note">
+    A weaker dollar can support gold, while a stronger dollar can pressure
+    it. DXY is contextual evidence, not a standalone trading signal.
+  </p>
+</section>
+
+<style>
+.dxy-panel {
+  background: #080808;
+  color: #f5f5f5;
+  border: 1px solid #80651f;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.dxy-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.dxy-eyebrow,
+.dxy-panel small {
+  color: #aaa;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.dxy-panel h2 {
+  color: #e0bd57;
+  font-size: 21px;
+  margin: 8px 0;
+}
+.dxy-heading p,
+.dxy-note {
+  color: #999;
+  font-size: 13px;
+  margin: 0;
+}
+#dxy-status {
+  color: #e0bd57;
+  border: 1px solid #80651f;
+  border-radius: 20px;
+  padding: 7px;
+  font-size: 10px;
+  text-align: center;
+}
+.dxy-price-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: #111;
+  padding: 16px;
+  border-radius: 12px;
+}
+.dxy-price-card strong {
+  display: block;
+  font-size: 27px;
+  margin-top: 8px;
+}
+.dxy-change-card {
+  text-align: right;
+}
+.dxy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.dxy-stat {
+  background: #111;
+  border: 1px solid #252525;
+  border-radius: 10px;
+  padding: 14px;
+}
+.dxy-stat strong {
+  display: block;
+  color: #e0bd57;
+  font-size: 14px;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+.dxy-updated {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid #292929;
+  padding-top: 14px;
+  margin-top: 18px;
+  color: #999;
+  font-size: 12px;
+}
+.dxy-note {
+  line-height: 1.6;
+  margin-top: 14px;
+}
+  </style>
   </main>    <nav>  
     <a href="#top">⌂<br>Home</a><a href="#gold">◈<br>Gold</a>  
     <a href="#signals">↗<br>Signals</a><a href="#analysis">⌁<br>Analysis</a>  
