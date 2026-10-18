@@ -768,13 +768,22 @@ transition: none !important;
         const signal = normaliseSignal(first(data, ["signal", "direction", "action"])); 
         const marketStatus = getGoldMarketStatus();
 
+const marketStatus = getGoldMarketStatus();
+
 if (marketStatus === "MARKET CLOSED") {
   setText("signal", "MARKET CLOSED");
   $("signal").className = "signal wait";
   setText("signalSubtitle", "XAU/USD · South Africa time");
-  setText("signalReason", "Gold market is scheduled to be closed. Signals are paused until it reopens.");
-  setText("signalSetup", "Entry: — · Stop loss: — · Take profit: — · R:R —");
+  setText(
+    "signalReason",
+    "Gold trading is scheduled to be closed. New signals are paused until the market reopens."
+  );
+  setText(
+    "signalSetup",
+    "Entry: — · Stop loss: — · Take profit: — · R:R —"
+  );
   return;
+}
 }
         setText("signal", signal);  
         $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");  
@@ -1076,19 +1085,32 @@ if (marketStatus === "MARKET CLOSED") {
     });
   }
   function getGoldMarketStatus() {
-  const now = new Date();
-  const sast = new Date(
-    now.getTime() + now.getTimezoneOffset() * 60000 + 7200000
-  );
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Johannesburg",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(new Date());
 
-  const day = sast.getUTCDay();
-  const minutes = sast.getUTCHours() * 60 + sast.getUTCMinutes();
+  const values = {};
+  parts.forEach(part => {
+    values[part.type] = part.value;
+  });
 
-  if (day === 6 || day === 0) return "MARKET CLOSED";
-  if (day === 5 && minutes >= 1380) return "MARKET CLOSED";
-  if (minutes >= 1380) return "MARKET CLOSED";
+  const day = values.weekday;
+  const minutes = Number(values.hour) * 60 + Number(values.minute);
+
+  if (day === "Sat" || day === "Sun") {
+    return "MARKET CLOSED";
+  }
+
+  if (minutes >= 23 * 60) {
+    return "MARKET CLOSED";
+  }
 
   return "MARKET OPEN";
+  }
   }
 </script>
 </body>
