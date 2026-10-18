@@ -768,8 +768,6 @@ transition: none !important;
         const signal = normaliseSignal(first(data, ["signal", "direction", "action"])); 
         const marketStatus = getGoldMarketStatus();
 
-const marketStatus = getGoldMarketStatus();
-
 if (marketStatus === "MARKET CLOSED") {
   setText("signal", "MARKET CLOSED");
   $("signal").className = "signal wait";
@@ -783,7 +781,6 @@ if (marketStatus === "MARKET CLOSED") {
     "Entry: — · Stop loss: — · Take profit: — · R:R —"
   );
   return;
-}
 }
         setText("signal", signal);  
         $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");  
