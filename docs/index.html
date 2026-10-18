@@ -1065,6 +1065,21 @@ transition: none !important;
         });
     });
   }
+  function getGoldMarketStatus() {
+  const now = new Date();
+  const sast = new Date(
+    now.getTime() + now.getTimezoneOffset() * 60000 + 7200000
+  );
+
+  const day = sast.getUTCDay();
+  const minutes = sast.getUTCHours() * 60 + sast.getUTCMinutes();
+
+  if (day === 6 || day === 0) return "MARKET CLOSED";
+  if (day === 5 && minutes >= 1380) return "MARKET CLOSED";
+  if (minutes >= 1380) return "MARKET CLOSED";
+
+  return "MARKET OPEN";
+  }
 </script>
 </body>
 </html>
