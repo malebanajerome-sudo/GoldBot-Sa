@@ -765,7 +765,17 @@ transition: none !important;
     async function loadSignal() {  
       try {  
         const data = await callFunction(ENDPOINTS.signal);  
-        const signal = normaliseSignal(first(data, ["signal", "direction", "action"]));  
+        const signal = normaliseSignal(first(data, ["signal", "direction", "action"])); 
+        const marketStatus = getGoldMarketStatus();
+
+if (marketStatus === "MARKET CLOSED") {
+  setText("signal", "MARKET CLOSED");
+  $("signal").className = "signal wait";
+  setText("signalSubtitle", "XAU/USD · South Africa time");
+  setText("signalReason", "Gold market is scheduled to be closed. Signals are paused until it reopens.");
+  setText("signalSetup", "Entry: — · Stop loss: — · Take profit: — · R:R —");
+  return;
+}
         setText("signal", signal);  
         $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");  
         setText("signalSubtitle", data.market || "XAU/USD");  
