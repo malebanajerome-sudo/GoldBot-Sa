@@ -777,88 +777,13 @@ transition: none !important;
   line-height: 1.6;
   margin-top: 14px;
 }
-  
-/* GoldBot-ZA circular section menu */
-#sectionNav {
-  position: fixed;
-  top: 14px;
-  right: 14px;
-  z-index: 9999;
-  font-family: inherit;
-}
-
-#sectionMenuButton {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid #c9a447;
-  background: #080808;
-  color: #e6bd55;
-  font-size: 22px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 12px rgba(201, 164, 71, 0.18);
-}
-
-#sectionMenu {
-  position: absolute;
-  top: 52px;
-  right: 0;
-  width: 235px;
-  padding: 8px;
-  border: 1px solid #705822;
-  border-radius: 14px;
-  background: #090909;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
-}
-
-#sectionMenu[hidden] {
-  display: none !important;
-}
-
-#sectionMenu a {
-  display: block;
-  padding: 13px 12px;
-  margin: 2px 0;
-  border-radius: 8px;
-  color: #f0d27a;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-#sectionMenu a:hover,
-#sectionMenu a:focus {
-  background: #211a0b;
-  outline: none;
-}
-
-@media (max-width: 480px) {
-  #sectionNav {
-    top: 10px;
-    right: 10px;
-  }
-}
-
   </style>
-  </main>
-
-  <nav id="sectionNav" aria-label="App sections">
-    <button type="button" id="sectionMenuButton" aria-label="Open sections" aria-expanded="false">☰</button>
-    <div id="sectionMenu" hidden>
-      <a href="#top">01 · Price</a>
-      <a href="#dxy">02 · DXY</a>
-      <a href="#analysis">03 · Market Analysis</a>
-      <a href="#signals">04 · Signal</a>
-      <a href="#performance">05 · Performance Centre</a>
-      <a href="#journal">06 · Trade Journal</a>
-    </div>
-  </nav>
-
-  <script>
-    "use strict";
-
+  </main>    <nav>  
+    <a href="#top">⌂<br>Home</a><a href="#gold">◈<br>Gold</a>  
+    <a href="#signals">↗<br>Signals</a><a href="#analysis">⌁<br>Analysis</a>  
+    <a href="#performance">▤<br>Stats</a>  
+  </nav>    <script>  
+    "use strict";  
   
     const SUPABASE_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co";  
     const SUPABASE_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";  
@@ -869,50 +794,9 @@ transition: none !important;
       analysis: "market-analysis-v2",  
       journal: "trade-journal",  
       performance: "performance-tracker",
-      dxy: "dxy-indicator"
-    };  
+      dxy: "dxy-indicator"    };  
   
-    const $ = id => document.getElementById(id); 
-    
-    // Circular section menu
-    const sectionMenuButton = $("sectionMenuButton");
-    const sectionMenu = $("sectionMenu");
-
-    if (sectionMenuButton && sectionMenu) {
-      sectionMenuButton.addEventListener("click", () => {
-        const isOpen = !sectionMenu.hidden;
-        sectionMenu.hidden = isOpen;
-        sectionMenuButton.setAttribute("aria-expanded", String(!isOpen));
-        sectionMenuButton.setAttribute(
-          "aria-label",
-          isOpen ? "Open sections" : "Close sections"
-        );
-        sectionMenuButton.textContent = isOpen ? "☰" : "✕";
-      });
-
-      sectionMenu.addEventListener("click", event => {
-        if (event.target.closest("a")) {
-          sectionMenu.hidden = true;
-          sectionMenuButton.setAttribute("aria-expanded", "false");
-          sectionMenuButton.setAttribute("aria-label", "Open sections");
-          sectionMenuButton.textContent = "☰";
-        }
-      });
-
-      document.addEventListener("click", event => {
-        if (
-          !sectionMenu.hidden &&
-          !sectionMenu.contains(event.target) &&
-          !sectionMenuButton.contains(event.target)
-        ) {
-          sectionMenu.hidden = true;
-          sectionMenuButton.setAttribute("aria-expanded", "false");
-          sectionMenuButton.setAttribute("aria-label", "Open sections");
-          sectionMenuButton.textContent = "☰";
-        }
-      });
-    }
-
+    const $ = id => document.getElementById(id);  
     let lastGoodPrice = null;  
     let refreshInProgress = false;  
   
@@ -984,59 +868,7 @@ transition: none !important;
       $(id).textContent = "";  
       $(id).classList.remove("error");  
     }  
-  async function loadDXY() {
-  try {
-    const data = await callFunction(ENDPOINTS.dxy);
-
-    if (data.success === false) {
-      throw new Error(data.error || "DXY request failed.");
-    }
-
-    setText("dxy-value", fmtNumber(data.value, 3));
-
-    const change = Number(data.day_change_percent);
-    setText(
-      "dxy-change",
-      Number.isFinite(change)
-        ? `${change > 0 ? "+" : ""}${change.toFixed(3)}%`
-        : "—"
-    );
-
-    setText("dxy-bias", data.provider_direction || "Unavailable");
-
-    setText(
-      "dxy-gold-context",
-      change < 0 ? "Potential gold support" :
-      change > 0 ? "Potential gold pressure" : "Neutral"
-    );
-
-    const stale = data.stale === true;
-    setText(
-      "dxy-status",
-      stale ? "STALE DATA" : "CONNECTED"
-    );
-
-    setText(
-      "dxy-updated",
-      data.timestamp ? fmtDate(data.timestamp) : "—"
-    );
-
-    if (stale) {
-      setText(
-        "dxy-status",
-        `STALE · ${data.market_state || "UNKNOWN"}`
-      );
-    }
-  } catch (error) {
-    setText("dxy-value", "—");
-    setText("dxy-change", "—");
-    setText("dxy-bias", "Unavailable");
-    setText("dxy-gold-context", "Unconfirmed");
-    setText("dxy-status", "CONNECTION ERROR");
-    setText("dxy-updated", error.message);
-  }
-    }
-    
+  
     async function loadPrice() {  
       try {  
         const data = await callFunction(ENDPOINTS.price);  
@@ -1370,7 +1202,7 @@ if (marketStatus === "MARKET CLOSED") {
   
       try {  
         await Promise.allSettled([  
-          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal(), loadDXY()  
+          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal()  
         ]);  
   
         const priceOk = $("goldPrice").textContent !== "Unavailable";  
@@ -1436,10 +1268,7 @@ if (marketStatus === "MARKET CLOSED") {
 
   return "MARKET OPEN";
   }
-
+  
 </script>
 </body>
 </html>
-
-
-                                                         
