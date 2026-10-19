@@ -566,10 +566,35 @@ transition: none !important;
       main { padding-left: 10px; padding-right: 10px; }  
       .panel { padding: 13px; }  
               }
-   #smcDetails {
+   
+   .smc-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.smc-detail-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border-color, rgba(255,255,255,0.12));
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+.smc-detail-value {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
   white-space: pre-line;
-  overflow-wrap: anywhere; 
-    }  
+}
+
+@media (max-width: 360px) {
+  .smc-details-grid {
+    grid-template-columns: 1fr;
+ }
+}
    
   </style>  </head>  
 <body id="top">  
@@ -651,7 +676,34 @@ transition: none !important;
   <div id="smcEvent" class="message">Waiting for market structure analysis...</div>
 
   <div class="eyebrow" style="margin-top:18px">Market Structure Details</div>
-  <div id="smcDetails" class="analysis-summary">Waiting for SMC data...</div>
+<div class="smc-details-grid">
+
+  <div class="smc-detail-card">
+    <div class="stat-label">Latest Liquidity Sweep</div>
+    <div id="smcLiquidity" class="smc-detail-value">—</div>
+  </div>
+
+  <div class="smc-detail-card">
+    <div class="stat-label">Unfilled Fair Value Gap</div>
+    <div id="smcFVG" class="smc-detail-value">—</div>
+  </div>
+
+  <div class="smc-detail-card">
+    <div class="stat-label">Latest Valid Order Block</div>
+    <div id="smcOrderBlock" class="smc-detail-value">—</div>
+  </div>
+
+  <div class="smc-detail-card">
+    <div class="stat-label">Latest Completed Candle</div>
+    <div id="smcCandle" class="smc-detail-value">—</div>
+  </div>
+
+  <div class="smc-detail-card">
+    <div class="stat-label">Signal Confirmation</div>
+    <div id="smcConfirmation" class="smc-detail-value">—</div>
+  </div>
+
+</div>
 
   <div id="smcError" class="message"></div>
 </section>
@@ -1180,16 +1232,25 @@ if (marketStatus === "MARKET CLOSED") {
         showError("analysisError", error);  
       }  
     }  
-    
+   
 async function loadSMC() {
   clearError("smcError");
+
+  const fields = [
+    "smcBias",
+    "smcSwings",
+    "smcSwingHigh",
+    "smcSwingLow",
+    "smcEvent",
+    "smcLiquidity",
+    "smcFVG",
+    "smcOrderBlock",
+    "smcCandle",
+    "smcConfirmation"
+  ];
+
+  fields.forEach(id => setText(id, "Loading..."));
   setText("smcUpdated", "Loading...");
-  setText("smcBias", "—");
-  setText("smcSwings", "—");
-  setText("smcSwingHigh", "—");
-  setText("smcSwingLow", "—");
-  setText("smcEvent", "Loading structure events...");
-  setText("smcDetails", "Loading liquidity and zones...");
 
   try {
     const data = await callFunction(ENDPOINTS.smc);
@@ -1203,6 +1264,7 @@ async function loadSMC() {
     const fvg = data.fairValueGaps || {};
     const blocks = data.orderBlocks || {};
     const confirmation = data.signalConfirmation || {};
+    const candle = data.latestCompletedCandle || {};
 
     setText("smcBias", structure.bias || "UNAVAILABLE");
     setText("smcSwings", structure.confirmedSwingCount ?? "—");
@@ -1215,33 +1277,69 @@ async function loadSMC() {
     if (latestEvent) {
       setText(
         "smcEvent",
-        `${latestEvent.type || "Structure event"} · Level ${formatSMCValue(latestEvent.brokenLevel)} · Close ${formatSMCValue(latestEvent.close)} · ${latestEvent.time ? fmtDate(latestEvent.time) : "Time unavailable"}`
+        `${latestEvent.type || "Structure event"}\n` +
+        `Broken level: ${formatSMCValue(latestEvent.brokenLevel)} · ` +
+        `Close: ${formatSMCValue(latestEvent.close)}\n` +
+        `${latestEvent.time ? fmtDate(latestEvent.time) : "Time unavailable"}`
       );
     } else {
       setText("smcEvent", "No structure events reported.");
     }
 
     const sweep = liquidity.latestSweep;
+    setText(
+      "smcLiquidity",
+      sweep
+        ? `${sweep.type || "Liquidity sweep"}\n` +
+          `Level: ${formatSMCValue(sweep.level)}\n` +
+          `Extreme: ${formatSMCValue(sweep.extreme)}\n` +
+          `Time: ${sweep.time ? fmtDate(sweep.time) : "—"}`
+        : "No recent sweep reported."
+    );
+
     const gap = fvg.latestUnfilled;
+    setText(
+      "smcFVG",
+      gap
+        ? `${gap.type || "Fair Value Gap"}\n` +
+          `Zone: ${formatSMCValue(gap.lower)} – ${formatSMCValue(gap.upper)}\n` +
+          `Midpoint: ${formatSMCValue(gap.midpoint)}\n` +
+          `Status: ${gap.fullyMitigated ? "Mitigated" : gap.touched ? "Touched" : "Unfilled"}`
+        : "No unfilled FVG reported."
+    );
+
     const block = blocks.latestValid;
-    const candle = data.latestCompletedCandle;
+    setText(
+      "smcOrderBlock",
+      block
+        ? `${block.type || "Order Block"}\n` +
+          `Zone: ${formatSMCValue(block.low)} – ${formatSMCValue(block.high)}\n` +
+          `Midpoint: ${formatSMCValue(block.midpoint)}\n` +
+          `Status: ${block.invalidated ? "Invalidated" : "Valid"}`
+        : "No valid order block reported."
+    );
 
-    const lines = [
-      `Timeframe: ${data.timeframe || "—"}`,
-      `Data source: ${data.dataSource || "—"}`,
-      `Completed candles: ${data.candleCount ?? "—"}`,
-      `Latest candle: ${candle?.time ? fmtDate(candle.time) : "—"}`,
-      `Latest candle close: ${formatSMCValue(candle?.close)}`,
-      `Latest candle age: ${data.latestCandleAgeMinutes != null ? Number(data.latestCandleAgeMinutes).toFixed(1) + " min" : "—"}`,
-      `Swing strength: ${structure.swingStrength ?? "—"}`,
-      `Latest liquidity sweep: ${sweep ? `${sweep.type} · Level ${formatSMCValue(sweep.level)} · Extreme ${formatSMCValue(sweep.extreme)}` : "None reported"}`,
-      `Latest unfilled FVG: ${gap ? `${gap.type} · ${formatSMCValue(gap.lower)}–${formatSMCValue(gap.upper)} · Midpoint ${formatSMCValue(gap.midpoint)}` : "None reported"}`,
-      `Latest valid order block: ${block ? `${block.type} · ${formatSMCValue(block.low)}–${formatSMCValue(block.high)} · Midpoint ${formatSMCValue(block.midpoint)}` : "None reported"}`,
-      `Signal confirmation: ${confirmation.direction || "—"} · ${confirmation.status || "—"}`,
-      confirmation.note || ""
-    ];
+    setText(
+      "smcCandle",
+      candle.time
+        ? `Time: ${fmtDate(candle.time)}\n` +
+          `Open: ${formatSMCValue(candle.open)}\n` +
+          `High: ${formatSMCValue(candle.high)}\n` +
+          `Low: ${formatSMCValue(candle.low)}\n` +
+          `Close: ${formatSMCValue(candle.close)}\n` +
+          `Age: ${data.latestCandleAgeMinutes != null
+            ? Number(data.latestCandleAgeMinutes).toFixed(1) + " min"
+            : "—"}`
+        : "Candle data unavailable."
+    );
 
-    setText("smcDetails", lines.filter(Boolean).join("\n"));
+    setText(
+      "smcConfirmation",
+      `${confirmation.direction || "—"} · ${confirmation.status || "—"}\n` +
+      `${confirmation.publishesTradeSignal === true
+        ? "Publishes a trade signal."
+        : "Analysis only — the main signal engine validates the trade setup."}`
+    );
 
     setText(
       "smcUpdated",
@@ -1251,13 +1349,19 @@ async function loadSMC() {
   } catch (error) {
     setText("smcUpdated", "Unavailable");
     setText("smcBias", "Unavailable");
+    setText("smcSwings", "—");
+    setText("smcSwingHigh", "—");
+    setText("smcSwingLow", "—");
     setText("smcEvent", "SMC data could not be loaded.");
-    setText("smcDetails", "Unable to retrieve market structure data.");
+    setText("smcLiquidity", "Unavailable");
+    setText("smcFVG", "Unavailable");
+    setText("smcOrderBlock", "Unavailable");
+    setText("smcCandle", "Unavailable");
+    setText("smcConfirmation", "Unavailable");
     showError("smcError", error);
   }
 }
-
-
+ 
 function formatSMCValue(value) {
   if (value == null || value === "") return "—";
 
