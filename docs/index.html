@@ -1334,68 +1334,7 @@ if (marketStatus === "MARKET CLOSED") {
         showError("analysisError", error);  
       }  
     }  
-   
-async function loadSMC() {
-  clearError("smcError");
 
-  const fields = [
-    "smcBias",
-    "smcSwings",
-    "smcSwingHigh",
-    "smcSwingLow",
-    "smcEvent",
-    "smcLiquidity",
-    "smcFVG",
-    "smcOrderBlock",
-    "smcCandle",
-    "smcConfirmation"
-  ];
-
-  fields.forEach(id => setText(id, "Loading..."));
-  setText("smcUpdated", "Loading...");
-
-  try {
-    const data = await callFunction(ENDPOINTS.smc);
-
-    if (!data || data.success !== true) {
-      throw new Error(data?.error || "SMC endpoint returned an unsuccessful response.");
-    }
-
-    const structure = data.marketStructure || {};
-    const liquidity = data.liquidity || {};
-    const fvg = data.fairValueGaps || {};
-    const blocks = data.orderBlocks || {};
-    const confirmation = data.signalConfirmation || {};
-    const candle = data.latestCompletedCandle || {};
-
-    setText("smcBias", structure.bias || "UNAVAILABLE");
-    setText("smcSwings", structure.confirmedSwingCount ?? "—");
-    setText("smcSwingHigh", formatSMCValue(structure.lastSwingHigh?.price));
-    setText("smcSwingLow", formatSMCValue(structure.lastSwingLow?.price));
-
-    const events = Array.isArray(structure.events) ? structure.events : [];
-    const latestEvent = events.length ? events[events.length - 1] : null;
-
-    if (latestEvent) {
-      setText(
-        "smcEvent",
-        `${latestEvent.type || "Structure event"}\n` +
-        `Broken level: ${formatSMCValue(latestEvent.brokenLevel)} · ` +
-        `Close: ${formatSMCValue(latestEvent.close)}\n` +
-        `${latestEvent.time ? fmtDate(latestEvent.time) : "Time unavailable"}`
-      );
-    } else {
-      setText("smcEvent", "No structure events reported.");
-    }
-
-    const sweep = liquidity.latestSweep;
-    setText(
-      "smcLiquidity",
-      sweep
-        ? `${sweep.type || "Liquidity sweep"}\n` +
-          `Level: ${formatSMCValue(sweep.level)}\n` +
-      }
-      
 async function loadSMC() {
   clearError("smcError");
   setText("smcUpdated", "Loading...");
