@@ -644,15 +644,11 @@ transition: none !important;
   <div id="analysisError" class="message"></div>  
 </section>  
 
-<!-- SMC MARKET STRUCTURE — STACKS CO. -->
-<div class="section-heading" id="smc">
-  <h2>Smart Money Concepts</h2>
-  <span id="smcUpdated" class="small muted">Waiting for data</span>
-</div>
-
+<!-- SMC MARKET STRUCTURE — STACKS CO. --> 
 <section class="panel" id="smc-panel">
   <div class="eyebrow">STACKS CO. · MARKET STRUCTURE</div>
 
+  <div class="eyebrow" style="margin-top:18px">Structure Overview</div>
   <div class="stats-grid">
     <div>
       <div class="stat-label">Structure Bias</div>
@@ -670,60 +666,166 @@ transition: none !important;
       <div class="stat-label">Last Swing Low</div>
       <div id="smcSwingLow" class="stat-value">—</div>
     </div>
+    <div>
+      <div class="stat-label">Swing Strength</div>
+      <div id="smcSwingStrength" class="stat-value">—</div>
+    </div>
   </div>
 
-  <div class="eyebrow" style="margin-top:18px">Latest Structure Event</div>
-  <div id="smcEvent" class="message">Waiting for market structure analysis...</div>
-
-  <div class="eyebrow" style="margin-top:18px">Market Structure Details</div>
-<div class="smc-details-grid">
-
-  <div class="smc-detail-card">
-    <div class="stat-label">Latest Liquidity Sweep</div>
-    <div id="smcLiquidity" class="smc-detail-value">—</div>
+  <div class="eyebrow" style="margin-top:20px">Latest Structure Event</div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Event Type</div>
+      <div id="smcEventType" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Broken Level</div>
+      <div id="smcEventLevel" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Event Close</div>
+      <div id="smcEventClose" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Event Time</div>
+      <div id="smcEventTime" class="stat-value">—</div>
+    </div>
   </div>
 
-  <div class="smc-detail-card">
-    <div class="stat-label">Unfilled Fair Value Gap</div>
-    <div id="smcFVG" class="smc-detail-value">—</div>
+  <div class="eyebrow" style="margin-top:20px">Liquidity Sweep</div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Sweep Type</div>
+      <div id="smcSweepType" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Liquidity Level</div>
+      <div id="smcSweepLevel" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Sweep Extreme</div>
+      <div id="smcSweepExtreme" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Sweep Time</div>
+      <div id="smcSweepTime" class="stat-value">—</div>
+    </div>
   </div>
 
-  <div class="smc-detail-card">
-    <div class="stat-label">Latest Valid Order Block</div>
-    <div id="smcOrderBlock" class="smc-detail-value">—</div>
+  <div class="eyebrow" style="margin-top:20px">Fair Value Gap</div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">FVG Type</div>
+      <div id="smcFVGType" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Zone Low</div>
+      <div id="smcFVGLow" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Zone High</div>
+      <div id="smcFVGHigh" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">FVG Midpoint</div>
+      <div id="smcFVGMid" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">FVG Status</div>
+      <div id="smcFVGStatus" class="stat-value">—</div>
+    </div>
   </div>
 
-  <div class="smc-detail-card">
-    <div class="stat-label">Latest Completed Candle</div>
-    <div id="smcCandle" class="smc-detail-value">—</div>
+  <div class="eyebrow" style="margin-top:20px">Order Block</div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Block Type</div>
+      <div id="smcOBType" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Block Low</div>
+      <div id="smcOBLow" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Block High</div>
+      <div id="smcOBHigh" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Block Midpoint</div>
+      <div id="smcOBMid" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Block Status</div>
+      <div id="smcOBStatus" class="stat-value">—</div>
+    </div>
   </div>
 
-  <div class="smc-detail-card">
-    <div class="stat-label">Signal Confirmation</div>
-    <div id="smcConfirmation" class="smc-detail-value">—</div>
+  <div class="eyebrow" style="margin-top:20px">Latest Completed Candle</div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Timeframe</div>
+      <div id="smcTimeframe" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Candle Time</div>
+      <div id="smcCandleTime" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Open</div>
+      <div id="smcCandleOpen" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">High</div>
+      <div id="smcCandleHigh" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Low</div>
+      <div id="smcCandleLow" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Close</div>
+      <div id="smcCandleClose" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Candle Age</div>
+      <div id="smcCandleAge" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Completed Candles</div>
+      <div id="smcCandleCount" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Data Source</div>
+      <div id="smcDataSource" class="stat-value">—</div>
+    </div>
   </div>
 
-</div>
+  <div class="eyebrow" style="margin-top:20px">Signal Confirmation</div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Direction</div>
+      <div id="smcConfirmDirection" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Confirmation Status</div>
+      <div id="smcConfirmStatus" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Publishes Trade Signal</div>
+      <div id="smcPublishesSignal" class="stat-value">—</div>
+    </div>
+  </div>
 
+  <div id="smcConfirmNote" class="message" style="margin-top:12px">
+    Waiting for signal confirmation details...
+  </div>
+
+  <div id="smcUpdated" class="small muted" style="margin-top:12px">
+    Waiting for data
+  </div>
   <div id="smcError" class="message"></div>
 </section>
 
-<div class="section-heading" id="performance">  
-  <h2>Performance centre</h2><button id="refreshButton" type="button">Refresh all</button>  
-</div>  
-<section class="panel">  
-  <div class="eyebrow">Paper trading performance</div>  
-  <div id="performanceMode" class="message">Loading performance tracker...</div>  
-  <div class="stats-grid">  
-    <div><div class="stat-label">Total journal trades</div><div id="totalTrades" class="stat-value">—</div></div>  
-    <div><div class="stat-label">Wins</div><div id="wins" class="stat-value green">—</div></div>  
-    <div><div class="stat-label">Losses</div><div id="losses" class="stat-value red">—</div></div>  
-    <div><div class="stat-label">Simulated net R</div><div id="netR" class="stat-value gold">—</div></div>  
-    <div><div class="stat-label">Closed trades</div><div id="closedTrades" class="stat-value">—</div></div>  
-    <div><div class="stat-label">Cancelled</div><div id="cancelledCount" class="stat-value">—</div></div>  
-  </div>  
-  <div id="performanceError" class="message"></div>  
-</section>  
 
 <div class="section-heading" id="journal"><h2>Recent trades</h2><span id="journalCount" class="small muted">Loading...</span></div>  
 <section class="panel">  
@@ -1292,75 +1394,132 @@ async function loadSMC() {
       sweep
         ? `${sweep.type || "Liquidity sweep"}\n` +
           `Level: ${formatSMCValue(sweep.level)}\n` +
-          `Extreme: ${formatSMCValue(sweep.extreme)}\n` +
-          `Time: ${sweep.time ? fmtDate(sweep.time) : "—"}`
-        : "No recent sweep reported."
-    );
+      }
+      
+async function loadSMC() {
+  clearError("smcError");
+  setText("smcUpdated", "Loading...");
+
+  const fields = [
+    "smcBias", "smcSwings", "smcSwingHigh", "smcSwingLow",
+    "smcSwingStrength",
+    "smcEventType", "smcEventLevel", "smcEventClose", "smcEventTime",
+    "smcSweepType", "smcSweepLevel", "smcSweepExtreme", "smcSweepTime",
+    "smcFVGType", "smcFVGLow", "smcFVGHigh", "smcFVGMid", "smcFVGStatus",
+    "smcOBType", "smcOBLow", "smcOBHigh", "smcOBMid", "smcOBStatus",
+    "smcTimeframe", "smcCandleTime", "smcCandleOpen", "smcCandleHigh",
+    "smcCandleLow", "smcCandleClose", "smcCandleAge", "smcCandleCount",
+    "smcDataSource", "smcConfirmDirection", "smcConfirmStatus",
+    "smcPublishesSignal", "smcConfirmNote"
+  ];
+
+  fields.forEach(id => setText(id, "—"));
+
+  try {
+    const data = await callFunction(ENDPOINTS.smc);
+
+    if (!data || data.success !== true) {
+      throw new Error(data?.error || "SMC endpoint returned an unsuccessful response.");
+    }
+
+    const structure = data.marketStructure || {};
+    const liquidity = data.liquidity || {};
+    const fvg = data.fairValueGaps || {};
+    const blocks = data.orderBlocks || {};
+    const confirmation = data.signalConfirmation || {};
+    const candle = data.latestCompletedCandle || {};
+
+    const price = value =>
+      value == null || value === "" ? "—" : formatSMCValue(value);
+
+    const date = value => value ? fmtDate(value) : "—";
+
+    setText("smcBias", structure.bias || "—");
+    setText("smcSwings", structure.confirmedSwingCount ?? "—");
+    setText("smcSwingHigh", price(structure.lastSwingHigh?.price));
+    setText("smcSwingLow", price(structure.lastSwingLow?.price));
+    setText("smcSwingStrength", structure.swingStrength ?? "—");
+
+    const events = Array.isArray(structure.events) ? structure.events : [];
+    const event = events.length ? events[events.length - 1] : null;
+
+    setText("smcEventType", event?.type || "No event");
+    setText("smcEventLevel", price(event?.brokenLevel));
+    setText("smcEventClose", price(event?.close));
+    setText("smcEventTime", date(event?.time));
+
+    const sweep = liquidity.latestSweep;
+    setText("smcSweepType", sweep?.type || "None reported");
+    setText("smcSweepLevel", price(sweep?.level));
+    setText("smcSweepExtreme", price(sweep?.extreme));
+    setText("smcSweepTime", date(sweep?.time));
 
     const gap = fvg.latestUnfilled;
+    setText("smcFVGType", gap?.type || "None reported");
+    setText("smcFVGLow", price(gap?.lower));
+    setText("smcFVGHigh", price(gap?.upper));
+    setText("smcFVGMid", price(gap?.midpoint));
+
     setText(
-      "smcFVG",
+      "smcFVGStatus",
       gap
-        ? `${gap.type || "Fair Value Gap"}\n` +
-          `Zone: ${formatSMCValue(gap.lower)} – ${formatSMCValue(gap.upper)}\n` +
-          `Midpoint: ${formatSMCValue(gap.midpoint)}\n` +
-          `Status: ${gap.fullyMitigated ? "Mitigated" : gap.touched ? "Touched" : "Unfilled"}`
-        : "No unfilled FVG reported."
+        ? gap.fullyMitigated
+          ? "Fully mitigated"
+          : gap.touched
+            ? "Touched"
+            : "Unfilled"
+        : "—"
     );
 
     const block = blocks.latestValid;
+    setText("smcOBType", block?.type || "None reported");
+    setText("smcOBLow", price(block?.low));
+    setText("smcOBHigh", price(block?.high));
+    setText("smcOBMid", price(block?.midpoint));
     setText(
-      "smcOrderBlock",
-      block
-        ? `${block.type || "Order Block"}\n` +
-          `Zone: ${formatSMCValue(block.low)} – ${formatSMCValue(block.high)}\n` +
-          `Midpoint: ${formatSMCValue(block.midpoint)}\n` +
-          `Status: ${block.invalidated ? "Invalidated" : "Valid"}`
-        : "No valid order block reported."
+      "smcOBStatus",
+      block ? (block.invalidated ? "Invalidated" : "Valid") : "—"
     );
 
-    setText(
-      "smcCandle",
-      candle.time
-        ? `Time: ${fmtDate(candle.time)}\n` +
-          `Open: ${formatSMCValue(candle.open)}\n` +
-          `High: ${formatSMCValue(candle.high)}\n` +
-          `Low: ${formatSMCValue(candle.low)}\n` +
-          `Close: ${formatSMCValue(candle.close)}\n` +
-          `Age: ${data.latestCandleAgeMinutes != null
-            ? Number(data.latestCandleAgeMinutes).toFixed(1) + " min"
-            : "—"}`
-        : "Candle data unavailable."
-    );
+    setText("smcTimeframe", data.timeframe || "—");
+    setText("smcCandleTime", date(candle.time));
+    setText("smcCandleOpen", price(candle.open));
+    setText("smcCandleHigh", price(candle.high));
+    setText("smcCandleLow", price(candle.low));
+    setText("smcCandleClose", price(candle.close));
 
     setText(
-      "smcConfirmation",
-      `${confirmation.direction || "—"} · ${confirmation.status || "—"}\n` +
-      `${confirmation.publishesTradeSignal === true
-        ? "Publishes a trade signal."
-        : "Analysis only — the main signal engine validates the trade setup."}`
+      "smcCandleAge",
+      data.latestCandleAgeMinutes != null
+        ? `${Number(data.latestCandleAgeMinutes).toFixed(1)} min`
+        : "—"
+    );
+
+    setText("smcCandleCount", data.candleCount ?? "—");
+    setText("smcDataSource", data.dataSource || "—");
+
+    setText("smcConfirmDirection", confirmation.direction || "—");
+    setText("smcConfirmStatus", confirmation.status || "—");
+    setText(
+      "smcPublishesSignal",
+      confirmation.publishesTradeSignal === true ? "Yes" : "No"
+    );
+    setText(
+      "smcConfirmNote",
+      confirmation.note || "No additional confirmation details."
     );
 
     setText(
       "smcUpdated",
-      data.generatedAt ? fmtDate(data.generatedAt) : "Response received"
+      data.generatedAt ? `Updated: ${date(data.generatedAt)}` : "Response received"
     );
 
   } catch (error) {
     setText("smcUpdated", "Unavailable");
-    setText("smcBias", "Unavailable");
-    setText("smcSwings", "—");
-    setText("smcSwingHigh", "—");
-    setText("smcSwingLow", "—");
-    setText("smcEvent", "SMC data could not be loaded.");
-    setText("smcLiquidity", "Unavailable");
-    setText("smcFVG", "Unavailable");
-    setText("smcOrderBlock", "Unavailable");
-    setText("smcCandle", "Unavailable");
-    setText("smcConfirmation", "Unavailable");
     showError("smcError", error);
   }
 }
+
  
 function formatSMCValue(value) {
   if (value == null || value === "") return "—";
