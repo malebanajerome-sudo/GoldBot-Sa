@@ -1434,6 +1434,11 @@ async function loadSMC() {
 
     const date = value => value ? fmtDate(value) : "—";
 
+    const cleanLabel = value =>
+  typeof value === "string"
+    ? value.replace(/_/g, " ")
+    : value;
+
     setText("smcBias", structure.bias || "—");
     setText("smcSwings", structure.confirmedSwingCount ?? "—");
     setText("smcSwingHigh", price(structure.lastSwingHigh?.price));
@@ -1442,20 +1447,19 @@ async function loadSMC() {
 
     const events = Array.isArray(structure.events) ? structure.events : [];
     const event = events.length ? events[events.length - 1] : null;
-
-    setText("smcEventType", event?.type || "No event");
+setText("smcEventType", cleanLabel(event?.type) || "No event");
     setText("smcEventLevel", price(event?.brokenLevel));
     setText("smcEventClose", price(event?.close));
     setText("smcEventTime", date(event?.time));
 
     const sweep = liquidity.latestSweep;
-    setText("smcSweepType", sweep?.type || "None reported");
+    setText("smcSweepType", cleanLabel(sweep?.type) || "None reported");
     setText("smcSweepLevel", price(sweep?.level));
     setText("smcSweepExtreme", price(sweep?.extreme));
     setText("smcSweepTime", date(sweep?.time));
 
     const gap = fvg.latestUnfilled;
-    setText("smcFVGType", gap?.type || "None reported");
+    setText("smcFVGType", cleanLabel(gap?.type) || "None reported");
     setText("smcFVGLow", price(gap?.lower));
     setText("smcFVGHigh", price(gap?.upper));
     setText("smcFVGMid", price(gap?.midpoint));
@@ -1472,7 +1476,7 @@ async function loadSMC() {
     );
 
     const block = blocks.latestValid;
-    setText("smcOBType", block?.type || "None reported");
+    setText("smcOBType", cleanLabel(block?.type) || "None reported");
     setText("smcOBLow", price(block?.low));
     setText("smcOBHigh", price(block?.high));
     setText("smcOBMid", price(block?.midpoint));
@@ -1498,15 +1502,15 @@ async function loadSMC() {
     setText("smcCandleCount", data.candleCount ?? "—");
     setText("smcDataSource", data.dataSource || "—");
 
-    setText("smcConfirmDirection", confirmation.direction || "—");
-    setText("smcConfirmStatus", confirmation.status || "—");
+    setText("smcConfirmDirection", cleanLabel(confirmation.direction) || "—");
+    setText("smcConfirmStatus", cleanLabel(confirmation.status) || "—");
     setText(
       "smcPublishesSignal",
       confirmation.publishesTradeSignal === true ? "Yes" : "No"
     );
     setText(
       "smcConfirmNote",
-      confirmation.note || "No additional confirmation details."
+      confirmation.note || "Analysis Only - the main signal engine validates trade set-up."
     );
 
     setText(
