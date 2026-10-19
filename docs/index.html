@@ -1175,6 +1175,116 @@ if (marketStatus === "MARKET CLOSED") {
         showError("analysisError", error);  
       }  
     }  
+    
+async function loadSMC() {
+  clearError("smcError");
+
+  setText("smcUpdated", "Updating...");
+  setText("smcBias", "—");
+  setText("smcSwings", "—");
+  setText("smcSwingHigh", "—");
+  setText("smcSwingLow", "—");
+  setText("smcEvent", "Loading market structure...");
+  setText("smcDetails", "Retrieving SMC data...");
+
+  try {
+    const data = await callFunction(ENDPOINTS.smc);
+
+    if (data.success === false) {
+      throw new Error(data.error || "SMC analysis failed.");
+    }
+
+    const root = data.data && typeof data.data === "object"
+      ? { ...data, ...data.data }
+      : data;
+
+    const bias = root.bias || root.structureBias || root.market_bias ||
+      root.marketBias || root.direction || "Unavailable";
+
+    const swings = root.confirmedSwingCount ?? root.confirmed_swing_count ??
+      root.swingCount ?? root.swing_count;
+
+    const high = root.lastSwingHigh ?? root.last_swing_high ??
+      root.latestSwingHigh ?? root.latest_swing_high;
+
+    const low = root.lastSwingLow ?? root.last_swing_low ??
+      root.latestSwingLow ?? root.latest_swing_low;
+
+    setText("smcBias", String(bias).replace(/_/g, " "));
+    setText("smcSwings", swings ?? "—");
+    setText("smcSwingHigh", formatSMCValue(high));
+    setText("smcSwingLow", formatSMCValue(low));
+
+    const events = root.events || root.recentEvents || root.recent_events;
+    const event = root.latestEvent || root.latest_event ||
+      root.lastEvent || root.last_event ||
+      (Array.isArray(events) ? events[0] : null);
+
+    if (event && typeof event === "object") {
+      const type = event.type || event.event || event.name || event.event_type ||
+        "Structure event";
+      const time = event.timestamp || event.time || event.created_at || "";
+      const price = event.price ?? event.level ?? event.broken_level;
+
+      setText(
+        "smcEvent",
+        `${type}${price != null ? " · " + formatSMCValue(price) : ""}${time ? " · " + String(time) : ""}`
+      );
+    } else {
+      setText("smcEvent", typeof event === "string" ? event : "No recent structure event reported.");
+    }
+
+    const details = [];
+    const fields = [
+      ["Trend", root.trend || root.trendBias || root.trend_bias],
+      ["Structure", root.structure || root.marketStructure || root.market_structure],
+      ["Last BOS", root.lastBOS || root.last_bos],
+      ["Last CHoCH", root.lastCHoCH || root.last_choch],
+      ["Liquidity sweep", root.latestSweep || root.latest_sweep],
+      ["Unfilled zone", root.latestUnfilled || root.latest_unfilled]
+    ];
+
+    for (const [label, value] of fields) {
+      if (value != null && typeof value !== "object") {
+        details.push(`${label}: ${String(value)}`);
+      }
+    }
+
+    setText(
+      "smcDetails",
+      details.length ? details.join(" · ") :
+        `SMC endpoint responded. Available fields: ${Object.keys(root).join(", ") || "none"}.`
+    );
+
+    const updated = root.updated_at || root.updatedAt || root.timestamp ||
+      root.generated_at || root.generatedAt;
+
+    setText("smcUpdated", updated ? fmtDate(updated) : "Response received");
+
+  } catch (error) {
+    setText("smcUpdated", "Unavailable");
+    setText("smcBias", "Unavailable");
+    setText("smcEvent", "SMC data could not be loaded.");
+    setText("smcDetails", "Check the SMC endpoint response.");
+    showError("smcError", error);
+  }
+}
+
+function formatSMCValue(value) {
+  if (value == null || value === "") return "—";
+
+  if (typeof value === "object") {
+    value = value.price ?? value.value ?? value.level ?? value.close;
+  }
+
+  const number = Number(value);
+  return Number.isFinite(number)
+    ? number.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 3
+      })
+    : String(value);
+}
   
     async function loadPerformance() {  
       clearError("performanceError");  
@@ -1292,7 +1402,7 @@ if (marketStatus === "MARKET CLOSED") {
   
       try {  
         await Promise.allSettled([  
-          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal(), loadDXY()  
+          loadPrice(), loadSignal(), loadAnalysis(), loadPerformance(), loadJournal(), loadDXY(), loadSMC()  
         ]);  
   
         const priceOk = $("goldPrice").textContent !== "Unavailable";  
