@@ -1244,6 +1244,12 @@ const details = [
   "Signal confirmation: " + JSON.stringify(root.signalConfirmation ?? null)
 ];
 
+for (const [label, value] of fields) {
+      if (value != null && typeof value !== "object") {
+        details.push(`${label}: ${String(value)}`);
+      }
+}
+    
     setText(
       "smcDetails",
       details.length ? details.join(" · ") :
