@@ -1174,43 +1174,76 @@ transition: none !important;
 
   return "MARKET OPEN";
     }
-    async function loadSignal() {  
-      try {  
-        const data = await callFunction(ENDPOINTS.signal);  
-        const signal = normaliseSignal(first(data, ["signal", "direction", "action"])); 
-        const marketStatus = getGoldMarketStatus();
 
-if (marketStatus === "MARKET CLOSED") {
-  setText("signal", "MARKET CLOSED");
-  $("signal").className = "signal wait";
-  setText("signalSubtitle", "XAU/USD · South Africa time");
-  setText(
-    "signalReason",
-    "Gold trading is scheduled to be closed. New signals are paused until the market reopens."
-  );
-  setText(
-    "signalSetup",
-    "Entry: — · Stop loss: — · Take profit: — · R:R —"
-  );
-  return;
+async function loadSignal() {
+  try {
+    const data = await callFunction(ENDPOINTS.signal);
+
+    const signal = normaliseSignal(
+      first(data, ["signal", "direction", "action"])
+    );
+
+    const marketStatus = getGoldMarketStatus();
+
+    if (marketStatus === "MARKET CLOSED") {
+      setText("signal", "MARKET CLOSED");
+      $("signal").className = "signal wait";
+      setText("signalSubtitle", "XAU/USD · South Africa time");
+      setText(
+        "signalReason",
+        "Gold trading is scheduled to be closed. New signals are paused until the market reopens."
+      );
+      setText(
+        "signalSetup",
+        "Entry: — · Stop loss: — · Take profit: — · R:R —"
+      );
+      return;
+    }
+
+    setText("signal", signal);
+    $("signal").className =
+      "signal " +
+      (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");
+
+    setText("signalSubtitle", data.market || "XAU/USD");
+
+    setText(
+      "signalReason",
+      first(data, ["reason", "message", "summary"]) ||
+        (data.success === false
+          ? data.error || "Signal engine reported a problem."
+          : `Confidence: ${data.confidence ?? "—"}% · Score: ${data.score ?? "—"}`)
+    );
+
+    const setup = data.trade_setup || data.setup || data.levels || data;
+
+    const entry = setup.entry ?? setup.entryPrice;
+    const stopLoss =
+      setup.stop_loss ?? setup.stopLoss ?? setup.sl;
+    const takeProfit =
+      setup.take_profit ?? setup.takeProfit ?? setup.tp;
+    const riskReward =
+      setup.risk_to_reward ?? setup.riskReward ?? setup.rr ?? "—";
+
+    const hasSetup =
+      entry != null && stopLoss != null && takeProfit != null;
+
+    setText(
+      "signalSetup",
+      hasSetup
+        ? `Entry: ${fmtMoney(entry)} · Stop loss: ${fmtMoney(stopLoss)} · Take profit: ${fmtMoney(takeProfit)} · R:R ${riskReward}`
+        : "No trade setup supplied by the signal engine."
+    );
+
+  } catch (error) {
+    setText("signal", "UNAVAILABLE");
+    $("signal").className = "signal wait";
+    setText("signalSubtitle", "Signal engine connection failed.");
+    showError("signalReason", error);
+    setText("signalSetup", "Entry: — · Stop loss: — · Take profit: — · R:R —");
+  }
 }
-        setText("signal", signal);  
-        $("signal").className = "signal " + (signal === "BUY" ? "buy" : signal === "SELL" ? "sell" : "wait");  
-        setText("signalSubtitle", data.market || "XAU/USD");  
-        setText("signalReason", first(data, ["reason", "message", "summary"]) ||  
-          (data.success === false ? data.error || "Signal engine reported a problem." : "Signal received. Review all conditions before trading."));  
-        const setup = data.trade_setup || data.setup;  
-        setText("signalSetup", setup && typeof setup === "object"  
-          ? `Entry: ${fmtMoney(setup.entry)} · Stop loss: ${fmtMoney(setup.stop_loss)} · Take profit: ${fmtMoney(setup.take_profit)} · R:R ${setup.risk_to_reward || "—"}`  
-          : "No trade setup supplied by the signal engine.");  
-      } catch (error) {  
-        setText("signal", "UNAVAILABLE");  
-        $("signal").className = "signal wait";  
-        setText("signalSubtitle", "Signal engine connection failed.");  
-        showError("signalReason", error);  
-        setText("signalSetup", "");  
-      }  
-    }  
+
   
     function extractFrames(data) {  
       // Accept direct response, nested data, or a JSON-encoded response.  
