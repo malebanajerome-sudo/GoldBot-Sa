@@ -439,8 +439,9 @@ font-size: 10px;
 *::after {
 scroll-behavior: auto !important;
 transition: none !important;
+ }
 }
-}
+   </style>
 
   <style>  
     :root {  
@@ -634,9 +635,11 @@ transition: none !important;
   </section>  
 </div>  
 
-<div class="section-heading" id="analysis">  
-  <h2>Market intelligence</h2><span id="analysisUpdated" class="small muted"></span>  
-</div>  
+<div class="section-heading" id="analysis">
+  <h2>Market intelligence</h2>
+  <span id="analysisUpdated" class="small muted"></span>
+  <button id="refreshButton" type="button">Refresh all</button>
+</div>
 <section class="panel">  
   <div class="eyebrow">Multi-timeframe analysis</div>  
   <div id="analysisSummary" class="analysis-summary" style="margin-top:12px">Loading market analysis...</div>  
