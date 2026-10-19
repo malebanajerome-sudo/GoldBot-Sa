@@ -1234,15 +1234,16 @@ async function loadSMC() {
       setText("smcEvent", typeof event === "string" ? event : "No recent structure event reported.");
     }
 
-    const details = [];
-    const fields = [
-      ["Trend", root.trend || root.trendBias || root.trend_bias],
-      ["Structure", root.structure || root.marketStructure || root.market_structure],
-      ["Last BOS", root.lastBOS || root.last_bos],
-      ["Last CHoCH", root.lastCHoCH || root.last_choch],
-      ["Liquidity sweep", root.latestSweep || root.latest_sweep],
-      ["Unfilled zone", root.latestUnfilled || root.latest_unfilled]
-    ];
+    
+const details = [
+  "Analysis: " + JSON.stringify(root.analysis ?? null),
+  "Market structure: " + JSON.stringify(root.marketStructure ?? null),
+  "Liquidity: " + JSON.stringify(root.liquidity ?? null),
+  "Fair value gaps: " + JSON.stringify(root.fairValueGaps ?? null),
+  "Order blocks: " + JSON.stringify(root.orderBlocks ?? null),
+  "Signal confirmation: " + JSON.stringify(root.signalConfirmation ?? null)
+];
+
 
     for (const [label, value] of fields) {
       if (value != null && typeof value !== "object") {
