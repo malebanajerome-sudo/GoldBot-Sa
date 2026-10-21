@@ -647,6 +647,51 @@ transition: none !important;
   <div id="analysisError" class="message"></div>  
 </section>  
 
+    
+<!-- DXY INDICATOR — STACKS CO. -->
+    <section id="dxy-indicator" class="dxy-panel">
+  <div class="dxy-heading">
+    <div>
+      <span class="dxy-eyebrow">STACKS CO. · MARKET CONTEXT</span>
+      <h2>🇺🇸 DXY Indicator</h2>
+      <p>US Dollar Index</p>
+    </div>
+    <span id="dxy-status">WAITING FOR DATA</span>
+  </div>
+
+  <div class="dxy-price-card">
+    <div>
+      <small>DXY VALUE</small>
+      <strong id="dxy-value">—</strong>
+    </div>
+    <div class="dxy-change-card">
+      <small>CHANGE</small>
+      <strong id="dxy-change">—</strong>
+    </div>
+  </div>
+
+  <div class="dxy-grid">
+    <div class="dxy-stat">
+      <small>DOLLAR BIAS</small>
+      <strong id="dxy-bias">Awaiting data</strong>
+    </div>
+    <div class="dxy-stat">
+      <small>GOLD CONTEXT</small>
+      <strong id="dxy-gold-context">Unconfirmed</strong>
+    </div>
+  </div>
+
+  <div class="dxy-updated">
+    <span>Last updated</span>
+    <span id="dxy-updated">—</span>
+  </div>
+
+  <p class="dxy-note">
+    A weaker dollar can support gold, while a stronger dollar can pressure
+    it. DXY is contextual evidence, not a standalone trading signal.
+  </p>
+    </section>
+
 <!-- SMC MARKET STRUCTURE — STACKS CO. --> 
 <section class="panel" id="smc-panel">
   <div class="eyebrow">STACKS CO. · MARKET STRUCTURE</div>
@@ -853,6 +898,15 @@ transition: none !important;
     target="_blank" rel="noopener">XOOMAR</a>
   </p>
 </section>
+
+
+<section class="panel" id="newsHub">
+  <div class="eyebrow">MARKET NEWS</div>
+  <h2>Gold News Hub</h2>
+  <p class="muted" id="newsStatus">Loading latest market headlines...</p>
+  <div id="newsItems"></div>
+  <button type="button" onclick="loadNewsHub()">Refresh News</button>
+</section>
     
     
 <div class="section-heading" id="journal"><h2>Recent trades</h2><span id="journalCount" class="small muted">Loading...</span></div>  
@@ -862,48 +916,7 @@ transition: none !important;
 </section>  
 
 <section id="performance" class="panel" style="margin-top:20px">
-  <div class="section-heading">
-    <h2>Paper-trading performance</h2>
-  </div>
 
-  <div id="performanceMode" class="message">
-    Connecting to performance tracker...
-  </div>
-
-  <div class="stats-grid">
-    <div>
-      <div class="stat-label">Total trades</div>
-      <div id="totalTrades" class="stat-value">—</div>
-    </div>
-
-    <div>
-      <div class="stat-label">Wins</div>
-      <div id="wins" class="stat-value green">—</div>
-    </div>
-
-    <div>
-      <div class="stat-label">Losses</div>
-      <div id="losses" class="stat-value red">—</div>
-    </div>
-
-    <div>
-      <div class="stat-label">Closed trades</div>
-      <div id="closedTrades" class="stat-value">—</div>
-    </div>
-
-    <div>
-      <div class="stat-label">Simulated net R</div>
-      <div id="netR" class="stat-value gold">—</div>
-    </div>
-
-    <div>
-      <div class="stat-label">Cancelled trades</div>
-      <div id="cancelledCount" class="stat-value">—</div>
-    </div>
-  </div>
-
-  <div id="performanceError" class="message"></div>
-</section>    
     
 <footer>  
   GOLD BOT-ZA · STACKS CO.<br>  
@@ -911,49 +924,6 @@ transition: none !important;
   Prices are informational. Signals are not guaranteed outcomes.  
   <div id="lastRefresh" style="margin-top:8px"></div>  
 </footer>
-<!-- DXY INDICATOR — STACKS CO. -->
-<section id="dxy-indicator" class="dxy-panel">
-  <div class="dxy-heading">
-    <div>
-      <span class="dxy-eyebrow">STACKS CO. · MARKET CONTEXT</span>
-      <h2>🇺🇸 DXY Indicator</h2>
-      <p>US Dollar Index</p>
-    </div>
-    <span id="dxy-status">WAITING FOR DATA</span>
-  </div>
-
-  <div class="dxy-price-card">
-    <div>
-      <small>DXY VALUE</small>
-      <strong id="dxy-value">—</strong>
-    </div>
-    <div class="dxy-change-card">
-      <small>CHANGE</small>
-      <strong id="dxy-change">—</strong>
-    </div>
-  </div>
-
-  <div class="dxy-grid">
-    <div class="dxy-stat">
-      <small>DOLLAR BIAS</small>
-      <strong id="dxy-bias">Awaiting data</strong>
-    </div>
-    <div class="dxy-stat">
-      <small>GOLD CONTEXT</small>
-      <strong id="dxy-gold-context">Unconfirmed</strong>
-    </div>
-  </div>
-
-  <div class="dxy-updated">
-    <span>Last updated</span>
-    <span id="dxy-updated">—</span>
-  </div>
-
-  <p class="dxy-note">
-    A weaker dollar can support gold, while a stronger dollar can pressure
-    it. DXY is contextual evidence, not a standalone trading signal.
-  </p>
-</section>
 
 <style>
 .dxy-panel {
