@@ -950,7 +950,7 @@ transition: none !important;
     </div>
     <div>
       <div class="stat-label">Win rate</div>
-      <div id="winRate" class="stat-value gold">—</div>
+      <div id="performanceWinRate" class="stat-value gold">—</div>
     </div>
     <div>
       <div class="stat-label">Simulated net result</div>
@@ -1706,7 +1706,7 @@ async function loadPerformance() {
     setText("performanceOpenTrades", open);
     setText("closedTrades", closed);
     setText("cancelledCount", cancelled);
-    setText("winRate", `${fmtNumber(winRate)}%`);
+    setText("performanceWinRate", `${fmtNumber(winRate)}%`);
 
     // Dashboard summary cards
     setText("openTrades", open);
