@@ -938,7 +938,7 @@ transition: none !important;
     </div>
     <div>
       <div class="stat-label">Open trades</div>
-      <div id="openTrades" class="stat-value">—</div>
+      <div id="performanceOpenTrades" class="stat-value">—</div>
     </div>
     <div>
       <div class="stat-label">Completed trades</div>
@@ -1662,33 +1662,85 @@ function formatSMCValue(value) {
       })
     : String(value);
 }
-  
-    async function loadPerformance() {  
-      clearError("performanceError");  
-      try {  
-        const data = await callFunction(ENDPOINTS.performance);  
-        if (data.success === false) throw new Error(data.error || "Performance tracker failed.");  
-  
-        setText("performanceMode", data.mode || "Performance tracker connected");  
-        setText("totalTrades", data.total_trades);  
-        setText("wins", data.wins);  
-        setText("losses", data.losses);  
-        setText("openTrades", data.open_trades);  
-        setText("completedTrades", data.closed_trades);  
-        setText("closedTrades", data.closed_trades);  
-        setText("cancelledTrades", `Cancelled: ${data.cancelled ?? "—"}`);  
-        setText("cancelledCount", data.cancelled);  
-        setText("winRate", data.win_rate_percent === undefined ? "—" : `${fmtNumber(data.win_rate_percent)}%`);  
-        setText("netR", data.simulated_net_R === undefined ? "—" : `${Number(data.simulated_net_R) > 0 ? "+" : ""}${fmtNumber(data.simulated_net_R)}R`);  
-  
-        if (data.note) setText("performanceMode", `${data.mode || "Tracker connected"} · ${data.note}`);  
-      } catch (error) {  
-        showError("performanceError", error);  
-        if ($("performanceMode").textContent.startsWith("Loading")) {  
-          $("performanceMode").textContent = "Performance tracker unavailable.";  
-        }  
-      }  
-    }  
+       
+async function loadPerformance() {
+  clearError("performanceError");
+  setText("performanceMode", "Refreshing performance data...");
+
+  try {
+    const data = await callFunction(ENDPOINTS.performance);
+
+    if (!data || data.success === false) {
+      throw new Error(
+        data?.error || "Performance tracker failed."
+      );
+    }
+
+    // The tracker returns statistics inside data.performance.
+    const stats = data.performance || {};
+
+    if (stats.connected === false) {
+      throw new Error("Trade journal is not connected.");
+    }
+
+    const total = Number(stats.total ?? 0);
+    const wins = Number(stats.wins ?? 0);
+    const losses = Number(stats.losses ?? 0);
+    const open = Number(stats.open ?? 0);
+    const closed = Number(stats.closed ?? 0);
+    const cancelled = Number(
+      stats.cancelled ?? data.cancelled ?? 0
+    );
+
+    const winRate = Number(
+      stats.win_rate_percent ??
+      (wins + losses > 0
+        ? (wins / (wins + losses)) * 100
+        : 0)
+    );
+
+    // Performance Centre
+    setText("totalTrades", total);
+    setText("wins", wins);
+    setText("losses", losses);
+    setText("performanceOpenTrades", open);
+    setText("closedTrades", closed);
+    setText("cancelledCount", cancelled);
+    setText("winRate", `${fmtNumber(winRate)}%`);
+
+    // Dashboard summary cards
+    setText("openTrades", open);
+    setText("completedTrades", closed);
+    setText("cancelledTrades", `Cancelled: ${cancelled}`);
+    setText("winRate", `${fmtNumber(winRate)}%`);
+
+    // Do not invent a net result if the backend doesn't provide it.
+    const netR =
+      stats.simulated_net_R ??
+      stats.simulated_net_r ??
+      stats.net_R ??
+      stats.net_r;
+
+    setText(
+      "netR",
+      netR == null || netR === ""
+        ? "Not available"
+        : `${Number(netR) > 0 ? "+" : ""}${fmtNumber(netR)}R`
+    );
+
+    setText(
+      "performanceMode",
+      stats.connected
+        ? "Performance tracker connected · Trade journal synced"
+        : "Performance data received"
+    );
+
+  } catch (error) {
+    showError("performanceError", error);
+    setText("performanceMode", "Unable to load performance statistics.");
+  }
+}
+
   
     function renderJournal(records) {  
       const holder = $("tradeList");  
