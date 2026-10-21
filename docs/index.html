@@ -2168,9 +2168,10 @@ async function syncGoldBotPushSubscription() {
         result.error || `Subscription failed (HTTP ${response.status})`
       );
     }
-
+console.log("Push subscription response:", result);
     console.log("GoldBot-ZA push subscription synced successfully.");
   } catch (error) {
+    console.error("Push sync diagnostic:", error?.message || error);
     console.error("GoldBot-ZA push subscription sync failed:", error);
   }
 }
