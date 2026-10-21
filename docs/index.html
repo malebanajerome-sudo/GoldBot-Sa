@@ -830,6 +830,31 @@ transition: none !important;
 </section>
 
 
+<section class="panel" id="economic-calendar">
+  <div class="panel-header">
+    <div>
+      <p class="eyebrow">FUNDAMENTALS</p>
+      <h2>Upcoming Economic Events</h2>
+      <p>High-impact US releases · South African time</p>
+    </div>
+    <button id="calendar-refresh" type="button">
+      Refresh
+    </button>
+  </div>
+
+  <p id="calendar-status" role="status">Loading calendar…</p>
+
+  <div id="calendar-events">
+    <p>Loading upcoming events…</p>
+  </div>
+
+  <p class="muted">
+    Data: <a href="https://xoomar.com/markets/api/calendar"
+    target="_blank" rel="noopener">XOOMAR</a>
+  </p>
+</section>
+    
+    
 <div class="section-heading" id="journal"><h2>Recent trades</h2><span id="journalCount" class="small muted">Loading...</span></div>  
 <section class="panel">  
   <div id="tradeList"><p class="message">Loading trade journal...</p></div>  
@@ -1762,7 +1787,121 @@ function formatSMCValue(value) {
   
     $("refreshButton").addEventListener("click", refreshDashboard);  
     refreshDashboard();  
-    setInterval(refreshDashboard, 60000);  
+    setInterval(refreshDashboard, 60000);    
+      }
+    }
+
+    
+async function loadEconomicCalendar() {
+  const status = document.getElementById("calendar-status");
+  const container = document.getElementById("calendar-events");
+  const button = document.getElementById("calendar-refresh");
+
+  if (!status || !container) return;
+
+  if (button) button.disabled = true;
+  status.textContent = "Loading upcoming events…";
+
+  try {
+    const response = await fetch(
+      "https://xoomar.com/api/markets/calendar?importance=high",
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Calendar request failed (${response.status})`);
+    }
+
+    const result = await response.json();
+
+    if (!Array.isArray(result.data)) {
+      throw new Error("Unexpected calendar response.");
+    }
+
+    const now = Date.now();
+
+    const events = result.data
+      .filter(event =>
+        event.importance === "high" &&
+        event.eventName &&
+        event.scheduledAt &&
+        Number.isFinite(Date.parse(event.scheduledAt)) &&
+        Date.parse(event.scheduledAt) > now
+      )
+      .sort((a, b) =>
+        Date.parse(a.scheduledAt) - Date.parse(b.scheduledAt)
+      )
+      .slice(0, 10);
+
+    if (!events.length) {
+      container.textContent = "No upcoming high-impact events found.";
+      status.textContent = "Calendar updated.";
+      return;
+    }
+
+    const list = document.createElement("div");
+    list.className = "calendar-list";
+
+    for (const event of events) {
+      const card = document.createElement("article");
+      card.className = "calendar-event";
+
+      const date = new Date(event.scheduledAt);
+      const dateText = new Intl.DateTimeFormat("en-ZA", {
+        timeZone: "Africa/Johannesburg",
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }).format(date);
+
+      const timeText = new Intl.DateTimeFormat("en-ZA", {
+        timeZone: "Africa/Johannesburg",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(date);
+
+      const heading = document.createElement("h3");
+      heading.textContent = event.eventName;
+
+      const timing = document.createElement("p");
+      timing.textContent = `${dateText} · ${timeText} SAST`;
+
+      const impact = document.createElement("span");
+      impact.className = "calendar-impact";
+      impact.textContent = "HIGH IMPACT";
+
+      const details = document.createElement("p");
+      const figures = [];
+
+      if (event.periodLabel) figures.push(`Period: ${event.periodLabel}`);
+      if (event.previous != null) figures.push(`Previous: ${event.previous}`);
+      if (event.actual != null) figures.push(`Actual: ${event.actual}`);
+
+      details.textContent = figures.length
+        ? figures.join(" · ")
+        : "Release figures not available yet.";
+
+      card.append(heading, timing, impact, details);
+      list.appendChild(card);
+    }
+
+    container.replaceChildren(list);
+    status.textContent = `${events.length} upcoming events · Times shown in SAST`;
+
+  } catch (error) {
+    container.textContent = "Calendar unavailable. Please try again.";
+    status.textContent = error.message || "Unable to load calendar.";
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+document.getElementById("calendar-refresh")
+  ?.addEventListener("click", loadEconomicCalendar);
+
+loadEconomicCalendar();
   </script> 
 
 <script>
