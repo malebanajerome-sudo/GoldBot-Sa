@@ -836,9 +836,53 @@ transition: none !important;
   <div id="journalError" class="message"></div>  
 </section>  
 
+<section id="performance" class="panel" style="margin-top:20px">
+  <div class="section-heading">
+    <h2>Paper-trading performance</h2>
+  </div>
+
+  <div id="performanceMode" class="message">
+    Connecting to performance tracker...
+  </div>
+
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Total trades</div>
+      <div id="totalTrades" class="stat-value">—</div>
+    </div>
+
+    <div>
+      <div class="stat-label">Wins</div>
+      <div id="wins" class="stat-value green">—</div>
+    </div>
+
+    <div>
+      <div class="stat-label">Losses</div>
+      <div id="losses" class="stat-value red">—</div>
+    </div>
+
+    <div>
+      <div class="stat-label">Closed trades</div>
+      <div id="closedTrades" class="stat-value">—</div>
+    </div>
+
+    <div>
+      <div class="stat-label">Simulated net R</div>
+      <div id="netR" class="stat-value gold">—</div>
+    </div>
+
+    <div>
+      <div class="stat-label">Cancelled trades</div>
+      <div id="cancelledCount" class="stat-value">—</div>
+    </div>
+  </div>
+
+  <div id="performanceError" class="message"></div>
+</section>    
+    
 <footer>  
   GOLD BOT-ZA · STACKS CO.<br>  
-  Market data by Standard Bullion<br>  
+  Market data by BiQuote.<br>  
   Prices are informational. Signals are not guaranteed outcomes.  
   <div id="lastRefresh" style="margin-top:8px"></div>  
 </footer>
@@ -1060,15 +1104,34 @@ transition: none !important;
       return data;  
     }  
   
-    function showError(id, error) {  
-      $(id).textContent = error instanceof Error ? error.message : String(error);  
-      $(id).classList.add("error");  
-    }  
-  
-    function clearError(id) {  
-      $(id).textContent = "";  
-      $(id).classList.remove("error");  
-    }  
+function setText(id, value) {
+  const element = $(id);
+  if (!element) return;
+
+  element.textContent =
+    value === undefined || value === null || value === ""
+      ? "—"
+      : String(value);
+}
+
+function showError(id, error) {
+  const element = $(id);
+  if (!element) return;
+
+  element.textContent =
+    error instanceof Error ? error.message : String(error);
+
+  element.classList.add("error");
+}
+
+function clearError(id) {
+  const element = $(id);
+  if (!element) return;
+
+  element.textContent = "";
+  element.classList.remove("error");
+}
+    
   async function loadDXY() {
   try {
     const data = await callFunction(ENDPOINTS.dxy);
