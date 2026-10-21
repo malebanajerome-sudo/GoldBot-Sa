@@ -530,3 +530,66 @@ self.addEventListener("message", event => {
     });
   }
 });
+
+
+/* ---------- PUSH NOTIFICATIONS ---------- */
+
+self.addEventListener("push", event => {
+  event.waitUntil((async () => {
+    let data = {};
+
+    try {
+      data = event.data ? event.data.json() : {};
+    } catch {
+      data = {
+        title: "GoldBot-ZA",
+        body: event.data?.text() || "You have a new notification."
+      };
+    }
+
+    const title = data.title || "GoldBot-ZA Signal";
+    const options = {
+      body: data.body || "A new gold trading signal is available.",
+      icon: new URL("./icons/icon-192.png", self.registration.scope).href,
+      badge: new URL("./icons/icon-192.png", self.registration.scope).href,
+      tag: data.signal_key || "goldbot-signal",
+      renotify: false,
+      data: {
+        url: data.url || "./",
+        signal_key: data.signal_key || null
+      }
+    };
+
+    await self.registration.showNotification(title, options);
+  })());
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+
+  const targetUrl = new URL(
+    event.notification.data?.url || "./",
+    self.registration.scope
+  ).href;
+
+  event.waitUntil((async () => {
+    const clients = await self.clients.matchAll({
+      type: "window",
+      includeUncontrolled: true
+    });
+
+    for (const client of clients) {
+      if (client.url.startsWith(self.registration.scope)) {
+        await client.focus();
+        client.postMessage({
+          type: "GOLDBOT_NOTIFICATION_CLICK",
+          signal_key: event.notification.data?.signal_key || null
+        });
+        return;
+      }
+    }
+
+    await self.clients.openWindow(targetUrl);
+  })());
+});
+
