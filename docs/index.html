@@ -1132,7 +1132,7 @@ function clearError(id) {
   element.classList.remove("error");
 }
     
-  async function loadDXY() {
+async function loadDXY() {
   try {
     const data = await callFunction(ENDPOINTS.dxy);
 
@@ -1183,7 +1183,8 @@ function clearError(id) {
     setText("dxy-status", "CONNECTION ERROR");
     setText("dxy-updated", error.message);
   }
-    }
+}    
+  
     async function loadPrice() {  
       try {  
         const data = await callFunction(ENDPOINTS.price);  
@@ -1480,16 +1481,34 @@ async function loadSMC() {
   try {
     const data = await callFunction(ENDPOINTS.smc);
 
-    if (!data || data.success !== true) {
-      throw new Error(data?.error || "SMC endpoint returned an unsuccessful response.");
-    }
+    
+if (!data || data.success === false) {
+  throw new Error(
+    data?.error || "SMC endpoint returned an unsuccessful response."
+  );
+}
 
-    const structure = data.marketStructure || {};
-    const liquidity = data.liquidity || {};
-    const fvg = data.fairValueGaps || {};
-    const blocks = data.orderBlocks || {};
-    const confirmation = data.signalConfirmation || {};
-    const candle = data.latestCompletedCandle || {};
+const analysis = data.analysis || {};
+const smc = analysis.smc || {};
+
+const structure =
+  data.marketStructure ||
+  data.structure ||
+  smc.structure ||
+  {};
+
+const liquidity = data.liquidity || {};
+const fvg = data.fairValueGaps || data.fair_value_gaps || {};
+const blocks = data.orderBlocks || data.order_blocks || {};
+const confirmation =
+  data.signalConfirmation ||
+  data.signal_confirmation ||
+  {};
+
+const candle =
+  data.latestCompletedCandle ||
+  data.latest_completed_candle ||
+  {};
 
     const price = value =>
       value == null || value === "" ? "—" : formatSMCValue(value);
