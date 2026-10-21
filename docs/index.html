@@ -915,7 +915,53 @@ transition: none !important;
   <div id="journalError" class="message"></div>  
 </section>  
 
-<section id="performance" class="panel" style="margin-top:20px">
+  
+<section id="performance" class="panel wide" style="margin-top:20px">
+  <div class="eyebrow">PAPER TRADING · PERFORMANCE</div>
+  <h2>Performance Tracker</h2>
+
+  <p id="performanceMode" class="message">Loading performance data...</p>
+  <div id="performanceError" class="message"></div>
+
+  <div class="stats-grid">
+    <div>
+      <div class="stat-label">Total trades</div>
+      <div id="totalTrades" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Wins</div>
+      <div id="wins" class="stat-value green">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Losses</div>
+      <div id="losses" class="stat-value red">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Open trades</div>
+      <div id="openTrades" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Completed trades</div>
+      <div id="closedTrades" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Cancelled trades</div>
+      <div id="cancelledCount" class="stat-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Win rate</div>
+      <div id="winRate" class="stat-value gold">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Simulated net result</div>
+      <div id="netR" class="stat-value">—</div>
+    </div>
+  </div>
+
+  <button type="button" onclick="loadPerformance()" style="margin-top:20px">
+    Refresh Statistics
+  </button>
+</section>
 
     
 <footer>  
