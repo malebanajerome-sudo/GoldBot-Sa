@@ -82,7 +82,7 @@ line-height: 1.7;
 }
 
 main > .eyebrow {
-color: var(--gold);
+color: var(--gold)
 font-weight: 850;
 }
 
@@ -989,7 +989,7 @@ transition: none !important;
   
     const ENDPOINTS = {  
       price: "gold-price-public",  
-      signal: "market-signal-v3",  
+      signal: "signal-lock",  
       analysis: "market-analysis-v2",  
       journal: "trade-journal",  
       performance: "performance-tracker",
@@ -1177,15 +1177,25 @@ transition: none !important;
 
 async function loadSignal() {
   try {
-    const data = await callFunction(ENDPOINTS.signal);
+    const response = await callFunction(ENDPOINTS.signal);
+
+    if (response.success === false) {
+      throw new Error(response.error || "Signal lock returned an error.");
+    }
+
+    // Accept common response wrappers without changing backend logic.
+    const data =
+      response.signal && typeof response.signal === "object"
+        ? { ...response, ...response.signal }
+        : response.result && typeof response.result === "object"
+          ? { ...response, ...response.result }
+          : response;
 
     const signal = normaliseSignal(
-      first(data, ["signal", "direction", "action"])
+      first(data, ["signal", "direction", "action", "status"])
     );
 
-    const marketStatus = getGoldMarketStatus();
-
-    if (marketStatus === "MARKET CLOSED") {
+    if (getGoldMarketStatus() === "MARKET CLOSED") {
       setText("signal", "MARKET CLOSED");
       $("signal").className = "signal wait";
       setText("signalSubtitle", "XAU/USD · South Africa time");
@@ -1207,42 +1217,56 @@ async function loadSignal() {
 
     setText("signalSubtitle", data.market || "XAU/USD");
 
+    const warnings = Array.isArray(data.warnings)
+      ? data.warnings.join(" ")
+      : "";
+
     setText(
       "signalReason",
-      first(data, ["reason", "message", "summary"]) ||
-        (data.success === false
-          ? data.error || "Signal engine reported a problem."
+      first(data, ["reason", "message", "summary", "note"]) ||
+        warnings ||
+        (signal === "NO TRADE"
+          ? "No trade: the required market confirmations have not all aligned."
           : `Confidence: ${data.confidence ?? "—"}% · Score: ${data.score ?? "—"}`)
     );
 
-    const setup = data.trade_setup || data.setup || data.levels || data;
+    const setup =
+      data.trade_setup ||
+      data.setup ||
+      data.levels ||
+      data;
 
-    const entry = setup.entry ?? setup.entryPrice;
-    const stopLoss =
-      setup.stop_loss ?? setup.stopLoss ?? setup.sl;
-    const takeProfit =
-      setup.take_profit ?? setup.takeProfit ?? setup.tp;
-    const riskReward =
-      setup.risk_to_reward ?? setup.riskReward ?? setup.rr ?? "—";
+    const entry = first(setup, ["entry", "entryPrice"]);
+    const stopLoss = first(setup, ["stop_loss", "stopLoss", "sl"]);
+    const takeProfit = first(setup, ["take_profit", "takeProfit", "tp"]);
+    const riskReward = first(
+      setup,
+      ["risk_to_reward", "riskReward", "rr"]
+    );
 
-    const hasSetup =
-      entry != null && stopLoss != null && takeProfit != null;
+    const validSetup =
+      (signal === "BUY" || signal === "SELL") &&
+      entry != null &&
+      stopLoss != null &&
+      takeProfit != null;
 
     setText(
       "signalSetup",
-      hasSetup
-        ? `Entry: ${fmtMoney(entry)} · Stop loss: ${fmtMoney(stopLoss)} · Take profit: ${fmtMoney(takeProfit)} · R:R ${riskReward}`
-        : "No trade setup supplied by the signal engine."
+      validSetup
+        ? `Entry: ${fmtMoney(entry)} · Stop loss: ${fmtMoney(stopLoss)} · Take profit: ${fmtMoney(takeProfit)} · R:R ${riskReward ?? "—"}`
+        : "Entry: — · Stop loss: — · Take profit: — · R:R —"
     );
-
   } catch (error) {
     setText("signal", "UNAVAILABLE");
     $("signal").className = "signal wait";
-    setText("signalSubtitle", "Signal engine connection failed.");
-    showError("signalReason", error);
-    setText("signalSetup", "Entry: — · Stop loss: — · Take profit: — · R:R —");
+    setText("signalSubtitle", "Signal lock connection failed.");
+    setText("signalReason", error.message || String(error));
+    setText(
+      "signalSetup",
+      "Entry: — · Stop loss: — · Take profit: — · R:R —"
+    );
   }
-}
+                   }
 
   
     function extractFrames(data) {  
