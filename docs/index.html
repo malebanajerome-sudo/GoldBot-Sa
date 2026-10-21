@@ -2107,7 +2107,7 @@ async function loadNewsHub() {
 loadNewsHub();
 setInterval(loadNewsHub, 5 * 60 * 1000);
 
-  
+
 /* ---------- GOLDBOT-ZA PUSH NOTIFICATIONS ---------- */
 
 const VAPID_PUBLIC_KEY = "BFlFEoYnrVSUy6-rtaVhUsamSWb9oaQx-0VspwtwSxNukH7H2fjn0XGTyWoTEtiJbTBqEUVbgTA4gL3l6c99n00";
@@ -2124,40 +2124,17 @@ function vapidKeyToBytes(base64Key) {
   );
 }
 
-async function enableGoldBotNotifications() {
-  try {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      alert("Push notifications are not supported by this browser.");
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-
-    if (permission !== "granted") {
-      alert("Notifications were not enabled. Allow them in your browser settings.");
-      return;
-    }
-
-    const registration = await navigator.serviceWorker.ready;
-
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: vapidKeyToBytes(VAPID_PUBLIC_KEY)
-      });
-    }
-
-    
-  async function syncGoldBotPushSubscription() {
+async function syncGoldBotPushSubscription() {
   try {
     if (
       !("serviceWorker" in navigator) ||
       !("PushManager" in window) ||
       !("Notification" in window) ||
       Notification.permission !== "granted"
-    ) return;
+    ) {
+      console.log("Push sync skipped: notifications are not permitted.");
+      return;
+    }
 
     const registration = await navigator.serviceWorker.ready;
 
@@ -2169,39 +2146,6 @@ async function enableGoldBotNotifications() {
         applicationServerKey: vapidKeyToBytes(VAPID_PUBLIC_KEY)
       });
     }
-window.addEventListener("load", () => {
-  if (
-    "Notification" in window &&
-    Notification.permission === "granted"
-  ) {
-    syncGoldBotPushSubscription();
-  }
-});
-    const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/push-subscribe`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_KEY
-        },
-        body: JSON.stringify({
-          subscription: subscription.toJSON()
-        })
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || `HTTP ${response.status}`);
-    }
-
-    console.log("GoldBot-ZA push subscription synced.");
-  } catch (error) {
-    console.error("GoldBot-ZA push subscription sync failed:", error);
-  }
-      }  
 
     const response = await fetch(
       `${SUPABASE_URL}/functions/v1/push-subscribe`,
@@ -2221,52 +2165,45 @@ window.addEventListener("load", () => {
 
     if (!response.ok || !result.success) {
       throw new Error(
-        result.error || `Subscription failed (${response.status})`
+        result.error || `Subscription failed (HTTP ${response.status})`
       );
     }
 
-    console.log("GoldBot-ZA push subscription synced.");
+    console.log("GoldBot-ZA push subscription synced successfully.");
   } catch (error) {
     console.error("GoldBot-ZA push subscription sync failed:", error);
   }
-  }
+}
 
-window.addEventListener("load", () => {
-  if (
-    "Notification" in window &&
-    Notification.permission === "granted"
-  ) {
-    syncGoldBotPushSubscription();
-  }
-});
-    
-    const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/push-subscribe`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_KEY
-        },
-        body: JSON.stringify({
-          subscription: subscription.toJSON()
-        })
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "Could not save your subscription.");
+async function enableGoldBotNotifications() {
+  try {
+    if (
+      !("serviceWorker" in navigator) ||
+      !("PushManager" in window) ||
+      !("Notification" in window)
+    ) {
+      alert("Push notifications are not supported by this browser.");
+      return;
     }
 
-    alert("GoldBot-ZA notifications are enabled on this device.");
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("Notifications were not enabled. Allow them in your browser settings.");
+      return;
+    }
+
+    await syncGoldBotPushSubscription();
+    alert("GoldBot-ZA notification setup was attempted. Check the app logs if it fails.");
   } catch (error) {
     console.error("GoldBot-ZA notifications:", error);
     alert("Could not enable notifications. Please try again.");
   }
 }
 
+window.addEventListener("load", () => {
+  syncGoldBotPushSubscription();
+});  
   
 </script>
 </body>
