@@ -2149,6 +2149,7 @@ async function enableGoldBotNotifications() {
       });
     }
 
+    
   async function syncGoldBotPushSubscription() {
   try {
     if (
@@ -2156,9 +2157,7 @@ async function enableGoldBotNotifications() {
       !("PushManager" in window) ||
       !("Notification" in window) ||
       Notification.permission !== "granted"
-    ) {
-      return;
-    }
+    ) return;
 
     const registration = await navigator.serviceWorker.ready;
 
@@ -2170,6 +2169,39 @@ async function enableGoldBotNotifications() {
         applicationServerKey: vapidKeyToBytes(VAPID_PUBLIC_KEY)
       });
     }
+window.addEventListener("load", () => {
+  if (
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ) {
+    syncGoldBotPushSubscription();
+  }
+});
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/push-subscribe`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY
+        },
+        body: JSON.stringify({
+          subscription: subscription.toJSON()
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || `HTTP ${response.status}`);
+    }
+
+    console.log("GoldBot-ZA push subscription synced.");
+  } catch (error) {
+    console.error("GoldBot-ZA push subscription sync failed:", error);
+  }
+      }  
 
     const response = await fetch(
       `${SUPABASE_URL}/functions/v1/push-subscribe`,
