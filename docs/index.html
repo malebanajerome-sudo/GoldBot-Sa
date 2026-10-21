@@ -2104,6 +2104,84 @@ loadNewsHub();
 setInterval(loadNewsHub, 5 * 60 * 1000);
 
   
+/* ---------- GOLDBOT-ZA PUSH NOTIFICATIONS ---------- */
+
+const VAPID_PUBLIC_KEY = "BFlFEoYnrVSUy6-rtaVhUsamSWb9oaQx-0VspwtwSxNukH7H2fjn0XGTyWoTEtiJbTBqEUVbgTA4gL3l6c99n00";
+
+function vapidKeyToBytes(base64Key) {
+  const padding = "=".repeat((4 - base64Key.length % 4) % 4);
+  const base64 = (base64Key + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  return Uint8Array.from(
+    atob(base64),
+    character => character.charCodeAt(0)
+  );
+}
+
+async function enableGoldBotNotifications() {
+  try {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      alert("Push notifications are not supported by this browser.");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("Notifications were not enabled. Allow them in your browser settings.");
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: vapidKeyToBytes(VAPID_PUBLIC_KEY)
+      });
+    }
+
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/push-subscribe`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY
+        },
+        body: JSON.stringify({
+          subscription: subscription.toJSON()
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Could not save your subscription.");
+    }
+
+    alert("GoldBot-ZA notifications are enabled on this device.");
+  } catch (error) {
+    console.error("GoldBot-ZA notifications:", error);
+    alert("Could not enable notifications. Please try again.");
+  }
+}
+
+  
 </script>
+  
+<button
+  type="button"
+  onclick="enableGoldBotNotifications()"
+  style="position:fixed;bottom:16px;right:16px;z-index:9999;padding:12px 16px;border:0;border-radius:10px;background:#d4af37;color:#111;font-weight:700;"
+>
+  🔔 Enable Notifications
+</button>
+
 </body>
 </html>
