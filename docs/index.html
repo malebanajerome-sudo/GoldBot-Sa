@@ -1911,6 +1911,100 @@ loadEconomicCalendar();
 
   return "MARKET OPEN";
   }
+
+  
+const NEWS_HUB_URL = "https://ayfdcfvyeqbjslumfgxf.supabase.co/functions/v1/news-hub";
+const NEWS_HUB_KEY = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
+
+async function loadNewsHub() {
+  const status = document.getElementById("newsStatus");
+  const container = document.getElementById("newsItems");
+
+  if (!status || !container) return;
+
+  status.textContent = "Loading latest market headlines...";
+  container.replaceChildren();
+
+  try {
+    const response = await fetch(NEWS_HUB_URL, {
+      method: "GET",
+      headers: {
+        "apikey": NEWS_HUB_KEY,
+        "Authorization": `Bearer ${NEWS_HUB_KEY}`
+      },
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(`News service returned HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || "News service unavailable");
+    }
+
+    if (!Array.isArray(data.items) || data.items.length === 0) {
+      status.textContent = "No relevant headlines found. Try refreshing later.";
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    for (const item of data.items) {
+      if (!item.title || !item.url || !/^https?:\/\//i.test(item.url)) {
+        continue;
+      }
+
+      const article = document.createElement("article");
+      article.style.cssText =
+        "padding:12px 0;border-bottom:1px solid rgba(128,128,128,.25)";
+
+      const link = document.createElement("a");
+      link.href = item.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = item.title;
+      link.style.cssText =
+        "font-weight:600;text-decoration:none;color:inherit";
+
+      const meta = document.createElement("p");
+      meta.className = "muted";
+
+      let published = "Date unavailable";
+      if (item.publishedAt && !Number.isNaN(Date.parse(item.publishedAt))) {
+        published = new Date(item.publishedAt).toLocaleString("en-ZA", {
+          timeZone: "Africa/Johannesburg",
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      meta.textContent =
+        `${item.source || "News"} · ${published} · Impact: ${item.impact || "unrated"}`;
+      meta.style.cssText = "font-size:12px;margin:6px 0 0";
+
+      article.append(link, meta);
+      fragment.append(article);
+    }
+
+    container.append(fragment);
+
+    status.textContent =
+      `${container.children.length} headlines · Updated ${new Date(data.updatedAt || Date.now()).toLocaleTimeString("en-ZA", {timeZone:"Africa/Johannesburg", hour:"2-digit", minute:"2-digit"})}`;
+  } catch (error) {
+    console.error("GoldBot-ZA News Hub:", error);
+    status.textContent =
+      "Unable to load news. Tap Refresh News to try again.";
+  }
+}
+
+loadNewsHub();
+setInterval(loadNewsHub, 5 * 60 * 1000);
+
   
 </script>
 </body>
