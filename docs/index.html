@@ -360,6 +360,38 @@
         timeZone: "Africa/Johannesburg", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
       }).format(d) + " SAST";
     }
+    
+function fmtSASTDate(value) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+
+  return new Intl.DateTimeFormat("en-ZA", {
+    timeZone: "Africa/Johannesburg",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(date) + " SAST";
+}
+function fmtCandleAge(value) {
+  if (value === null || value === undefined || value === "") {
+    return "—";
+  }
+
+  const minutes = Number(value);
+  if (!Number.isFinite(minutes) || minutes < 0) return "—";
+
+  const total = Math.floor(minutes);
+  const hours = Math.floor(total / 60);
+  const remainder = total % 60;
+
+  return hours > 0
+    ? `${hours}h ${remainder}m (${total} min)`
+    : `${total} min`;
+}
     function fmtClock(date = new Date()) {
       return new Intl.DateTimeFormat("en-ZA", {
         timeZone: "Africa/Johannesburg", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
@@ -500,26 +532,97 @@
         if (row) return row;
       }
       return null;
-    }
-    function frameCard(title, tf) {
-      if (!tf || !Object.keys(tf).length) return { title, trend: "NO DATA", empty: true, rows: [], warning: "No timeframe object was returned." };
-      const trend = String(tf.trend || "NEUTRAL").toUpperCase();
-      const age = first(tf, ["latest_candle_age_minutes", "ageMinutes"]);
-      const records = first(tf, ["candles_used", "candle_count", "records_used", "recordsUsed", "count", "candles"]);
-      const candleTime = first(tf, ["latest_candle_time", "latestTime", "latest_time", "last_candle_time"]);
-      return {
-        title, trend, rows: [
-          ["Latest close", fmtMoney(first(tf, ["latest_close", "latestClose", "close", "last_close"]))],
-          ["SMA 20", fmtMoney(first(tf, ["sma20", "sma_20", "SMA20"]))],
-          ["SMA 50", fmtMoney(first(tf, ["sma50", "sma_50", "SMA50"]))],
-          ["RSI 14", fmtNumber(first(tf, ["rsi14", "rsi_14", "RSI14"]))],
-          ["Candles", records == null ? "—" : String(records)],
-          ["Last candle", candleTime ? fmtDate(candleTime) : "—"],
-          ["Candle age", age == null || age === "" ? "—" : fmtNumber(age, 0) + " min"]
-        ].map(([label, value]) => ({ label, value })),
-        warning: tf.available === false ? "Insufficient candles for all indicators." : ""
-      };
-    }
+    }   
+function frameCard(title, tf) {
+  if (!tf || !Object.keys(tf).length) {
+    return {
+      title,
+      trend: "NO DATA",
+      empty: true,
+      rows: [],
+      warning: "No timeframe object was returned."
+    };
+  }
+
+  const trend = String(tf.trend || "NEUTRAL").toUpperCase();
+
+  const records = first(tf, [
+    "candles_used",
+    "candle_count",
+    "records_used",
+    "recordsUsed",
+    "count",
+    "candles"
+  ]);
+
+  const candleOpen = first(tf, [
+    "latest_candle_open_time",
+    "latest_candle_time",
+    "latestTime",
+    "latest_time",
+    "last_candle_time"
+  ]);
+
+  const candleClose = first(tf, [
+    "latest_candle_close_time"
+  ]);
+
+  const age = first(tf, [
+    "candle_age_minutes",
+    "latest_candle_age_minutes",
+    "ageMinutes"
+  ]);
+
+  return {
+    title,
+    trend,
+    rows: [
+      [
+        "Latest close",
+        fmtMoney(first(tf, [
+          "latest_close",
+          "latestClose",
+          "close",
+          "last_close"
+        ]))
+      ],
+      [
+        "SMA 20",
+        fmtMoney(first(tf, ["sma20", "sma_20", "SMA20"]))
+      ],
+      [
+        "SMA 50",
+        fmtMoney(first(tf, ["sma50", "sma_50", "SMA50"]))
+      ],
+      [
+        "RSI 14",
+        fmtNumber(first(tf, ["rsi14", "rsi_14", "RSI14"]))
+      ],
+      [
+        "Candles",
+        records == null ? "—" : String(records)
+      ],
+      [
+        "Candle opened",
+        candleOpen ? fmtSASTDate(candleOpen) : "—"
+      ],
+      [
+        "Candle closes",
+        candleClose ? fmtSASTDate(candleClose) : "—"
+      ],
+      [
+        "Candle age",
+        age == null || age === ""
+          ? "—"
+          : fmtCandleAge(age)
+      ]
+    ].map(([label, value]) => ({ label, value })),
+
+    warning: tf.available === false
+      ? "Insufficient candles for all indicators."
+      : ""
+  };
+}
     function parseAnalysis(data) {
       const record = assertOk(data, "Market analysis failed.");
       let root = record;
