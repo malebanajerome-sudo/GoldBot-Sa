@@ -184,7 +184,7 @@
     <div class="section" id="analysis">
       <div>
         <h2>Market intelligence</h2>
-        <p id="analysisUpdated" class="note">Hourly closes from gold-candles-twelvedata</p>
+        <p id="analysisUpdated" class="note">Hourly candles from BiQuote</p>
       </div>
       <button id="refreshButton" class="gold" type="button">Refresh all</button>
     </div>
@@ -192,7 +192,7 @@
     <section class="panel stack">
       <p class="eyebrow">Hourly chart · gold-candles</p>
       <p class="note">Last 48 completed 1H closes from gold-candles-twelvedata.</p>
-      <svg id="chart" class="chart" viewBox="0 0 640 176" role="img" aria-label="Hourly gold closes"></svg>
+      <svg id="chart" class="chart" viewBox="0 0 640 176" role="img" aria-label="Hourly gold closes from BiQuote"></svg>
       <div id="chartError"></div>
     </section>
 
@@ -310,7 +310,7 @@
       performance: "performance-tracker",
       dxy: "dxy-indicator",
       smc: "market-structure-analysis-",
-      candles: "gold-candles-twelvedata?interval=1h",
+      candles: "https://biquote.io/api/XAUUSD/ohlc?interval=1h&limit=100",
       news: "news-hub"
     };
     const $ = (id) => document.getElementById(id);
@@ -544,23 +544,102 @@
       };
     }
 
-    function parseCandles(data) {
-      const record = assertOk(data, "Candle history failed.");
-      const points = [];
-      for (const row of Array.isArray(record.candles) ? record.candles : []) {
-        const candle = rec(row);
-        if (!candle || candle.is_closed === false) continue;
-        const close = Number(candle.close);
-        const stamp = candle.time || candle.timestamp;
-        const date = new Date(String(stamp || ""));
-        if (!Number.isFinite(close) || Number.isNaN(date.getTime())) continue;
-        points.push({
-          label: new Intl.DateTimeFormat("en-ZA", { timeZone: "Africa/Johannesburg", day: "2-digit", month: "short", hour: "2-digit", hourCycle: "h23" }).format(date),
-          close
-        });
+ function parseCandles(data) {
+  const record = assertOk(data, "BiQuote candle history failed.");
+
+  // BiQuote returns OHLC records inside "bars".
+  const rows = Array.isArray(record.bars)
+    ? record.bars
+    : Array.isArray(record.candles)
+      ? record.candles
+      : [];
+
+  if (!rows.length) {
+    throw new Error("BiQuote returned no hourly candles.");
+  }
+
+  const now = Date.now();
+  const intervalMs = 60 * 60 * 1000;
+
+  const candles = rows
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+
+      const rawTime =
+        row.openTime ??
+        row.time ??
+        row.timestamp ??
+        row.datetime;
+
+      if (rawTime == null) return null;
+
+      // ISO timestamps containing Z are parsed as UTC automatically.
+      // Do not manually add or subtract two hours.
+      const openTimeMs = new Date(String(rawTime)).getTime();
+      const close = Number(row.close);
+
+      if (
+        !Number.isFinite(openTimeMs) ||
+        !Number.isFinite(close) ||
+        openTimeMs > now + 60_000
+      ) {
+        return null;
       }
-      return points.slice(-48);
-    }
+
+      // Do not plot the still-forming candle.
+      if (row.isOpen === true || row.is_closed === false) {
+        return null;
+      }
+
+      const closeTimeMs = openTimeMs + intervalMs;
+
+      // A candle is only completed once its scheduled close has passed.
+      if (closeTimeMs > now) return null;
+
+      return {
+        openTimeMs,
+        closeTimeMs,
+        close,
+        label: new Intl.DateTimeFormat("en-ZA", {
+          timeZone: "Africa/Johannesburg",
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23"
+        }).format(new Date(openTimeMs))
+      };
+    })
+    .filter(Boolean)
+    // BiQuote returns newest-first; the chart needs oldest-first.
+    .sort((a, b) => a.openTimeMs - b.openTimeMs);
+
+  if (!candles.length) {
+    throw new Error("No completed hourly candles were available.");
+  }
+
+  const latest = candles[candles.length - 1];
+  const ageMinutes = Math.max(0, (now - latest.closeTimeMs) / 60_000);
+
+  $("chartMeta").textContent =
+    "Last completed candle opened " +
+    fmtDate(new Date(latest.openTimeMs).toISOString()) +
+    " · Closed " +
+    fmtDate(new Date(latest.closeTimeMs).toISOString()) +
+    " · Age since close: " +
+    Math.floor(ageMinutes) +
+    " min · BiQuote";
+
+  if (ageMinutes > 90) {
+    $("chartMeta").textContent += " · WARNING: hourly candles are stale";
+  }
+
+  return candles.slice(-48).map((candle) => ({
+    label: candle.label,
+    close: candle.close
+  }));
+    }   
+      
     function parseDxy(data) {
       const record = assertOk(data, "DXY request failed.");
       const change = Number(record.day_change_percent);
@@ -954,7 +1033,14 @@
           settle(() => callFunction(ENDPOINTS.signal).then(parseSignal)),
           settle(() => callFunction(ENDPOINTS.lock).then(parseLock)),
           settle(() => callFunction(ENDPOINTS.analysis).then(parseAnalysis)),
-          settle(() => callFunction(ENDPOINTS.candles).then(parseCandles)),
+          settle(() =>
+  fetch(ENDPOINTS.candles, {
+    method: "GET",
+    cache: "no-store"
+  })
+    .then(readJson)
+    .then(parseCandles)
+),
           settle(() => callFunction(ENDPOINTS.dxy).then(parseDxy)),
           settle(() => callFunction(ENDPOINTS.smc).then(parseSmc)),
           settle(() => fetch("https://xoomar.com/api/markets/calendar?importance=high", { cache: "no-store" }).then(readJson).then(parseCalendar)),
