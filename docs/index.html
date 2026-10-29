@@ -303,14 +303,14 @@
     const VAPID_PUBLIC_KEY = "BFlFEoYnrVSUy6-rtaVhUsamSWb9oaQx-0VspwtwSxNukH7H2fjn0XGTyWoTEtiJbTBqEUVbgTA4gL3l6c99n00";
     const ENDPOINTS = {
       price: "gold-price-public",
-      signal: "market-signal-v2",
+      signal: "market-signal-v3",
       lock: "signal-lock",
       analysis: "market-analysis-v2",
       journal: "trade-journal",
       performance: "performance-tracker",
       dxy: "dxy-indicator",
       smc: "market-structure-analysis-",
-      candles: "gold-candles?interval=1h",
+      candles: "gold-candles-twelvedata?interval=1h",
       news: "news-hub"
     };
     const $ = (id) => document.getElementById(id);
