@@ -184,14 +184,14 @@
     <div class="section" id="analysis">
       <div>
         <h2>Market intelligence</h2>
-        <p id="analysisUpdated" class="note">Hourly closes from gold-candles</p>
+        <p id="analysisUpdated" class="note">Hourly closes from gold-candles-twelvedata</p>
       </div>
       <button id="refreshButton" class="gold" type="button">Refresh all</button>
     </div>
 
     <section class="panel stack">
       <p class="eyebrow">Hourly chart · gold-candles</p>
-      <p class="note">Last 48 completed 1H closes. History previously carried as XAUS, served by gold-candles.</p>
+      <p class="note">Last 48 completed 1H closes from gold-candles-twelvedata.</p>
       <svg id="chart" class="chart" viewBox="0 0 640 176" role="img" aria-label="Hourly gold closes"></svg>
       <div id="chartError"></div>
     </section>
@@ -284,7 +284,7 @@
 
     <footer>
       GOLD BOT-ZA · STACKS CO.<br>
-      Live price, DXY, and 15-minute structure from BiQuote. Candles via gold-candles. Analysis by market-analysis-v2. Signals by market-signal-v2, with the paper lock on signal-lock. Journal and performance sit in Supabase.<br>
+      Live price, DXY, and 15-minute structure from BiQuote. Candles via gold-candles-twelvedata. Analysis by market-analysis-v2. Signals by market-signal-v3, with the paper lock on signal-lock. Journal and performance sit in Supabase.<br>
       Prices are informational. Signals are not guaranteed outcomes.
       <div id="lastRefresh"></div>
     </footer>
