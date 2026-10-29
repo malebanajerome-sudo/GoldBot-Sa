@@ -188,13 +188,16 @@
       </div>
       <button id="refreshButton" class="gold" type="button">Refresh all</button>
     </div>
+    
 
-    <section class="panel stack">
-      <p class="eyebrow">Hourly chart · gold-candles</p>
-      <p class="note">Last 48 completed 1H closes from BiQuote. </p>
-      <svg id="chart" class="chart" viewBox="0 0 640 176" role="img" aria-label="Hourly gold closes from BiQuote"></svg>
-      <div id="chartError"></div>
-    </section>
+<section class="panel stack">
+  <p class="eyebrow">Hourly chart · BiQuote</p>
+  <p class="note">Last 48 completed 1H closes from BiQuote.</p>
+  <p id="chartMeta" class="note">Waiting for candle data…</p>
+  <svg id="chart" class="chart" viewBox="0 0 640 176" role="img" aria-label="Hourly gold closes from BiQuote"></svg>
+  <div id="chartError"></div>
+</section>
+
 
     <section class="panel stack">
       <p class="eyebrow">Multi-timeframe analysis · market-analysis-v2</p>
