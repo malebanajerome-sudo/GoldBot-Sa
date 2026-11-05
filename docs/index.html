@@ -425,30 +425,31 @@
   }
 
   function normalizeCandle(candle) {
-    const time = getTime(
-      candle.time ??
-      candle.timestamp ??
-      candle.datetime ??
-      candle.date ??
-      candle.t
-    );
+  const time = getTime(
+    candle.openTime ??
+    candle.time ??
+    candle.timestamp ??
+    candle.datetime ??
+    candle.date ??
+    candle.t
+  );
 
-    const open = Number(candle.open ?? candle.o ?? candle.Open);
-    const high = Number(candle.high ?? candle.h ?? candle.High);
-    const low = Number(candle.low ?? candle.l ?? candle.Low);
-    const close = Number(candle.close ?? candle.c ?? candle.Close);
+  const open = Number(candle.open ?? candle.o ?? candle.Open);
+  const high = Number(candle.high ?? candle.h ?? candle.High);
+  const low = Number(candle.low ?? candle.l ?? candle.Low);
+  const close = Number(candle.close ?? candle.c ?? candle.Close);
 
-    if (
-      !Number.isFinite(time) ||
-      !Number.isFinite(open) ||
-      !Number.isFinite(high) ||
-      !Number.isFinite(low) ||
-      !Number.isFinite(close)
-    ) {
-      return null;
-    }
+  if (
+    !Number.isFinite(time) ||
+    !Number.isFinite(open) ||
+    !Number.isFinite(high) ||
+    !Number.isFinite(low) ||
+    !Number.isFinite(close)
+  ) {
+    return null;
+  }
 
-    return { time, open, high, low, close };
+  return { time, open, high, low, close };
   }
 
   async function loadChart() {
