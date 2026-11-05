@@ -181,6 +181,374 @@
       <section class="panel wide-metric"><p class="eyebrow">Completed trades</p><div id="completedTrades" class="metric">—</div><p class="note">Wins + losses</p></section>
     </div>
 
+    <!-- =========================================
+     GOLDBOT-ZA | LIVE XAU/USD CHART
+     BiQuote 5-minute candles
+========================================= -->
+
+<section id="goldbot-chart-panel">
+
+  <div class="gb-chart-header">
+    <div>
+      <div class="gb-chart-title">GOLD CHART</div>
+      <div class="gb-chart-subtitle">XAU/USD · LIVE MARKET</div>
+    </div>
+
+    <div class="gb-chart-live">
+      <span class="gb-live-dot"></span>
+      <span id="gb-chart-status">CONNECTING</span>
+    </div>
+  </div>
+
+  <div class="gb-chart-price-row">
+    <div>
+      <div class="gb-chart-price" id="gb-chart-price">Loading...</div>
+      <div class="gb-chart-change" id="gb-chart-time">
+        Waiting for market data
+      </div>
+    </div>
+    <div class="gb-chart-interval">5 MIN</div>
+  </div>
+
+  <div id="gb-gold-chart"></div>
+
+  <div class="gb-chart-footer">
+    <span>DATA: BIQUOTE</span>
+    <span id="gb-chart-updated">Awaiting first update</span>
+  </div>
+
+</section>
+
+<style>
+#goldbot-chart-panel {
+  background: #111318;
+  border: 1px solid rgba(231,189,85,.20);
+  border-radius: 15px;
+  padding: 15px;
+  margin: 16px 0;
+  color: #f2f2f2;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.gb-chart-header,
+.gb-chart-price-row,
+.gb-chart-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gb-chart-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #e7bd55;
+}
+
+.gb-chart-subtitle {
+  font-size: 10px;
+  color: #858995;
+  margin-top: 4px;
+}
+
+.gb-chart-live {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  color: #35c98a;
+  font-weight: 700;
+}
+
+.gb-live-dot {
+  width: 7px;
+  height: 7px;
+  background: #35c98a;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #35c98a;
+}
+
+.gb-chart-price-row {
+  margin: 18px 0 12px;
+}
+
+.gb-chart-price {
+  font-size: 25px;
+  font-weight: 800;
+  color: #e7bd55;
+  font-variant-numeric: tabular-nums;
+}
+
+.gb-chart-change {
+  font-size: 10px;
+  color: #9296a0;
+  margin-top: 5px;
+}
+
+.gb-chart-interval {
+  border: 1px solid rgba(231,189,85,.35);
+  color: #e7bd55;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+#gb-gold-chart {
+  width: 100%;
+  height: 320px;
+  position: relative;
+}
+
+.gb-chart-footer {
+  border-top: 1px solid #292c33;
+  margin-top: 10px;
+  padding-top: 10px;
+  font-size: 9px;
+  color: #777d89;
+  letter-spacing: .5px;
+}
+
+#gb-chart-panel-error {
+  color: #f07878;
+  font-size: 11px;
+  padding: 12px 0;
+}
+</style>
+
+<script src="https://unpkg.com/lightweight-charts@4.2.2/dist/lightweight-charts.standalone.production.js"></script>
+
+<script>
+(() => {
+  "use strict";
+
+  const endpoint =
+    "https://biquote.io/api/XAUUSD/ohlc?interval=5m&limit=100";
+
+  const chartElement = document.getElementById("gb-gold-chart");
+  const priceElement = document.getElementById("gb-chart-price");
+  const timeElement = document.getElementById("gb-chart-time");
+  const statusElement = document.getElementById("gb-chart-status");
+  const updatedElement = document.getElementById("gb-chart-updated");
+
+  if (!chartElement || !window.LightweightCharts) {
+    statusElement.textContent = "CHART LIBRARY ERROR";
+    return;
+  }
+
+  const chart = LightweightCharts.createChart(chartElement, {
+    width: chartElement.clientWidth,
+    height: 320,
+
+    layout: {
+      background: { color: "#111318" },
+      textColor: "#9296a0",
+      fontFamily: "Arial, sans-serif"
+    },
+
+    grid: {
+      vertLines: { color: "#20232a" },
+      horzLines: { color: "#20232a" }
+    },
+
+    crosshair: {
+      mode: LightweightCharts.CrosshairMode.Normal
+    },
+
+    rightPriceScale: {
+      borderColor: "#343740"
+    },
+
+    timeScale: {
+      borderColor: "#343740",
+      timeVisible: true,
+      secondsVisible: false
+    },
+
+    localization: {
+      priceFormatter: price => "$" + price.toFixed(2)
+    },
+
+    handleScroll: true,
+    handleScale: true
+  });
+
+  const candles = chart.addCandlestickSeries({
+    upColor: "#35c98a",
+    downColor: "#f06464",
+    borderUpColor: "#35c98a",
+    borderDownColor: "#f06464",
+    wickUpColor: "#35c98a",
+    wickDownColor: "#f06464",
+    priceLineVisible: true,
+    priceLineColor: "#e7bd55",
+    priceLineWidth: 1,
+    lastValueVisible: true
+  });
+
+  function getArray(json) {
+    if (Array.isArray(json)) return json;
+
+    const possible =
+      json?.candles ||
+      json?.data ||
+      json?.ohlc ||
+      json?.results ||
+      json?.bars;
+
+    if (Array.isArray(possible)) return possible;
+
+    throw new Error("Unexpected candle data format");
+  }
+
+  function getTime(value) {
+    if (typeof value === "number") {
+      return Math.floor(value > 1000000000000
+        ? value / 1000
+        : value);
+    }
+
+    if (typeof value === "string") {
+      const numeric = Number(value);
+
+      if (Number.isFinite(numeric)) {
+        return Math.floor(numeric > 1000000000000
+          ? numeric / 1000
+          : numeric);
+      }
+
+      return Math.floor(new Date(value).getTime() / 1000);
+    }
+
+    return NaN;
+  }
+
+  function normalizeCandle(candle) {
+    const time = getTime(
+      candle.time ??
+      candle.timestamp ??
+      candle.datetime ??
+      candle.date ??
+      candle.t
+    );
+
+    const open = Number(candle.open ?? candle.o ?? candle.Open);
+    const high = Number(candle.high ?? candle.h ?? candle.High);
+    const low = Number(candle.low ?? candle.l ?? candle.Low);
+    const close = Number(candle.close ?? candle.c ?? candle.Close);
+
+    if (
+      !Number.isFinite(time) ||
+      !Number.isFinite(open) ||
+      !Number.isFinite(high) ||
+      !Number.isFinite(low) ||
+      !Number.isFinite(close)
+    ) {
+      return null;
+    }
+
+    return { time, open, high, low, close };
+  }
+
+  async function loadChart() {
+    try {
+      statusElement.textContent = "UPDATING";
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("BiQuote HTTP " + response.status);
+      }
+
+      const json = await response.json();
+
+      const data = getArray(json)
+        .map(normalizeCandle)
+        .filter(Boolean)
+        .sort((a, b) => a.time - b.time);
+
+      if (!data.length) {
+        throw new Error("No valid candles received");
+      }
+
+      // Remove duplicate timestamps.
+      const unique = [
+        ...new Map(data.map(c => [c.time, c])).values()
+      ];
+
+      candles.setData(unique);
+
+      const latest = unique[unique.length - 1];
+
+      priceElement.textContent =
+        "$" + latest.close.toFixed(2);
+
+      timeElement.textContent =
+        "Latest candle · " +
+        new Date(latest.time * 1000).toLocaleTimeString(
+          "en-ZA",
+          {
+            timeZone: "Africa/Johannesburg",
+            hour: "2-digit",
+            minute: "2-digit"
+          }
+        ) + " SAST";
+
+      updatedElement.textContent =
+        "Updated " +
+        new Date().toLocaleTimeString("en-ZA", {
+          timeZone: "Africa/Johannesburg",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+
+      statusElement.textContent = "CONNECTED";
+
+      chart.timeScale().fitContent();
+
+    } catch (error) {
+      console.error("[GoldBot Chart]", error);
+
+      statusElement.textContent = "DATA ERROR";
+
+      updatedElement.textContent =
+        error.message || "Unable to load candles";
+    }
+  }
+
+  loadChart();
+
+  // Refresh the chart every 30 seconds.
+  const refreshTimer = setInterval(loadChart, 30000);
+
+  // Keep chart responsive when the screen changes size.
+  if (window.ResizeObserver) {
+    const observer = new ResizeObserver(() => {
+      chart.applyOptions({
+        width: chartElement.clientWidth
+      });
+    });
+
+    observer.observe(chartElement);
+  } else {
+    window.addEventListener("resize", () => {
+      chart.applyOptions({
+        width: chartElement.clientWidth
+      });
+    });
+  }
+
+})();
+</script>
+
+<!-- END GOLDBOT-ZA CHART -->
+    
     <div class="section" id="analysis">
       <div>
         <h2>Market intelligence</h2>
