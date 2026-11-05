@@ -239,10 +239,16 @@
   const statusElement = el("gb-1m-status");
   const updatedElement = el("gb-1m-updated");
 
+  function waitForChartLibrary() {
   if (!window.LightweightCharts) {
-    statusElement.textContent = "LIBRARY ERROR";
+    setTimeout(waitForChartLibrary, 250);
     return;
   }
+
+  initialize1mChart();
+}
+
+function initialize1mChart() {
 
   const chart = LightweightCharts.createChart(chartElement, {
     width: chartElement.clientWidth,
@@ -401,7 +407,9 @@
       chart.applyOptions({ width: chartElement.clientWidth });
     }).observe(chartElement);
   }
+}
 
+waitForChartLibrary();
 })();
 </script>
 
