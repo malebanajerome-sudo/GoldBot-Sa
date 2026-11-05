@@ -225,11 +225,37 @@
 </section>
 
 <script>
+/* One short-lived snapshot cache shared by the dashboard and both live charts. */
+window.GoldBotSnapshot = window.GoldBotSnapshot || (() => {
+  const url = "https://ayfdcfvyeqbjslumfgxf.supabase.co/functions/v1/gold-market-snapshot";
+  const key = "sb_publishable_t45Mz6GdYDnu05OlIvqJAg_4g2aooQ2";
+  let cached = null;
+  let cachedAt = 0;
+  let pending = null;
+  async function get(force = false) {
+    if (!force && cached && Date.now() - cachedAt < 12000) return cached;
+    if (!force && pending) return pending;
+    pending = (async () => {
+      const response = await fetch(url, {
+        method: "GET", cache: "no-store",
+        headers: { apikey: key, Authorization: "Bearer " + key, Accept: "application/json" }
+      });
+      const data = await response.json();
+      if (!response.ok || !data || data.success !== true || !data.quote || !data.timeframes) {
+        throw new Error(data?.error || "Shared gold snapshot unavailable (HTTP " + response.status + ")");
+      }
+      cached = data;
+      cachedAt = Date.now();
+      return data;
+    })();
+    try { return await pending; } finally { pending = null; }
+  }
+  return { get };
+})();
 (() => {
   "use strict";
 
-  const endpoint =
-    "https://biquote.io/api/XAUUSD/ohlc?interval=1m&limit=500";
+  const timeframe = "1m";
 
   const el = id => document.getElementById(id);
 
@@ -335,19 +361,10 @@ function initialize1mChart() {
     try {
       statusElement.textContent = "UPDATING";
 
-      const response = await fetch(endpoint, {
-        cache: "no-store",
-        headers: { Accept: "application/json" }
-      });
-
-      if (!response.ok) {
-        throw new Error("BiQuote HTTP " + response.status);
-      }
-
-      const json = await response.json();
-      const bars = Array.isArray(json)
-        ? json
-        : json.bars || json.candles || json.data || [];
+      const snapshot = await window.GoldBotSnapshot.get();
+      const series = snapshot.timeframes?.[timeframe];
+      const bars = Array.isArray(series?.bars) ? series.bars : [];
+      if (!bars.length) throw new Error("Snapshot contains no 1-minute candles");
 
       const data = [
         ...new Map(
@@ -558,8 +575,7 @@ waitForChartLibrary();
 (() => {
   "use strict";
 
-  const endpoint =
-    "https://biquote.io/api/XAUUSD/ohlc?interval=5m&limit=500";
+  const timeframe = "5m";
 
   const chartElement = document.getElementById("gb-gold-chart");
   const priceElement = document.getElementById("gb-chart-price");
@@ -691,19 +707,12 @@ waitForChartLibrary();
     try {
       statusElement.textContent = "UPDATING";
 
-      const response = await fetch(endpoint, {
-        method: "GET",
-        cache: "no-store",
-        headers: { "Accept": "application/json" }
-      });
+      const snapshot = await window.GoldBotSnapshot.get();
+      const series = snapshot.timeframes?.[timeframe];
+      const bars = Array.isArray(series?.bars) ? series.bars : [];
+      if (!bars.length) throw new Error("Snapshot contains no 5-minute candles");
 
-      if (!response.ok) {
-        throw new Error("BiQuote HTTP " + response.status);
-      }
-
-      const json = await response.json();
-
-      const data = getArray(json)
+      const data = bars
         .map(normalizeCandle)
         .filter(Boolean)
         .sort((a, b) => a.time - b.time);
@@ -889,7 +898,7 @@ waitForChartLibrary();
 
     <footer>
       GOLD BOT-ZA · STACKS CO.<br>
-      Live price, DXY, and 15-minute structure from BiQuote. Candles via gold-candles-twelvedata. Analysis by market-analysis-v2. Signals by market-signal-v3, with the paper lock on signal-lock. Journal and performance sit in Supabase.<br>
+      Gold quote and 1m, 5m and 1h candles from one cached BiQuote market snapshot. Multi-timeframe analysis and SMC are served by Supabase Edge Functions. Signals are paper-only; journal and performance are stored in Supabase.<br>
       Prices are informational. Signals are not guaranteed outcomes.
       <div id="lastRefresh"></div>
     </footer>
@@ -925,6 +934,7 @@ waitForChartLibrary();
     let lastPrice = null;
     let session = "";
     let busy = false;
+    let smcBusy = false;
 
     function el(tag, cls, text) {
       const node = document.createElement(tag);
@@ -1370,68 +1380,81 @@ function frameCard(title, tf) {
       const nested = rec(analysis.smc) || {};
       const structure = rec(record.marketStructure) || rec(record.structure) || rec(nested.structure) || {};
       const liquidity = rec(record.liquidity) || {};
-      const fvg = rec(record.fairValueGaps) || rec(record.fair_value_gaps) || {};
-      const blocks = rec(record.orderBlocks) || rec(record.order_blocks) || {};
       const confirmation = rec(record.signalConfirmation) || rec(record.signal_confirmation) || {};
-      const candle = rec(record.latestCompletedCandle) || rec(record.latest_completed_candle) || {};
-      const events = Array.isArray(structure.events) ? structure.events : [];
-      const event = rec(events.length ? events[events.length - 1] : null);
-      const sweep = rec(liquidity.latestSweep);
-      const gap = rec(fvg.latestUnfilled);
-      const block = rec(blocks.latestValid);
+      const range = rec(record.dealingRange) || {};
+      const eventsRaw = Array.isArray(record.structureEvents?.recent)
+        ? record.structureEvents.recent
+        : Array.isArray(structure.events) ? structure.events : [];
+      const events = eventsRaw.map(rec).filter(Boolean);
+      const event = rec(record.structureEvents?.latest) || (events.length ? events[events.length - 1] : null);
+      const sweeps = Array.isArray(liquidity.sweeps) ? liquidity.sweeps : [];
+      const sweep = sweeps.length ? rec(sweeps[sweeps.length - 1]) : rec(liquidity.latestSweep);
+      const fvgs = Array.isArray(record.fairValueGaps) ? record.fairValueGaps : [];
+      const gap = [...fvgs].reverse().map(rec).find(x => x && x.mitigated !== true) || (fvgs.length ? rec(fvgs[fvgs.length - 1]) : null);
+      const blocks = Array.isArray(record.orderBlocks) ? record.orderBlocks : [];
+      const block = [...blocks].reverse().map(rec).find(x => x && x.mitigated !== true) || (blocks.length ? rec(blocks[blocks.length - 1]) : null);
       const high = rec(structure.lastSwingHigh);
       const low = rec(structure.lastSwingLow);
       const bias = text(structure.bias) || "—";
+      const candleTime = structure.latest_completed_candle_time || record.latestCompletedCandle?.time || record.latest_completed_candle?.time;
+      const candleClose = structure.latest_completed_close ?? record.latestCompletedCandle?.close;
+      const completedCount = record.diagnostics?.completed_15m_candles ?? structure.confirmed_swing_count;
+      const age = record.diagnostics?.latest_candle_age_minutes;
+      const fvgLow = gap ? Math.min(Number(gap.from ?? gap.lower ?? gap.low), Number(gap.to ?? gap.upper ?? gap.high)) : null;
+      const fvgHigh = gap ? Math.max(Number(gap.from ?? gap.lower ?? gap.low), Number(gap.to ?? gap.upper ?? gap.high)) : null;
+      const blockLow = block ? Number(block.low) : null;
+      const blockHigh = block ? Number(block.high) : null;
+      const finite = n => Number.isFinite(Number(n));
       return {
-        updated: record.generatedAt ? "Updated " + fmtDate(record.generatedAt) : "Response received",
-        note: text(confirmation.note) || "Analysis only. The main signal engine validates the trade setup.",
+        updated: record.calculated_at ? "Updated " + fmtDate(record.calculated_at) : record.generatedAt ? "Updated " + fmtDate(record.generatedAt) : "Response received",
+        note: text(confirmation.note) || "Independent completed 15-minute SMC. 1-minute and 5-minute breakout confirmation is handled separately by the signal engine.",
         groups: [
           { title: "Structure overview", stats: [
             { label: "Structure bias", value: clean(bias), tone: biasTone(bias) },
-            { label: "Confirmed swings", value: structure.confirmedSwingCount == null ? "—" : String(structure.confirmedSwingCount) },
+            { label: "Confirmed swings", value: structure.confirmed_swing_count == null ? "—" : String(structure.confirmed_swing_count) },
             { label: "Last swing high", value: level(high && high.price) },
             { label: "Last swing low", value: level(low && low.price) },
-            { label: "Swing strength", value: structure.swingStrength == null ? "—" : String(structure.swingStrength) }
+            { label: "Dealing range", value: finite(range.low) && finite(range.high) ? level(range.low) + " – " + level(range.high) : "—" },
+            { label: "Premium / discount", value: clean(range.zone || "—") }
           ]},
           { title: "Latest structure event", stats: [
-            { label: "Event type", value: event ? clean(event.type) : "No event" },
-            { label: "Broken level", value: level(event && event.brokenLevel) },
+            { label: "Event type", value: event ? clean(event.type) : "No confirmed BOS / CHoCH" },
+            { label: "Broken level", value: level(event && (event.level ?? event.brokenLevel)) },
             { label: "Event close", value: level(event && event.close) },
             { label: "Event time", value: event && event.time ? fmtDate(event.time) : "—" }
           ]},
-          { title: "Liquidity sweep", stats: [
-            { label: "Sweep type", value: sweep ? clean(sweep.type) : "None reported" },
+          { title: "Liquidity", stats: [
+            { label: "Latest sweep", value: sweep ? clean(sweep.type) : "None detected" },
             { label: "Liquidity level", value: level(sweep && sweep.level) },
-            { label: "Sweep extreme", value: level(sweep && sweep.extreme) },
-            { label: "Sweep time", value: sweep && sweep.time ? fmtDate(sweep.time) : "—" }
+            { label: "Wick extreme", value: level(sweep && (sweep.wick ?? sweep.extreme)) },
+            { label: "Sweep time", value: sweep && sweep.time ? fmtDate(sweep.time) : "—" },
+            { label: "Equal-high pools", value: String((liquidity.equal_high_pools || []).length) },
+            { label: "Equal-low pools", value: String((liquidity.equal_low_pools || []).length) }
           ]},
           { title: "Fair value gap", stats: [
-            { label: "FVG type", value: gap ? clean(gap.type) : "None reported" },
-            { label: "Zone low", value: level(gap && gap.lower) },
-            { label: "Zone high", value: level(gap && gap.upper) },
+            { label: "FVG type", value: gap ? clean(gap.type) : "None detected" },
+            { label: "Zone low", value: fvgLow != null && Number.isFinite(fvgLow) ? level(fvgLow) : "—" },
+            { label: "Zone high", value: fvgHigh != null && Number.isFinite(fvgHigh) ? level(fvgHigh) : "—" },
             { label: "Midpoint", value: level(gap && gap.midpoint) },
-            { label: "Status", value: gap ? (gap.fullyMitigated ? "Fully mitigated" : gap.touched ? "Touched" : "Unfilled") : "—" }
+            { label: "Status", value: gap ? (gap.mitigated ? "Mitigated" : "Unmitigated") : "—" }
           ]},
           { title: "Order block", stats: [
-            { label: "Block type", value: block ? clean(block.type) : "None reported" },
-            { label: "Block low", value: level(block && block.low) },
-            { label: "Block high", value: level(block && block.high) },
-            { label: "Midpoint", value: level(block && block.midpoint) },
-            { label: "Status", value: block ? (block.invalidated ? "Invalidated" : "Valid") : "—" }
+            { label: "Block type", value: block ? clean(block.type) : "None detected" },
+            { label: "Block low", value: level(blockLow) },
+            { label: "Block high", value: level(blockHigh) },
+            { label: "Midpoint", value: block && finite(blockLow) && finite(blockHigh) ? level((blockLow + blockHigh) / 2) : "—" },
+            { label: "Status", value: block ? (block.mitigated ? "Mitigated" : "Unmitigated") : "—" }
           ]},
           { title: "Latest completed 15m candle", stats: [
-            { label: "Timeframe", value: text(record.timeframe) || "—" },
-            { label: "Candle time", value: candle.time ? fmtDate(candle.time) : "—" },
-            { label: "Open", value: level(candle.open) },
-            { label: "High", value: level(candle.high) },
-            { label: "Low", value: level(candle.low) },
-            { label: "Close", value: level(candle.close) },
-            { label: "Candle age", value: record.latestCandleAgeMinutes == null ? "—" : Number(record.latestCandleAgeMinutes).toFixed(1) + " min" },
-            { label: "Completed candles", value: record.candleCount == null ? "—" : String(record.candleCount) },
-            { label: "Data source", value: text(record.dataSource) || "—" }
+            { label: "Timeframe", value: text(record.timeframe) || "15m" },
+            { label: "Candle time", value: candleTime ? fmtDate(candleTime) : "—" },
+            { label: "Close", value: level(candleClose) },
+            { label: "Candle age", value: age == null ? "—" : Number(age).toFixed(1) + " min" },
+            { label: "Completed candles", value: completedCount == null ? "—" : String(completedCount) },
+            { label: "Data source", value: text(record.source || record.dataSource) || "—" }
           ]},
           { title: "Signal confirmation", stats: [
-            { label: "Direction", value: clean(confirmation.direction), tone: biasTone(text(confirmation.direction)) },
+            { label: "Direction", value: clean(confirmation.direction || "NEUTRAL"), tone: biasTone(text(confirmation.direction)) },
             { label: "Status", value: clean(confirmation.status) },
             { label: "Publishes a signal", value: confirmation.publishesTradeSignal === true ? "Yes" : "No" }
           ]}
@@ -1729,6 +1752,20 @@ function frameCard(title, tf) {
       try { return { data: await task(), error: "" }; }
       catch (error) { return { data: null, error: error instanceof Error ? error.message : String(error) }; }
     }
+
+    // SMC is an independent 15-minute market-structure feed.
+    // It must never wait for, or be gated by, 1m/5m candle closes or dashboard refreshes.
+    async function refreshSmc() {
+      if (smcBusy) return;
+      smcBusy = true;
+      try {
+        const result = await settle(() => callFunction(ENDPOINTS.smc).then(parseSmc));
+        paintSmc(result.data, result.error);
+      } finally {
+        smcBusy = false;
+      }
+    }
+
     async function refresh() {
       if (busy) return;
       busy = true;
@@ -1738,33 +1775,38 @@ function frameCard(title, tf) {
       $("status").textContent = "Updating";
       $("status").className = "status";
       try {
-        const [priceR, signalR, lockR, analysisR, candleR, dxyR, smcR, calendarR, newsR, journalR, perfR] = await Promise.all([
-          settle(() => callFunction(ENDPOINTS.price).then(parsePrice)),
+        const snapshotR = await settle(() => window.GoldBotSnapshot.get(true));
+        const snapshot = snapshotR.data;
+        const quote = snapshot?.quote;
+        const pricePayload = quote ? {
+          success: true, market: "XAU/USD", source: "BiQuote", provider: quote.source || snapshot.provider || "BiQuote",
+          price: quote.mid ?? quote.price, mid: quote.mid ?? quote.price,
+          bid: quote.bid, ask: quote.ask, spread: quote.spread,
+          timestamp: snapshot.snapshot_timestamp || quote.timestamp,
+          quoteAgeSeconds: quote.quoteAgeSeconds, marketState: quote.marketState,
+          stale: false, snapshot_id: snapshot.snapshot_id
+        } : null;
+        const hourlyBars = snapshot?.timeframes?.["1h"]?.bars;
+        const candlePayload = Array.isArray(hourlyBars) ? { success: true, bars: hourlyBars } : null;
+
+        const [priceR, signalR, lockR, analysisR, candleR, dxyR, calendarR, newsR, journalR, perfR] = await Promise.all([
+          settle(() => pricePayload ? parsePrice(pricePayload) : Promise.reject(new Error(snapshotR.error || "Shared snapshot unavailable"))),
           settle(() => callFunction(ENDPOINTS.signal).then(parseSignal)),
           settle(() => callFunction(ENDPOINTS.lock).then(parseLock)),
           settle(() => callFunction(ENDPOINTS.analysis).then(parseAnalysis)),
-          settle(() =>
-  fetch(ENDPOINTS.candles, {
-    method: "GET",
-    cache: "no-store"
-  })
-    .then(readJson)
-    .then(parseCandles)
-),
+          settle(() => candlePayload ? parseCandles(candlePayload) : Promise.reject(new Error(snapshotR.error || "Hourly candles unavailable in shared snapshot"))),
           settle(() => callFunction(ENDPOINTS.dxy).then(parseDxy)),
-          settle(() => callFunction(ENDPOINTS.smc).then(parseSmc)),
           settle(() => fetch("https://xoomar.com/api/markets/calendar?importance=high", { cache: "no-store" }).then(readJson).then(parseCalendar)),
           settle(() => callFunction(ENDPOINTS.news).then(parseNews)),
           settle(() => callFunction(ENDPOINTS.journal).then(parseJournal)),
           settle(() => callFunction(ENDPOINTS.performance).then(parsePerformance))
         ]);
         if (priceR.data) lastPrice = priceR.data;
-        paintPrice(priceR.data || lastPrice, priceR.error);
+        paintPrice(priceR.data || lastPrice, priceR.error || snapshotR.error);
         paintSignal(signalR.data, lockR.data, signalR.error || lockR.error);
         paintAnalysis(analysisR.data, analysisR.error);
         drawChart(candleR.data, candleR.error);
         paintDxy(dxyR.data, dxyR.error);
-        paintSmc(smcR.data, smcR.error);
         paintCalendar(calendarR.data, calendarR.error);
         paintNews(newsR.data, newsR.error);
         paintJournal(journalR.data, journalR.error);
@@ -1772,7 +1814,7 @@ function frameCard(title, tf) {
         const ok = Boolean(priceR.data || lastPrice) && Boolean(signalR.data);
         $("status").textContent = ok ? "Connected" : "Check feeds";
         $("status").className = "status " + (ok ? "ok" : "bad");
-        $("lastRefresh").textContent = "Dashboard refreshed " + fmtClock() + " SAST";
+        $("lastRefresh").textContent = "Dashboard refreshed " + fmtClock() + " SAST" + (snapshot?.snapshot_timestamp ? " · Gold snapshot " + fmtDate(snapshot.snapshot_timestamp) : "");
       } finally {
         busy = false;
         $("refreshButton").disabled = false;
@@ -1836,6 +1878,8 @@ function frameCard(title, tf) {
     setInterval(tick, 30000);
     refresh();
     setInterval(refresh, 60000);
+    refreshSmc();
+    setInterval(refreshSmc, 60000);
   </script>
 </body>
-</html>
+  </html>
